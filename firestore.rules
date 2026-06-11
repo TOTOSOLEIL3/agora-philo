@@ -18,6 +18,42 @@ service cloud.firestore {
         request.resource.data.ts is int;
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
+    match /battles/{code} {
+      allow read: if true;
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasOnly(['game', 'seed', 'status', 'host', 'ts']) &&
+        request.resource.data.host == request.auth.uid &&
+        request.resource.data.status == 'waiting' &&
+        request.resource.data.game is string &&
+        request.resource.data.game.size() <= 24 &&
+        request.resource.data.seed is int &&
+        request.resource.data.ts is int;
+      allow update: if request.auth != null &&
+        resource.data.host == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) &&
+        request.resource.data.status in ['playing', 'done'];
+      allow delete: if false;
+
+      match /players/{uid} {
+        allow read: if true;
+        allow create, update: if request.auth != null &&
+          request.auth.uid == uid &&
+          request.resource.data.keys().hasOnly(['pseudo', 'score', 'progress', 'done', 'ts']) &&
+          request.resource.data.pseudo is string &&
+          request.resource.data.pseudo.size() >= 2 &&
+          request.resource.data.pseudo.size() <= 16 &&
+          request.resource.data.score is int &&
+          request.resource.data.score >= 0 &&
+          request.resource.data.score <= 100 &&
+          request.resource.data.progress is int &&
+          request.resource.data.progress >= 0 &&
+          request.resource.data.progress <= 100 &&
+          request.resource.data.done is bool &&
+          request.resource.data.ts is int;
+        allow delete: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

@@ -146,6 +146,13 @@ let pendingChallenge = null;  // défi reçu via l'URL, pas encore accepté
 const CHALLENGEABLE = key => /^(quotes|quiz|vf|examen|sansfilet|drill:)/.test(key || "");
 
 function beginRun(key) {
+  if (pendingBattle && pendingBattle.game === key) {
+    currentRun = { game: key, seed: pendingBattle.seed };
+    challengeCtx = null;
+    pendingBattle = null;
+    rand = mulberry32(currentRun.seed);
+    return;
+  }
   if (pendingChallenge && pendingChallenge.game === key) {
     currentRun = { game: key, seed: pendingChallenge.seed };
     challengeCtx = { score: pendingChallenge.score, total: pendingChallenge.total, pseudo: pendingChallenge.pseudo };
@@ -208,6 +215,211 @@ function duelBlock(score, total) {
       <span class="scores">${escapeHtml(c.pseudo)} : <strong>${c.score}/${c.total}</strong> — Toi : <strong>${score}/${total}</strong></span>
       <span class="verdict">${win ? "VICTOIRE ! 🏆" : tie ? "Égalité parfaite — l'agora retient son souffle" : "Défaite… vengeance immédiate ?"}</span>
     </div>`;
+}
+
+/* ============================================================
+   BATTLE EN DIRECT — code d'invitation, scores en temps réel
+   ============================================================ */
+let battleCtx = null;      // { code } pendant une partie en battle
+let pendingBattle = null;  // { game, seed } à consommer par beginRun
+let battlePlayers = [];    // dernier état des joueurs (snapshot live)
+
+const BATTLE_GAMES = [
+  ["quiz", "🏛️ Le Grand QCM"],
+  ["quotes", "🗣️ Qui a dit ça ?"],
+  ["vf", "⚖️ Vrai ou Faux"],
+  ["sansfilet", "🖋️ Sans filet"]
+];
+
+function battleCleanup() {
+  if (window.battle) try { window.battle.unwatch(); } catch (e) {}
+  battleCtx = null;
+  pendingBattle = null;
+  battlePlayers = [];
+  const live = $("#battle-live");
+  if (live) { live.innerHTML = ""; live.style.display = "none"; }
+}
+
+function ensurePseudoField() {
+  const p = localStorage.getItem("agora_pseudo") || "";
+  return `<div class="type-zone" style="margin-bottom:1rem">
+    <input id="battle-pseudo" maxlength="16" placeholder="Ton pseudo (2–16 caractères)" value="${escapeHtml(p)}" autocomplete="off">
+  </div>`;
+}
+
+function readPseudo() {
+  const v = ($("#battle-pseudo")?.value || localStorage.getItem("agora_pseudo") || "").trim();
+  if (v.length < 2) return null;
+  localStorage.setItem("agora_pseudo", v);
+  if (window.lbSync) try { window.lbSync(); } catch (e) {}
+  return v;
+}
+
+function startBattleSetup(prefillCode) {
+  battleCleanup();
+  $("#game-title").textContent = "Battle en direct";
+  setMeta("", "");
+  setProgress(0);
+  show("view-game");
+
+  if (!window.battle || !window.battle.ready()) {
+    stage().innerHTML = `<div class="q-card"><div class="label">Connexion…</div>
+      <div class="question" style="font-size:1.1rem;font-family:var(--font-body)">Connexion au serveur de battle… si rien ne se passe en quelques secondes, vérifie ta connexion (ou ton bloqueur de pub).</div></div>
+      <div class="next-zone"><button class="btn" id="battle-retry">Réessayer</button></div>`;
+    $("#battle-retry").addEventListener("click", () => startBattleSetup(prefillCode));
+    return;
+  }
+
+  stage().innerHTML = `
+    <div class="q-card">
+      <div class="label">⚡ Battle en direct</div>
+      <div class="question" style="font-size:1.1rem;font-family:var(--font-body)">Mêmes questions, en même temps, sur chaque téléphone — scores en direct. Crée une salle ou rejoins avec un code.</div>
+    </div>
+    ${ensurePseudoField()}
+    <div class="fiche-sec">
+      <div class="sec-title">Créer une battle</div>
+      <div class="options">
+        ${BATTLE_GAMES.map(([k, label], i) => `<button class="opt" data-bgame="${k}"><span class="key">${String.fromCharCode(65 + i)}</span><span>${label}</span></button>`).join("")}
+      </div>
+    </div>
+    <div class="fiche-sec">
+      <div class="sec-title">Rejoindre avec un code</div>
+      <div class="type-zone">
+        <input id="battle-code" maxlength="4" placeholder="CODE" value="${escapeHtml(prefillCode || "")}" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:0.3em;font-family:var(--font-mono)">
+        <button class="btn primary" id="battle-join">Rejoindre ⚡</button>
+      </div>
+      <p class="mono" id="battle-error" style="color:var(--red);margin-top:0.6rem"></p>
+    </div>`;
+
+  document.querySelectorAll("[data-bgame]").forEach(b => b.addEventListener("click", async () => {
+    if (!readPseudo()) { $("#battle-pseudo").focus(); return; }
+    b.disabled = true;
+    try {
+      const seed = Math.floor(Math.random() * 2147483647);
+      const code = await window.battle.create(b.dataset.bgame, seed);
+      battleLobby(code, true);
+    } catch (e) { $("#battle-error").textContent = "Création impossible — réessaie."; b.disabled = false; }
+  }));
+
+  const join = async () => {
+    if (!readPseudo()) { $("#battle-pseudo").focus(); return; }
+    const code = ($("#battle-code").value || "").trim().toUpperCase();
+    if (code.length !== 4) { $("#battle-error").textContent = "Le code fait 4 caractères."; return; }
+    try {
+      const b = await window.battle.get(code);
+      if (!b) { $("#battle-error").textContent = "Aucune battle avec ce code."; return; }
+      if (b.status !== "waiting") { $("#battle-error").textContent = "Cette battle a déjà commencé."; return; }
+      await window.battle.enter(code);
+      battleLobby(code, false);
+    } catch (e) { $("#battle-error").textContent = "Connexion impossible — réessaie."; }
+  };
+  $("#battle-join").addEventListener("click", join);
+  $("#battle-code").addEventListener("keydown", e => { if (e.key === "Enter") join(); });
+}
+
+function battleLobby(code, isHost) {
+  $("#game-title").textContent = "Battle · salle " + code;
+  let launched = false;
+
+  stage().innerHTML = `
+    <div class="battle-code-box">
+      <span class="mono">Code de la salle</span>
+      <div class="battle-code">${code}</div>
+      <button class="btn" id="battle-share">Inviter les potes 📤</button>
+    </div>
+    <div class="fiche-sec">
+      <div class="sec-title">Dans la salle</div>
+      <ul class="battle-players" id="battle-players"><li class="mono">connexion…</li></ul>
+    </div>
+    <div class="next-zone" id="battle-action">
+      ${isHost
+        ? `<button class="btn danger" id="battle-go" disabled>Lancer la battle ⚡</button>`
+        : `<p class="mono">En attente du lancement par l'hôte…</p>`}
+    </div>`;
+
+  $("#battle-share").addEventListener("click", () =>
+    shareScore(`⚡ Battle de philo EN DIRECT sur AGORA ! Code : ${code} — rejoins avant le coup d'envoi :`, `https://agora-philo.fr/#battle=${code}`));
+
+  window.battle.watch(code,
+    b => {
+      if (b.status === "playing" && !launched) {
+        launched = true;
+        battleCountdown(code, b);
+      }
+    },
+    ps => {
+      battlePlayers = ps;
+      const ul = $("#battle-players");
+      if (ul) ul.innerHTML = ps.map(p => `<li>🦉 <strong>${escapeHtml(p.pseudo || "…")}</strong></li>`).join("");
+      const go = $("#battle-go");
+      if (go) go.disabled = ps.length < 2;
+      renderBattleLive();
+      renderBattleRank();
+    });
+
+  const go = $("#battle-go");
+  if (go) go.addEventListener("click", () => { go.disabled = true; window.battle.start(code); });
+}
+
+function battleCountdown(code, b) {
+  battleCtx = { code };
+  let n = 3;
+  const tick = () => {
+    if (n > 0) {
+      stage().innerHTML = `<div class="endscreen"><div class="big-score countdown">${n}</div><div class="mention">Prépare-toi…</div></div>`;
+      n--;
+      setTimeout(tick, 900);
+    } else {
+      pendingBattle = { game: b.game, seed: b.seed };
+      if (b.game.startsWith("drill:")) startNotionDrill(b.game.slice(6));
+      else nav(b.game);
+      const live = $("#battle-live");
+      if (live) live.style.display = "flex";
+    }
+  };
+  tick();
+}
+
+function renderBattleLive() {
+  const el = $("#battle-live");
+  if (!el || !battleCtx) return;
+  const myUid = window.battle ? window.battle.myUid() : null;
+  const others = battlePlayers.filter(p => p.id !== myUid);
+  el.innerHTML = others.map(p =>
+    `<span class="blive ${p.done ? "bdone" : ""}">⚡ ${escapeHtml(p.pseudo || "…")} · ${p.score}/${p.progress}${p.done ? " ✓" : ""}</span>`).join("");
+}
+
+function renderBattleRank() {
+  const el = $("#battle-rank");
+  if (!el) return;
+  const myUid = window.battle ? window.battle.myUid() : null;
+  const sorted = [...battlePlayers].sort((a, b) => b.score - a.score || (b.done ? 1 : 0) - (a.done ? 1 : 0));
+  const medals = ["🥇", "🥈", "🥉"];
+  el.innerHTML = `<div class="recap-title">⚡ Classement de la battle</div>` + sorted.map((p, i) => `
+    <div class="recap-row ${p.id === myUid ? "me-row" : ""}">
+      <span>${medals[i] || i + 1}</span>
+      <span class="recap-notion">${escapeHtml(p.pseudo || "…")}</span>
+      <span class="recap-score">${p.score}/${p.progress}${p.done ? "" : " · en cours…"}</span>
+    </div>`).join("");
+  if (sorted.length > 1 && sorted.every(p => p.done) && sorted[0].id === myUid && !el.dataset.celebrated) {
+    el.dataset.celebrated = "1";
+    confetti();
+  }
+}
+
+function parseBattleHash() {
+  const m = location.hash.match(/^#battle=([A-Z0-9]{4})$/i);
+  if (!m) return;
+  history.replaceState(null, "", location.pathname + location.search);
+  // petite attente que Firebase soit prêt
+  let tries = 0;
+  const t = setInterval(() => {
+    tries++;
+    if ((window.battle && window.battle.ready()) || tries > 20) {
+      clearInterval(t);
+      startBattleSetup(m[1].toUpperCase());
+    }
+  }, 400);
 }
 
 /* ---------- mes erreurs : les questions ratées, à re-réviser ---------- */
@@ -322,7 +534,8 @@ const GAMES = {
   sansfilet: { title: "Sans filet", start: startSansFilet },
   marathon: { title: "Le Marathon", start: startMarathon },
   examen: { title: "L'Examen Blanc", start: startExamen },
-  errors: { title: "Mes erreurs", start: startErrors }
+  errors: { title: "Mes erreurs", start: startErrors },
+  battle: { title: "Battle en direct", start: startBattleSetup }
 };
 
 function show(viewId) {
@@ -333,6 +546,7 @@ function show(viewId) {
 
 function nav(target) {
   if (target === "home") {
+    battleCleanup();
     refreshBests();
     show("view-home");
     return;
@@ -753,6 +967,7 @@ function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
       <div class="mention">${mention}</div>
       <p class="comment">${comment}</p>
       ${duelBlock(score, total)}
+      ${battleCtx ? `<div class="exam-recap" id="battle-rank"></div>` : ""}
       ${bestLine ? `<p class="mono" style="margin-bottom:1.4rem">${bestLine}</p>` : ""}
       <div class="actions">
         <button class="btn primary" id="btn-replay">Rejouer</button>
@@ -772,6 +987,13 @@ function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
   if (challengeCtx && score > challengeCtx.score) confetti();
   else if (bestLine && bestLine.includes("★")) confetti();
   challengeCtx = null;
+  if (battleCtx && window.battle) {
+    window.battle.report(battleCtx.code, score, total, true);
+    battleCtx = null;
+    const live = $("#battle-live");
+    if (live) { live.innerHTML = ""; live.style.display = "none"; }
+    renderBattleRank();
+  }
 }
 
 function updateBest(game, value, lowerIsBetter = false) {
@@ -820,6 +1042,7 @@ function startQuotes() {
         recordError({ kind: "qcm", label: "Qui a dit ça ?", q: `« ${cur.q} »`, opts: [...opts], answer: cur.a, why: `${cur.a} — ${cur.src}.` });
       }
       bumpDaily();
+      if (battleCtx && window.battle) window.battle.report(battleCtx.code, score, i + 1, false);
       $("#feedback").innerHTML = explainBlock(good,
         good ? "Exact !" : "Raté — c'était " + cur.a,
         `<em>${cur.src}</em>`);
@@ -879,6 +1102,7 @@ function startQuiz() {
         recordError({ kind: "qcm", label: "QCM", q: cur.q, opts: [...cur.opts], answer: cur.opts[cur.ok], why: cur.why });
       }
       bumpDaily();
+      if (battleCtx && window.battle) window.battle.report(battleCtx.code, score, i + 1, false);
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
       $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
@@ -938,6 +1162,7 @@ function startVF() {
         recordError({ kind: "vf", label: "Vrai ou faux ?", q: cur.s, v: cur.v, why: cur.why });
       }
       bumpDaily();
+      if (battleCtx && window.battle) window.battle.report(battleCtx.code, score, i + 1, false);
       $("#feedback").innerHTML = explainBlock(good,
         good ? "Exact !" : `Non — c'était ${cur.v ? "VRAI" : "FAUX"}`, cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
@@ -1424,6 +1649,7 @@ function startSansFilet() {
           answer: cur.a, why: `${cur.a} — ${cur.src}.`
         });
       }
+      if (battleCtx && window.battle) window.battle.report(battleCtx.code, score, i + 1, false);
       $("#feedback").innerHTML = explainBlock(ok,
         ok ? (exact ? "Exact, orthographe parfaite !" : `Accordé ! (orthographe exacte : ${cur.a})`) : `Non — c'était ${cur.a}`,
         `<em>${cur.src}</em>`);
@@ -1590,6 +1816,7 @@ function initHome() {
 
 initHome();
 parseChallenge();
+parseBattleHash();
 
 /* ---------- PWA : installable + hors ligne ---------- */
 if ("serviceWorker" in navigator) {

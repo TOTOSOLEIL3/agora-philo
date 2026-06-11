@@ -1201,6 +1201,62 @@ body::after {
   padding: 1.2rem;
 }
 
+/* ---------- battle en direct ---------- */
+.battle-card { border-color: var(--blue); box-shadow: 5px 5px 0 var(--blue); }
+.battle-card .num { color: var(--blue); }
+.battle-card:hover { box-shadow: 8px 8px 0 var(--blue); }
+.battle-card:active { box-shadow: 2px 2px 0 var(--blue); }
+
+.battle-code-box {
+  text-align: center;
+  border: 2px solid var(--ink);
+  background: #fbf7ec;
+  box-shadow: var(--shadow);
+  padding: 1.8rem 1.5rem;
+  margin-bottom: 1.8rem;
+}
+
+.battle-code {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 12vw, 5rem);
+  letter-spacing: 0.25em;
+  color: var(--blue);
+  margin: 0.4rem 0 1rem;
+  user-select: all;
+}
+
+.battle-players { list-style: none; display: grid; gap: 0.5rem; }
+
+.battle-players li {
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  padding: 0.6rem 0.9rem;
+  animation: drop-in 0.25s ease both;
+}
+
+.battle-live {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: -1.4rem 0 1.6rem;
+}
+
+.battle-live .blive {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  background: #fbf7ec;
+  padding: 0.3rem 0.6rem;
+}
+
+.battle-live .blive.bdone { border-color: var(--green); color: var(--green); }
+
+.countdown { animation: pop 0.8s ease infinite; }
+
+.exam-recap .recap-row.me-row { background: #faf3df; border-left: 4px solid var(--gold); padding-left: 0.5rem; }
+
 /* ---------- saisie libre (Sans filet) ---------- */
 .type-zone {
   display: flex;

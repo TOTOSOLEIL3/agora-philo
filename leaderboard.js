@@ -5,7 +5,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, collection, query, orderBy, limit, onSnapshot
+  getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -86,6 +86,51 @@ function renderList(rows) {
     ? (meIdx >= 0 ? `Ta position : ${meIdx + 1}ᵉ sur ${rows.length}` : "Joue pour apparaître au classement !")
     : "";
 }
+
+/* ---------- battles en direct (code d'invitation, scores live) ---------- */
+const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+let battleUnsubs = [];
+
+window.battle = {
+  ready: () => !!(db && uid),
+  myUid: () => uid,
+
+  async create(game, seed) {
+    const code = Array.from({ length: 4 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join("");
+    await setDoc(doc(db, "battles", code), { game, seed, status: "waiting", host: uid, ts: Date.now() });
+    await this.enter(code);
+    return code;
+  },
+
+  async get(code) {
+    const s = await getDoc(doc(db, "battles", code));
+    return s.exists() ? s.data() : null;
+  },
+
+  async enter(code) {
+    const pseudo = (localStorage.getItem("agora_pseudo") || "").slice(0, 16);
+    await setDoc(doc(db, "battles", code, "players", uid), { pseudo, score: 0, progress: 0, done: false, ts: Date.now() });
+  },
+
+  watch(code, onBattle, onPlayers) {
+    this.unwatch();
+    battleUnsubs.push(onSnapshot(doc(db, "battles", code), s => { if (s.exists()) onBattle(s.data()); }));
+    battleUnsubs.push(onSnapshot(collection(db, "battles", code, "players"), s => {
+      const ps = [];
+      s.forEach(d => ps.push({ id: d.id, ...d.data() }));
+      onPlayers(ps);
+    }));
+  },
+
+  unwatch() { battleUnsubs.forEach(u => { try { u(); } catch (e) {} }); battleUnsubs = []; },
+
+  start(code) { return updateDoc(doc(db, "battles", code), { status: "playing" }); },
+
+  report(code, score, progress, done) {
+    const pseudo = (localStorage.getItem("agora_pseudo") || "").slice(0, 16);
+    setDoc(doc(db, "battles", code, "players", uid), { pseudo, score, progress, done, ts: Date.now() }).catch(() => {});
+  }
+};
 
 /* ---------- démarrage ---------- */
 async function boot() {
