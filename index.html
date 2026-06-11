@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Karla:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
@@ -64,6 +64,12 @@
     <div class="marquee" aria-hidden="true">
       <div class="track" id="marquee-track"></div>
     </div>
+
+    <section class="quote-day">
+      <span class="label mono">✶ Citation du jour ✶</span>
+      <p class="txt" id="qday-txt"></p>
+      <p class="who" id="qday-who"></p>
+    </section>
 
     <section class="games" id="jeux">
       <div class="section-head">
@@ -119,6 +125,14 @@
           <h3>Le Marathon</h3>
           <p>Un mélange de tout, sans filet : une seule erreur et c'est terminé. Jusqu'où ira ta série ?</p>
           <span class="best" data-best="marathon">Record : —</span>
+        </button>
+
+        <button class="game-card revenge-card" data-nav="errors">
+          <span class="pictogram">♻️</span>
+          <span class="num">LA REVANCHE</span>
+          <h3>Mes erreurs</h3>
+          <p>Chaque question ratée — dans n'importe quel jeu — atterrit ici. Réponds juste pour l'effacer. Vise la table rase avant lundi.</p>
+          <span class="best" id="errors-count">Aucune erreur enregistrée 😇</span>
         </button>
 
         <button class="game-card exam-card" data-nav="examen">
@@ -204,9 +218,9 @@
     <p class="madeby">AGORA · révision du bac de philosophie · fait avec 🦉 et zéro publicité</p>
   </footer>
 
-  <script src="data.js?v=3"></script>
-  <script src="cours.js?v=3"></script>
-  <script src="app.js?v=3"></script>
+  <script src="data.js?v=4"></script>
+  <script src="cours.js?v=4"></script>
+  <script src="app.js?v=4"></script>
   <script data-goatcounter="https://totosoleil3.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

@@ -53,6 +53,7 @@ function refreshBests() {
     else el.textContent = `Record : ${b}/10`;
   });
   renderNotionGrid();
+  refreshErrorBadges();
 }
 
 function renderNotionGrid() {
@@ -74,6 +75,65 @@ function gainXp(amount) {
   store.xp = store.xp + amount;
   refreshHud();
   return levelFor(store.xp).name !== before; // niveau franchi ?
+}
+
+/* ---------- mes erreurs : les questions ratées, à re-réviser ---------- */
+const errStore = {
+  all() { return JSON.parse(localStorage.getItem("agora_errors") || "[]"); },
+  save(list) { localStorage.setItem("agora_errors", JSON.stringify(list.slice(-120))); },
+  add(item) {
+    const list = this.all();
+    const key = (item.q || "").slice(0, 80);
+    const existing = list.find(e => e.key === key);
+    if (existing) existing.fails = (existing.fails || 1) + 1;
+    else list.push({ ...item, key, fails: 1 });
+    this.save(list);
+    refreshErrorBadges();
+  },
+  remove(key) { this.save(this.all().filter(e => e.key !== key)); refreshErrorBadges(); },
+  count() { return this.all().length; }
+};
+
+function recordError(item) { errStore.add(item); }
+
+function refreshErrorBadges() {
+  const el = $("#errors-count");
+  if (!el) return;
+  const n = errStore.count();
+  el.textContent = n === 0 ? "Aucune erreur enregistrée 😇" : `${n} question${n > 1 ? "s" : ""} à corriger`;
+}
+
+/* ---------- partage de score ---------- */
+async function shareScore(text) {
+  const full = text + "\nhttps://agora-philo.fr";
+  try {
+    if (navigator.share) { await navigator.share({ text: full }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(full); toast("Copié ! Colle-le à tes potes 📋"); }
+  catch { prompt("Copie ce texte :", full); }
+}
+
+function toast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+/* ---------- confettis (records & sans-faute) ---------- */
+function confetti() {
+  const colors = ["#2230d4", "#e4502a", "#c9962e", "#2e7d4f", "#17140e"];
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement("span");
+    s.className = "confetti";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.background = colors[i % colors.length];
+    s.style.animationDelay = (Math.random() * 0.4) + "s";
+    s.style.animationDuration = (1.6 + Math.random() * 1.2) + "s";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 3400);
+  }
 }
 
 /* ---------- série quotidienne & compte à rebours ---------- */
@@ -127,7 +187,8 @@ const GAMES = {
   cards: { title: "Les Repères", start: startCards },
   match: { title: "Le Grand Duel", start: startMatch },
   marathon: { title: "Le Marathon", start: startMarathon },
-  examen: { title: "L'Examen Blanc", start: startExamen }
+  examen: { title: "L'Examen Blanc", start: startExamen },
+  errors: { title: "Mes erreurs", start: startErrors }
 };
 
 function show(viewId) {
@@ -307,7 +368,11 @@ function startNotionDrill(id) {
     }
 
     function after(good) {
-      if (good) { score++; streak++; } else streak = 0;
+      if (good) { score++; streak++; }
+      else {
+        streak = 0;
+        recordError({ kind: cur.kind, label: cur.label, q: cur.q, opts: cur.opts, answer: cur.answer, v: cur.v, why: cur.why });
+      }
       bumpDaily();
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
@@ -505,9 +570,10 @@ function mentionFor(score, total) {
   return ["Rattrapage en vue", "Socrate disait « je sais que je ne sais rien ». Toi aussi, visiblement. Rejoue !"];
 }
 
-function endScreen({ score, total, xp, bestLine, replay, extra }) {
+function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
   const [mention, comment] = mentionFor(score, total);
   const lvlUp = gainXp(xp);
+  const errN = errStore.count();
   stage().innerHTML = `
     <div class="endscreen">
       <span class="xp-gain">+${xp} XP${lvlUp ? " · NIVEAU SUPÉRIEUR : " + levelFor(store.xp).name + " !" : ""}</span>
@@ -517,11 +583,16 @@ function endScreen({ score, total, xp, bestLine, replay, extra }) {
       ${bestLine ? `<p class="mono" style="margin-bottom:1.4rem">${bestLine}</p>` : ""}
       <div class="actions">
         <button class="btn primary" id="btn-replay">Rejouer</button>
+        <button class="btn" id="btn-share">Partager 📤</button>
         ${extra ? `<button class="btn" data-nav="${extra.nav}">${extra.label}</button>` : ""}
+        ${errN ? `<button class="btn danger" data-nav="errors">Mes erreurs (${errN})</button>` : ""}
         <button class="btn" data-nav="home">Retour à l'arène</button>
       </div>
     </div>`;
   $("#btn-replay").addEventListener("click", replay);
+  $("#btn-share").addEventListener("click", () =>
+    shareScore(share || `🦉 ${score}/${total} en révision de philo sur AGORA. Tu fais mieux ?`));
+  if (bestLine && bestLine.includes("★")) confetti();
 }
 
 function updateBest(game, value, lowerIsBetter = false) {
@@ -564,7 +635,10 @@ function startQuotes() {
         else b.classList.add("dimmed");
       });
       if (good) { score++; streak++; maxStreak = Math.max(maxStreak, streak); }
-      else streak = 0;
+      else {
+        streak = 0;
+        recordError({ kind: "qcm", label: "Qui a dit ça ?", q: `« ${cur.q} »`, opts: [...opts], answer: cur.a, why: `${cur.a} — ${cur.src}.` });
+      }
       bumpDaily();
       $("#feedback").innerHTML = explainBlock(good,
         good ? "Exact !" : "Raté — c'était " + cur.a,
@@ -618,7 +692,11 @@ function startQuiz() {
         else if (b === btn) b.classList.add("wrong");
         else b.classList.add("dimmed");
       });
-      if (good) { score++; streak++; } else streak = 0;
+      if (good) { score++; streak++; }
+      else {
+        streak = 0;
+        recordError({ kind: "qcm", label: "QCM", q: cur.q, opts: [...cur.opts], answer: cur.opts[cur.ok], why: cur.why });
+      }
       bumpDaily();
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
@@ -672,7 +750,11 @@ function startVF() {
         else if (b === btn) b.classList.add("wrong");
         else b.classList.add("dimmed");
       });
-      if (good) { score++; streak++; } else streak = 0;
+      if (good) { score++; streak++; }
+      else {
+        streak = 0;
+        recordError({ kind: "vf", label: "Vrai ou faux ?", q: cur.s, v: cur.v, why: cur.why });
+      }
       bumpDaily();
       $("#feedback").innerHTML = explainBlock(good,
         good ? "Exact !" : `Non — c'était ${cur.v ? "VRAI" : "FAUX"}`, cur.why);
@@ -835,6 +917,7 @@ function startMatch() {
     const perfect = pairs.length;
     const xp = Math.max(20, 120 - (moves - perfect) * 10);
     const isRecord = updateBest("match", moves, true);
+    if (moves === perfect) confetti();
     stage().innerHTML = `
       <div class="endscreen">
         <span class="xp-gain">+${xp} XP${gainXp(xp) ? " · NIVEAU SUPÉRIEUR !" : ""}</span>
@@ -851,6 +934,109 @@ function startMatch() {
       </div>`;
     $("#btn-replay").addEventListener("click", startMatch);
   }
+}
+
+/* ============================================================
+   MES ERREURS — re-réviser les questions ratées
+   ============================================================ */
+function startErrors() {
+  const queue = shuffle(errStore.all());
+  const total = queue.length;
+  let i = 0, corrected = 0;
+
+  if (!total) {
+    setMeta("", "");
+    setProgress(0);
+    stage().innerHTML = `
+      <div class="endscreen">
+        <div class="big-score">😇</div>
+        <div class="mention">Aucune erreur enregistrée</div>
+        <p class="comment">Va d'abord te planter un peu dans l'arène — chaque question ratée atterrira ici, prête à être corrigée.</p>
+        <div class="actions"><button class="btn primary" data-nav="home">Retour à l'arène</button></div>
+      </div>`;
+    return;
+  }
+
+  function round() {
+    const cur = queue[i];
+    setMeta(`${i + 1} / ${total}`, `ratée ${cur.fails || 1}×`);
+    setProgress(i / total);
+
+    const head = `
+      <div class="q-card">
+        <div class="label">${cur.label} · à corriger</div>
+        <div class="question" style="font-size:1.15rem">${cur.q}</div>
+      </div>`;
+
+    if (cur.kind === "qcm") {
+      const opts = shuffle(cur.opts);
+      stage().innerHTML = `${head}
+        <div class="options">${opts.map(optionButton).join("")}</div>
+        <div id="feedback"></div><div class="next-zone" id="next-zone"></div>`;
+      document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+        const good = opts[btn.dataset.idx] === cur.answer;
+        document.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if (opts[b.dataset.idx] === cur.answer) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+          else b.classList.add("dimmed");
+        });
+        after(good);
+      }));
+    } else {
+      stage().innerHTML = `${head}
+        <div class="vf-buttons">
+          <button class="opt" data-v="true"><span>VRAI</span></button>
+          <button class="opt" data-v="false"><span>FAUX</span></button>
+        </div>
+        <div id="feedback"></div><div class="next-zone" id="next-zone"></div>`;
+      document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+        const good = (btn.dataset.v === "true") === cur.v;
+        document.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if ((b.dataset.v === "true") === cur.v) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+          else b.classList.add("dimmed");
+        });
+        after(good);
+      }));
+    }
+
+    function after(good) {
+      bumpDaily();
+      if (good) { corrected++; errStore.remove(cur.key); }
+      $("#feedback").innerHTML = explainBlock(good,
+        good ? "Corrigée ! Elle disparaît de la liste" : "Toujours pas — elle reste dans la liste",
+        cur.why);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < total ? "Suivante →" : "Voir le bilan"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < total ? round() : finish(); });
+    }
+  }
+
+  function finish() {
+    setProgress(1);
+    const xp = corrected * 8;
+    const lvlUp = xp > 0 ? gainXp(xp) : false;
+    const remaining = errStore.count();
+    if (corrected === total) confetti();
+    stage().innerHTML = `
+      <div class="endscreen">
+        ${xp > 0 ? `<span class="xp-gain">+${xp} XP${lvlUp ? " · NIVEAU SUPÉRIEUR !" : ""}</span>` : ""}
+        <div class="big-score">${corrected}/${total}</div>
+        <div class="mention">${corrected === total ? "Table rase — plus aucune erreur !" : remaining + " question" + (remaining > 1 ? "s" : "") + " encore à corriger"}</div>
+        <p class="comment">${corrected === total
+          ? "Tu as transformé chaque faute en acquis. C'est exactement comme ça qu'on progresse."
+          : "Celles que tu viens de rater restent dans la liste — reviens les corriger, c'est là que se gagnent les points du bac."}</p>
+        <div class="actions">
+          ${remaining ? `<button class="btn primary" id="btn-replay">Continuer à corriger</button>` : ""}
+          <button class="btn" data-nav="home">Retour à l'arène</button>
+        </div>
+      </div>`;
+    const r = $("#btn-replay");
+    if (r) r.addEventListener("click", startErrors);
+  }
+
+  round();
 }
 
 /* ============================================================
@@ -924,6 +1110,7 @@ function startExamen() {
       bumpDaily();
       parNotion[cur.nid].total++;
       if (good) { score++; parNotion[cur.nid].ok++; }
+      else recordError({ kind: cur.kind, label: `${cur.ntitle} · ${cur.label}`, q: cur.q, opts: cur.opts, answer: cur.answer, v: cur.v, why: cur.why });
       $("#feedback").innerHTML = explainBlock(good, good ? "+1 point" : "Zéro pointé sur celle-là", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Question suivante →" : "Voir ma copie"}</button>`;
       $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
@@ -939,6 +1126,7 @@ function startExamen() {
     const aRevoir = Object.entries(parNotion)
       .filter(([, v]) => v.ok < v.total)
       .sort((a, b) => a[1].ok - b[1].ok);
+    if (isRecord || score >= 16) confetti();
 
     stage().innerHTML = `
       <div class="endscreen">
@@ -960,10 +1148,14 @@ function startExamen() {
         </div>` : `<p class="mono" style="margin-bottom:1.4rem">SANS-FAUTE SUR TOUTES LES NOTIONS. RESPECT ÉTERNEL.</p>`}
         <div class="actions">
           <button class="btn primary" id="btn-replay">Repasser un examen</button>
+          <button class="btn" id="btn-share">Partager 📤</button>
+          ${errStore.count() ? `<button class="btn danger" data-nav="errors">Mes erreurs (${errStore.count()})</button>` : ""}
           <button class="btn" data-nav="home">Retour à l'arène</button>
         </div>
       </div>`;
     $("#btn-replay").addEventListener("click", startExamen);
+    $("#btn-share").addEventListener("click", () =>
+      shareScore(`🎓 J'ai eu ${score}/20 à l'examen blanc de philo sur AGORA (${mention}). Viens me battre !`));
   }
 
   round();
@@ -999,7 +1191,8 @@ function startMarathon() {
           <div class="question is-quote">« ${cur.q} »</div>
         </div>
         <div class="options">${opts.map(optionButton).join("")}</div>`;
-      wire(opts.map(o => o === cur.a), `C'était ${cur.a} — <em>${cur.src}</em>`);
+      wire(opts.map(o => o === cur.a), `C'était ${cur.a} — <em>${cur.src}</em>`,
+        { kind: "qcm", label: "Qui a dit ça ?", q: `« ${cur.q} »`, opts: [...opts], answer: cur.a, why: `${cur.a} — ${cur.src}.` });
     } else if (item.type === "quiz") {
       const cur = item.data;
       const order = shuffle(cur.opts.map((_, k) => k));
@@ -1009,7 +1202,8 @@ function startMarathon() {
           <div class="question">${cur.q}</div>
         </div>
         <div class="options">${order.map((k, idx) => optionButton(cur.opts[k], idx)).join("")}</div>`;
-      wire(order.map(k => k === cur.ok), cur.why);
+      wire(order.map(k => k === cur.ok), cur.why,
+        { kind: "qcm", label: "QCM", q: cur.q, opts: [...cur.opts], answer: cur.opts[cur.ok], why: cur.why });
     } else {
       const cur = item.data;
       stage().innerHTML = `
@@ -1021,15 +1215,17 @@ function startMarathon() {
           <button class="opt" data-idx="0"><span>VRAI</span></button>
           <button class="opt" data-idx="1"><span>FAUX</span></button>
         </div>`;
-      wire([cur.v === true, cur.v === false], cur.why);
+      wire([cur.v === true, cur.v === false], cur.why,
+        { kind: "vf", label: "Vrai ou faux ?", q: cur.s, v: cur.v, why: cur.why });
     }
   }
 
   // goodMask[i] = true si l'option i est la bonne
-  function wire(goodMask, why) {
+  function wire(goodMask, why, errItem) {
     document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
       const idx = Number(btn.dataset.idx);
       const good = goodMask[idx];
+      if (!good && errItem) recordError(errItem);
       bumpDaily();
       document.querySelectorAll(".opt").forEach(b => {
         b.disabled = true;
@@ -1064,10 +1260,15 @@ function startMarathon() {
         <p class="mono" style="margin-bottom:1.4rem">${isRecord ? "★ Nouveau record !" : "Record : série de " + store.best("marathon")}</p>
         <div class="actions">
           <button class="btn primary" id="btn-replay">Rejouer</button>
+          <button class="btn" id="btn-share">Partager 📤</button>
+          ${errStore.count() ? `<button class="btn danger" data-nav="errors">Mes erreurs (${errStore.count()})</button>` : ""}
           <button class="btn" data-nav="home">Retour à l'arène</button>
         </div>
       </div>`;
+    if (isRecord && streak > 0) confetti();
     $("#btn-replay").addEventListener("click", startMarathon);
+    $("#btn-share").addEventListener("click", () =>
+      shareScore(`🔥 Série de ${streak} au Marathon philo d'AGORA (mort subite). Tu tiens combien, toi ?`));
   }
 
   next();
@@ -1081,6 +1282,12 @@ function initHome() {
   $("#marquee-track").innerHTML = items + items; // boucle continue
 
   renderNotionGrid();
+
+  // Citation du jour (déterministe : même citation pour tout le monde, change chaque jour)
+  const dayIdx = Math.floor(Date.now() / 86400000) % QUOTES.length;
+  const qd = QUOTES[dayIdx];
+  $("#qday-txt").textContent = `« ${qd.q} »`;
+  $("#qday-who").textContent = `${qd.a} — ${qd.src}`;
 
   const fq = QUOTES[Math.floor(Math.random() * QUOTES.length)];
   $("#footer-quote").textContent = `« ${fq.q} »`;
