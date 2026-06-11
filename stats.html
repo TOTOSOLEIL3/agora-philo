@@ -48,9 +48,28 @@
     .empty { font-family: var(--mono); font-size: 0.8rem; opacity: 0.6; padding: 1rem 0; }
     footer { margin-top: 3rem; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; opacity: 0.5; text-align: center; border-top: 1.5px solid var(--ink); padding-top: 1rem; }
     .updated { font-family: var(--mono); font-size: 0.66rem; opacity: 0.6; }
+    #gate { position: fixed; inset: 0; background: var(--paper); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; z-index: 100; padding: 1.5rem; text-align: center; }
+    body.locked #gate { display: flex; }
+    body.locked #status, body.locked #histo, body.locked #board { display: none !important; }
+    #gate .lock { font-size: 3rem; }
+    #gate h1 { font-family: var(--display); font-weight: 400; }
+    #gate input { font-family: var(--mono); font-size: 1rem; text-align: center; letter-spacing: 0.1em; color: var(--ink); background: #fbf7ec; border: 2px solid var(--ink); padding: 0.8rem 1rem; min-width: 260px; outline: none; }
+    #gate input:focus { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
+    #gate button { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--blue); color: var(--paper); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 0.8rem 1.6rem; cursor: pointer; }
+    #gate .err { color: var(--red); font-family: var(--mono); font-size: 0.75rem; min-height: 1.2em; }
   </style>
 </head>
-<body>
+<body class="locked">
+
+  <div id="gate">
+    <span class="lock">🔒</span>
+    <h1>Tableau de bord privé</h1>
+    <p class="updated">Réservé à l'administrateur d'AGORA.</p>
+    <input id="gate-pwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
+    <button id="gate-go">Entrer</button>
+    <p class="err" id="gate-err"></p>
+  </div>
+
   <header>
     <h1>📊 AGORA <span class="live" id="live" style="display:none">en direct</span></h1>
     <a class="home-link" href="/">← le site</a>
@@ -198,7 +217,7 @@
       $("updated").textContent = "Mis à jour à " + t.toLocaleTimeString("fr-FR");
     }
 
-    (async () => {
+    async function boot() {
       renderHisto();
       try {
         const app = initializeApp(cfg);
@@ -215,7 +234,35 @@
       } catch (e) {
         $("status").textContent = "Connexion impossible — vérifie ta connexion ou un bloqueur de pub.";
       }
-    })();
+    }
+
+    /* ---- porte d'entrée : mot de passe (empreinte SHA-256, jamais en clair) ---- */
+    const PWD_HASH = "52c0668ab55b3725561de322529f79f014986261a8d0531b1e575c29c52de29a";
+    async function sha256(s) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    async function tryUnlock(pwd) {
+      if (await sha256(pwd) === PWD_HASH) {
+        sessionStorage.setItem("agora_stats_ok", "1");
+        document.body.classList.remove("locked");
+        boot();
+        return true;
+      }
+      return false;
+    }
+    if (sessionStorage.getItem("agora_stats_ok") === "1") {
+      document.body.classList.remove("locked");
+      boot();
+    } else {
+      $("gate-pwd").focus();
+      const submit = async () => {
+        const ok = await tryUnlock($("gate-pwd").value);
+        if (!ok) { $("gate-err").textContent = "Mot de passe incorrect."; $("gate-pwd").value = ""; $("gate-pwd").focus(); }
+      };
+      $("gate-go").addEventListener("click", submit);
+      $("gate-pwd").addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+    }
   </script>
 </body>
 </html>
