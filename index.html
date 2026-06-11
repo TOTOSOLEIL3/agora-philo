@@ -4,15 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AGORA — Révise le bac philo en jouant</title>
-  <meta name="description" content="Mini-jeux de révision pour le bac de philosophie : citations, QCM, repères, vrai ou faux. Gratuit, sans pub, sans migraine.">
+  <meta name="description" content="Révise le bac de philosophie en jouant : 17 fiches de cours (auteurs, citations, repères), quiz, examen blanc noté /20, annales, méthode de la dissertation. Gratuit, sans pub.">
   <meta name="theme-color" content="#f4eddd">
   <meta property="og:title" content="AGORA — Révise le bac philo en jouant 🦉">
-  <meta property="og:description" content="6 mini-jeux + 17 fiches de cours + la méthode. Citations, QCM, repères officiels, vrai/faux… Gratuit, sans pub, sans migraine.">
+  <meta property="og:description" content="7 mini-jeux + 17 fiches de cours + annales + méthode. Examen blanc noté /20, défis entre potes, classement en direct. Gratuit, sans pub, sans migraine.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://agora-philo.fr/">
+  <meta property="og:image" content="https://agora-philo.fr/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:locale" content="fr_FR">
   <link rel="canonical" href="https://agora-philo.fr/">
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "AGORA",
+    "alternateName": "AGORA — Révise le bac philo en jouant",
+    "url": "https://agora-philo.fr/",
+    "description": "Site gratuit de révision du bac de philosophie : fiches de cours, mini-jeux, examen blanc, annales, méthode de la dissertation et de l'explication de texte.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "inLanguage": "fr",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "audience": { "@type": "EducationalAudience", "educationalRole": "student" }
+  }
+  </script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Karla:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 
@@ -237,13 +256,17 @@
   <footer>
     <p class="quote" id="footer-quote">« Une vie sans examen ne vaut pas la peine d'être vécue. »</p>
     <p class="who" id="footer-who">Socrate — Apologie de Socrate</p>
+    <nav class="footer-links" aria-label="Fiches de révision en accès direct">
+      <span class="mono">Les fiches en accès direct :</span>
+      <a href="notions/art.html">L'art</a><a href="notions/bonheur.html">Le bonheur</a><a href="notions/conscience.html">La conscience</a><a href="notions/devoir.html">Le devoir</a><a href="notions/etat.html">L'État</a><a href="notions/inconscient.html">L'inconscient</a><a href="notions/justice.html">La justice</a><a href="notions/langage.html">Le langage</a><a href="notions/liberte.html">La liberté</a><a href="notions/nature.html">La nature</a><a href="notions/raison.html">La raison</a><a href="notions/religion.html">La religion</a><a href="notions/science.html">La science</a><a href="notions/technique.html">La technique</a><a href="notions/temps.html">Le temps</a><a href="notions/travail.html">Le travail</a><a href="notions/verite.html">La vérité</a><a href="methode/dissertation.html">Méthode de la dissertation</a><a href="methode/explication.html">Méthode de l'explication de texte</a>
+    </nav>
     <p class="madeby">AGORA · révision du bac de philosophie · fait avec 🦉 et zéro publicité</p>
   </footer>
 
-  <script src="data.js?v=8"></script>
-  <script src="cours.js?v=8"></script>
-  <script src="app.js?v=8"></script>
-  <script type="module" src="leaderboard.js?v=8"></script>
+  <script src="data.js?v=9"></script>
+  <script src="cours.js?v=9"></script>
+  <script src="app.js?v=9"></script>
+  <script type="module" src="leaderboard.js?v=9"></script>
   <script data-goatcounter="https://totosoleil3.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
