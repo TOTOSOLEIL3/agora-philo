@@ -25,6 +25,10 @@
     .home-link { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); text-decoration: none; border-bottom: 2px solid var(--blue); }
     h2 { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin: 2.2rem 0 1rem; display: flex; align-items: center; gap: 0.7rem; }
     h2::after { content: ""; flex: 1; height: 1.5px; background: var(--ink); opacity: 0.2; }
+    .subh { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.7rem; }
+    #histo { border: 2px dashed var(--gold); background: #faf3df; padding: 1.2rem 1.3rem 1.5rem; margin-bottom: 1rem; }
+    #histo h2 { margin-top: 0; color: var(--gold); }
+    #histo h2::after { background: var(--gold); }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
     .card { border: 2px solid var(--ink); background: #fbf7ec; box-shadow: 4px 4px 0 var(--ink); padding: 1.1rem 1.2rem; }
     .card .n { font-family: var(--display); font-size: 2.6rem; line-height: 1; color: var(--blue); }
@@ -54,8 +58,18 @@
 
   <div id="status" class="empty">Connexion au tableau de bord…</div>
 
+  <div id="histo">
+    <h2>📈 Démarrage — semaine du 4 au 11 juin (import GoatCounter)</h2>
+    <div class="cards" id="cards-histo"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.6rem;margin-top:1.4rem">
+      <div><h3 class="subh">D'où venaient les visiteurs</h3><div class="bars" id="histo-ref"></div></div>
+      <div><h3 class="subh">Sur quel appareil</h3><div class="bars" id="histo-dev"></div></div>
+      <div><h3 class="subh">Depuis quel pays</h3><div class="bars" id="histo-geo"></div></div>
+    </div>
+  </div>
+
   <div id="board" style="display:none">
-    <h2>Audience</h2>
+    <h2>📊 En direct — depuis le 11 juin (notre système)</h2>
     <div class="cards" id="cards-audience"></div>
 
     <h2>Activité — 14 derniers jours</h2>
@@ -125,6 +139,24 @@
         </div>`).join("");
     }
 
+    // ---- Historique GoatCounter (semaine 2026-06-04 → 2026-06-11, 105 visites) ----
+    const HISTO = {
+      visites: 105,
+      referrers: { "Direct / inconnu": 73, "Instagram": 29, "Facebook": 3 },
+      devices: { "📱 Téléphones": 77, "💻 Ordinateurs": 18, "📲 Tablettes": 7, "🖥️ Grands écrans": 3 },
+      geo: { "🇫🇷 France": 84, "🇺🇸 États-Unis": 13, "🇮🇪 Irlande": 2, "🇧🇷 Brésil": 1, "🇨🇦 Canada": 1, "🇬🇧 Royaume-Uni": 1 }
+    };
+    function renderHisto() {
+      $("cards-histo").innerHTML =
+        card(HISTO.visites, "Visiteurs (1ʳᵉ semaine)") +
+        card("32", "Venus des réseaux") +
+        card("80%", "depuis la France") +
+        card("73%", "sur téléphone");
+      bars($("histo-ref"), HISTO.referrers, id => id, false);
+      bars($("histo-dev"), HISTO.devices, id => id, true);
+      bars($("histo-geo"), HISTO.geo, id => id, false);
+    }
+
     let leaderboardCount = 0;
 
     function render(byDate) {
@@ -167,6 +199,7 @@
     }
 
     (async () => {
+      renderHisto();
       try {
         const app = initializeApp(cfg);
         await signInAnonymously(getAuth(app));
