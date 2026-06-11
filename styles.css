@@ -127,6 +127,29 @@ body::after {
 }
 
 /* ============================================================
+   BARRE QUOTIDIENNE (série, objectif, J-X)
+   ============================================================ */
+.daily-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper-deep);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.daily-strip .sep { color: var(--red); }
+.daily-strip .hot { color: var(--red); font-weight: 600; }
+.daily-strip .jx { color: var(--blue); font-weight: 600; }
+
+/* ============================================================
    HERO
    ============================================================ */
 .hero {
@@ -1050,6 +1073,48 @@ body::after {
 .endscreen p.comment { max-width: 40ch; margin: 0.8rem auto 1.8rem; }
 
 .endscreen .actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+.exam-card { background: var(--ink); color: var(--paper); }
+.exam-card .best { color: var(--gold); }
+.exam-card:hover { background: var(--blue); }
+
+.exam-recap {
+  text-align: left;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  padding: 1.1rem 1.3rem;
+  margin: 0 auto 1.8rem;
+  max-width: 480px;
+}
+
+.exam-recap .recap-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 0.8rem;
+}
+
+.exam-recap .recap-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid rgba(23, 20, 14, 0.15);
+}
+
+.exam-recap .recap-notion {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.exam-recap .recap-score {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--red);
+}
 
 .xp-gain {
   display: inline-block;

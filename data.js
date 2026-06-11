@@ -2,6 +2,10 @@
    AGORA — Données de révision (programme de philosophie, Tle)
    ============================================================ */
 
+/* Date de l'épreuve de philosophie (bac général 2026 : lundi 15 juin au matin) */
+const BAC_DATE = "2026-06-15";
+const DAILY_GOAL = 30; // objectif de questions par jour
+
 const NOTIONS = [
   "L'art", "Le bonheur", "La conscience", "Le devoir", "L'État",
   "L'inconscient", "La justice", "Le langage", "La liberté", "La nature",

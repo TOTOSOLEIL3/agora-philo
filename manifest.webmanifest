@@ -1,0 +1,16 @@
+{
+  "name": "AGORA — Révise le bac philo en jouant",
+  "short_name": "AGORA",
+  "description": "Mini-jeux, fiches de cours et méthode pour le bac de philosophie. Gratuit, sans pub, hors ligne.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4eddd",
+  "theme_color": "#f4eddd",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

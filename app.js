@@ -76,6 +76,49 @@ function gainXp(amount) {
   return levelFor(store.xp).name !== before; // niveau franchi ?
 }
 
+/* ---------- série quotidienne & compte à rebours ---------- */
+const fmtDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const todayStr = () => fmtDate(new Date());
+const yesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return fmtDate(d); };
+
+// Appelée à chaque question répondue (tous jeux confondus)
+function bumpDaily() {
+  const t = todayStr();
+  const daily = JSON.parse(localStorage.getItem("agora_daily") || "{}");
+  const n = (daily.d === t ? daily.n : 0) + 1;
+  localStorage.setItem("agora_daily", JSON.stringify({ d: t, n }));
+
+  const st = JSON.parse(localStorage.getItem("agora_streak") || "{}");
+  if (st.last !== t) {
+    const days = st.last === yesterdayStr() ? (st.days || 0) + 1 : 1;
+    localStorage.setItem("agora_streak", JSON.stringify({ last: t, days }));
+  }
+  renderDaily();
+}
+
+function renderDaily() {
+  const el = $("#daily-strip");
+  if (!el) return;
+  const t = todayStr();
+  const daily = JSON.parse(localStorage.getItem("agora_daily") || "{}");
+  const n = daily.d === t ? daily.n : 0;
+  const st = JSON.parse(localStorage.getItem("agora_streak") || "{}");
+  const days = (st.last === t || st.last === yesterdayStr()) ? (st.days || 0) : 0;
+
+  const diff = Math.round((new Date(BAC_DATE) - new Date(t)) / 86400000);
+  const jx = diff > 1 ? `J−${diff} avant l'épreuve`
+    : diff === 1 ? "L'épreuve est DEMAIN — tu gères 💪"
+    : diff === 0 ? "C'EST AUJOURD'HUI ! Merde ! 🍀"
+    : "Épreuve passée — repose-toi, tu l'as mérité";
+
+  el.innerHTML = `
+    <span class="${days > 0 ? "hot" : ""}">🔥 ${days} jour${days > 1 ? "s" : ""} de série</span>
+    <span class="sep">✶</span>
+    <span>${n >= DAILY_GOAL ? "✓ objectif atteint : " : ""}${n}/${DAILY_GOAL} questions aujourd'hui</span>
+    <span class="sep">✶</span>
+    <span class="jx">📅 ${jx}</span>`;
+}
+
 /* ---------- navigation ---------- */
 const GAMES = {
   quotes: { title: "Qui a dit ça ?", start: startQuotes },
@@ -83,7 +126,8 @@ const GAMES = {
   vf: { title: "Vrai ou Faux", start: startVF },
   cards: { title: "Les Repères", start: startCards },
   match: { title: "Le Grand Duel", start: startMatch },
-  marathon: { title: "Le Marathon", start: startMarathon }
+  marathon: { title: "Le Marathon", start: startMarathon },
+  examen: { title: "L'Examen Blanc", start: startExamen }
 };
 
 function show(viewId) {
@@ -253,6 +297,7 @@ function startNotionDrill(id) {
 
     function after(good) {
       if (good) { score++; streak++; } else streak = 0;
+      bumpDaily();
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
       $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
@@ -487,6 +532,7 @@ function startQuotes() {
       });
       if (good) { score++; streak++; maxStreak = Math.max(maxStreak, streak); }
       else streak = 0;
+      bumpDaily();
       $("#feedback").innerHTML = explainBlock(good,
         good ? "Exact !" : "Raté — c'était " + cur.a,
         `<em>${cur.src}</em>`);
@@ -540,6 +586,7 @@ function startQuiz() {
         else b.classList.add("dimmed");
       });
       if (good) { score++; streak++; } else streak = 0;
+      bumpDaily();
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
       $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
@@ -593,6 +640,7 @@ function startVF() {
         else b.classList.add("dimmed");
       });
       if (good) { score++; streak++; } else streak = 0;
+      bumpDaily();
       $("#feedback").innerHTML = explainBlock(good,
         good ? "Exact !" : `Non — c'était ${cur.v ? "VRAI" : "FAUX"}`, cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
@@ -647,6 +695,7 @@ function startCards() {
     });
 
     $("#btn-known").addEventListener("click", () => {
+      bumpDaily();
       if (cur.fresh) mastered++;
       seen++;
       queue.shift();
@@ -654,6 +703,7 @@ function startCards() {
     });
 
     $("#btn-again").addEventListener("click", () => {
+      bumpDaily();
       seen++;
       const c = queue.shift();
       c.fresh = false;
@@ -723,6 +773,7 @@ function startMatch() {
     const a = tiles[selected], b = tiles[idx];
     const prevBtn = document.querySelector(`[data-tile="${selected}"]`);
     moves++;
+    bumpDaily();
 
     if (a.id === b.id && a.kind !== b.kind) {
       matched++;
@@ -767,6 +818,122 @@ function startMatch() {
       </div>`;
     $("#btn-replay").addEventListener("click", startMatch);
   }
+}
+
+/* ============================================================
+   L'EXAMEN BLANC — 20 questions, 10 notions, note sur 20
+   ============================================================ */
+function bacMention(n) {
+  if (n >= 18) return ["Mention Très Bien + félicitations", "Le jury s'est levé pour applaudir. Va passer l'agrég directement."];
+  if (n >= 16) return ["Mention Très Bien", "Copie solide, références maîtrisées. Le 15 juin, tu déroules."];
+  if (n >= 14) return ["Mention Bien", "Très bon niveau — consolide les notions ratées ci-dessous et c'est la TB."];
+  if (n >= 12) return ["Mention Assez Bien", "Le socle est là. Relis les fiches faibles, ça monte vite."];
+  if (n >= 10) return ["Admis·e", "Ça passe ! Mais ne t'arrête pas là, va relire ce qui a pêché."];
+  if (n >= 8) return ["Rattrapage", "Pas de panique : c'est un examen BLANC. Les fiches à revoir sont juste en dessous."];
+  return ["Recalé·e (heureusement, c'était pour de faux)", "Socrate aussi est parti de « je sais que je ne sais rien ». Relis, rejoue, remonte."];
+}
+
+function startExamen() {
+  // 10 notions tirées au sort, 2 questions chacune
+  const notions = pick(COURS, 10);
+  const rounds = shuffle(notions.flatMap(c =>
+    pick(buildDrill(c), 2).map(q => ({ ...q, nid: c.id, ntitle: c.title }))
+  ));
+  const parNotion = {};
+  notions.forEach(c => parNotion[c.id] = { title: c.title, ok: 0, total: 0 });
+  let i = 0, score = 0;
+
+  function round() {
+    const cur = rounds[i];
+    setMeta(`${i + 1} / ${rounds.length}`, `note : ${score}/${i}`.replace("/0", "/—"));
+    setProgress(i / rounds.length);
+
+    const head = `
+      <div class="q-card">
+        <div class="label">${cur.ntitle} · ${cur.label}</div>
+        <div class="question" style="font-size:1.15rem">${cur.q}</div>
+      </div>`;
+
+    if (cur.kind === "qcm") {
+      stage().innerHTML = `${head}
+        <div class="options">${cur.opts.map(optionButton).join("")}</div>
+        <div id="feedback"></div><div class="next-zone" id="next-zone"></div>`;
+      document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+        const good = cur.opts[btn.dataset.idx] === cur.answer;
+        document.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if (cur.opts[b.dataset.idx] === cur.answer) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+          else b.classList.add("dimmed");
+        });
+        after(good);
+      }));
+    } else {
+      stage().innerHTML = `${head}
+        <div class="vf-buttons">
+          <button class="opt" data-v="true"><span>VRAI</span></button>
+          <button class="opt" data-v="false"><span>FAUX</span></button>
+        </div>
+        <div id="feedback"></div><div class="next-zone" id="next-zone"></div>`;
+      document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+        const good = (btn.dataset.v === "true") === cur.v;
+        document.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if ((b.dataset.v === "true") === cur.v) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+          else b.classList.add("dimmed");
+        });
+        after(good);
+      }));
+    }
+
+    function after(good) {
+      bumpDaily();
+      parNotion[cur.nid].total++;
+      if (good) { score++; parNotion[cur.nid].ok++; }
+      $("#feedback").innerHTML = explainBlock(good, good ? "+1 point" : "Zéro pointé sur celle-là", cur.why);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Question suivante →" : "Voir ma copie"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    }
+  }
+
+  function finish() {
+    setProgress(1);
+    const [mention, comment] = bacMention(score);
+    const xp = score * 15;
+    const isRecord = updateBest("examen", score);
+    const lvlUp = gainXp(xp);
+    const aRevoir = Object.entries(parNotion)
+      .filter(([, v]) => v.ok < v.total)
+      .sort((a, b) => a[1].ok - b[1].ok);
+
+    stage().innerHTML = `
+      <div class="endscreen">
+        <span class="xp-gain">+${xp} XP${lvlUp ? " · NIVEAU SUPÉRIEUR !" : ""}</span>
+        <div class="big-score">${score}/20</div>
+        <div class="mention">${mention}</div>
+        <p class="comment">${comment}</p>
+        <p class="mono" style="margin-bottom:1.4rem">${isRecord ? "★ Nouveau record !" : "Record : " + store.best("examen") + "/20"}</p>
+        ${aRevoir.length ? `
+        <div class="exam-recap">
+          <div class="recap-title">À revoir avant le jour J</div>
+          ${aRevoir.map(([id, v]) => `
+            <div class="recap-row">
+              <span class="recap-notion">${v.title}</span>
+              <span class="recap-score">${v.ok}/${v.total}</span>
+              <button class="btn ghost" data-nav="fiche:${id}">Relire</button>
+              <button class="btn ghost" data-nav="drill:${id}">S'entraîner</button>
+            </div>`).join("")}
+        </div>` : `<p class="mono" style="margin-bottom:1.4rem">SANS-FAUTE SUR TOUTES LES NOTIONS. RESPECT ÉTERNEL.</p>`}
+        <div class="actions">
+          <button class="btn primary" id="btn-replay">Repasser un examen</button>
+          <button class="btn" data-nav="home">Retour à l'arène</button>
+        </div>
+      </div>`;
+    $("#btn-replay").addEventListener("click", startExamen);
+  }
+
+  round();
 }
 
 /* ============================================================
@@ -830,6 +997,7 @@ function startMarathon() {
     document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
       const idx = Number(btn.dataset.idx);
       const good = goodMask[idx];
+      bumpDaily();
       document.querySelectorAll(".opt").forEach(b => {
         b.disabled = true;
         if (goodMask[Number(b.dataset.idx)]) b.classList.add("correct");
@@ -887,6 +1055,12 @@ function initHome() {
 
   refreshHud();
   refreshBests();
+  renderDaily();
 }
 
 initHome();
+
+/* ---------- PWA : installable + hors ligne ---------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
