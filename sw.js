@@ -1,12 +1,14 @@
-/* AGORA — service worker : hors ligne + installable */
-const CACHE = "agora-v2";
+/* AGORA — service worker : hors ligne + installable
+   Pour publier une mise à jour : bumper V ici ET les ?v= dans index.html */
+const V = 3;
+const CACHE = "agora-v" + V;
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.js",
-  "./data.js",
-  "./cours.js",
+  `./styles.css?v=${V}`,
+  `./app.js?v=${V}`,
+  `./data.js?v=${V}`,
+  `./cours.js?v=${V}`,
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png"
