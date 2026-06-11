@@ -1,6 +1,6 @@
 /* AGORA — service worker : hors ligne + installable
    Pour publier une mise à jour : bumper V ici ET les ?v= dans index.html */
-const V = 14;
+const V = 15;
 const CACHE = "agora-v" + V;
 const ASSETS = [
   "./",
@@ -30,15 +30,22 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;
-  if (url.hostname.includes("goatcounter") || url.hostname.includes("zgo.at")) return; // stats : réseau seul
   if (url.hostname.includes("firestore") || url.hostname.includes("identitytoolkit") || url.hostname.endsWith("firebaseapp.com")) return; // Firebase temps réel : jamais de cache
+  if (url.pathname.endsWith("/stats.html")) return; // tableau de bord : toujours frais, jamais en cache
 
   // Navigations : réseau d'abord (site toujours frais), cache en secours (hors ligne)
   if (e.request.mode === "navigate") {
     e.respondWith(
       fetch(e.request)
-        .then(r => { caches.open(CACHE).then(c => c.put("./index.html", r.clone())); return r; })
-        .catch(() => caches.match("./index.html"))
+        .then(r => {
+          // Ne mettre en cache sous "./index.html" QUE la page d'accueil (sinon une fiche
+          // visitée écraserait l'app hors ligne — bug corrigé en v15)
+          if (url.pathname === "/" || url.pathname.endsWith("/index.html")) {
+            caches.open(CACHE).then(c => c.put("./index.html", r.clone()));
+          }
+          return r;
+        })
+        .catch(() => caches.match(e.request).then(m => m || caches.match("./index.html")))
     );
     return;
   }

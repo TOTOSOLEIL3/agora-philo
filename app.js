@@ -463,13 +463,9 @@ async function shareScore(text, url = "https://agora-philo.fr") {
   catch { prompt("Copie ce texte :", full); }
 }
 
-/* ---------- statistiques d'usage (événements GoatCounter, sans cookies) ---------- */
+/* ---------- statistiques d'usage (événements maison, dans Firestore, sans cookies) ---------- */
 function track(name) {
-  try {
-    if (window.goatcounter && window.goatcounter.count) {
-      window.goatcounter.count({ path: name, title: name, event: true });
-    }
-  } catch (e) {}
+  try { if (window.lbStat) window.lbStat(name); } catch (e) {}
 }
 window.track = track;
 

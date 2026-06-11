@@ -5,7 +5,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, onSnapshot
+  getFirestore, doc, setDoc, getDoc, updateDoc, increment,
+  collection, query, orderBy, limit, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -19,6 +20,27 @@ const firebaseConfig = {
 
 let db = null;
 let uid = null;
+let statQueue = [];
+
+const statDay = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+/* Compteur d'événement d'usage, agrégé par jour dans Firestore (stats/{date}) */
+function recordStat(evt) {
+  if (typeof evt !== "string" || !/^[a-z0-9-]{1,40}$/.test(evt)) return;
+  if (!db || !uid) { if (statQueue.length < 60) statQueue.push(evt); return; }
+  setDoc(doc(db, "stats", statDay()), { total: increment(1), [evt]: increment(1) }, { merge: true }).catch(() => {});
+}
+window.lbStat = recordStat;
+
+function recordVisit() {
+  const key = "agora_seen_" + statDay();
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, "1");
+  recordStat("visite");
+}
 
 const $id = s => document.getElementById(s);
 const getPseudo = () => localStorage.getItem("agora_pseudo") || "";
@@ -142,6 +164,8 @@ async function boot() {
     db = getFirestore(app);
     await signInAnonymously(auth);
     uid = auth.currentUser.uid;
+    statQueue.splice(0).forEach(recordStat);
+    recordVisit();
     onSnapshot(
       query(collection(db, "players"), orderBy("xp", "desc"), limit(50)),
       snap => {

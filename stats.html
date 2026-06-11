@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord — AGORA</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#17140e">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Karla:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4eddd; --ink: #17140e; --blue: #2230d4; --red: #e4502a;
+      --green: #2e7d4f; --gold: #c9962e;
+      --display: "Gloock", serif; --body: "Karla", sans-serif; --mono: "IBM Plex Mono", monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.5; padding: 1.4rem; max-width: 1000px; margin: 0 auto; }
+    header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; border-bottom: 2px solid var(--ink); padding-bottom: 0.9rem; margin-bottom: 1.6rem; }
+    h1 { font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 5vw, 2.6rem); }
+    h1 .live { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green); vertical-align: middle; margin-left: 0.5rem; }
+    h1 .live::before { content: "● "; }
+    .home-link { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); text-decoration: none; border-bottom: 2px solid var(--blue); }
+    h2 { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin: 2.2rem 0 1rem; display: flex; align-items: center; gap: 0.7rem; }
+    h2::after { content: ""; flex: 1; height: 1.5px; background: var(--ink); opacity: 0.2; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+    .card { border: 2px solid var(--ink); background: #fbf7ec; box-shadow: 4px 4px 0 var(--ink); padding: 1.1rem 1.2rem; }
+    .card .n { font-family: var(--display); font-size: 2.6rem; line-height: 1; color: var(--blue); }
+    .card .l { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-top: 0.35rem; }
+    .bars { display: grid; gap: 0.5rem; }
+    .bar-row { display: grid; grid-template-columns: 120px 1fr 46px; align-items: center; gap: 0.7rem; font-size: 0.85rem; }
+    .bar-row .lab { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { background: #e3d9bf; border: 1.5px solid var(--ink); height: 22px; position: relative; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--blue); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+    .bar-row.alt .bar-fill { background: var(--red); }
+    .bar-row .val { font-family: var(--mono); font-size: 0.78rem; text-align: right; font-weight: 600; }
+    .daygrid { display: flex; align-items: flex-end; gap: 4px; height: 150px; border-bottom: 2px solid var(--ink); padding-top: 0.5rem; }
+    .daycol { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; height: 100%; }
+    .daycol .db { width: 100%; background: var(--blue); min-height: 2px; transition: height 0.5s ease; }
+    .daycol .dv { font-family: var(--mono); font-size: 0.6rem; }
+    .daycol .dd { font-family: var(--mono); font-size: 0.54rem; opacity: 0.55; transform: rotate(-45deg); white-space: nowrap; margin-top: 4px; }
+    .empty { font-family: var(--mono); font-size: 0.8rem; opacity: 0.6; padding: 1rem 0; }
+    footer { margin-top: 3rem; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; opacity: 0.5; text-align: center; border-top: 1.5px solid var(--ink); padding-top: 1rem; }
+    .updated { font-family: var(--mono); font-size: 0.66rem; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 AGORA <span class="live" id="live" style="display:none">en direct</span></h1>
+    <a class="home-link" href="/">← le site</a>
+  </header>
+
+  <div id="status" class="empty">Connexion au tableau de bord…</div>
+
+  <div id="board" style="display:none">
+    <h2>Audience</h2>
+    <div class="cards" id="cards-audience"></div>
+
+    <h2>Activité — 14 derniers jours</h2>
+    <div class="daygrid" id="daygrid"></div>
+
+    <h2>Jeux les plus joués</h2>
+    <div class="bars" id="bars-games"></div>
+
+    <h2>Fiches de cours les plus lues</h2>
+    <div class="bars" id="bars-fiches"></div>
+
+    <h2>Notions les plus révisées (mini-jeux)</h2>
+    <div class="bars" id="bars-revision"></div>
+
+    <h2>Social & engagement</h2>
+    <div class="cards" id="cards-social"></div>
+
+    <p class="updated" id="updated"></p>
+  </div>
+
+  <footer>AGORA · tableau de bord privé · données anonymes, sans cookies · agora-philo.fr</footer>
+
+  <script src="cours.js?v=15"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const cfg = {
+      apiKey: "AIzaSyBkx0d_zKO5AJuiV5JpBKYdOAQddeZoRy4",
+      authDomain: "agora-philo-bac.firebaseapp.com",
+      projectId: "agora-philo-bac",
+      storageBucket: "agora-philo-bac.firebasestorage.app",
+      messagingSenderId: "1027507940674",
+      appId: "1:1027507940674:web:0b020f3bab9946fbc46cdb"
+    };
+
+    const $ = s => document.getElementById(s);
+    const GAME_LABELS = { quiz: "🏛️ Grand QCM", quotes: "🗣️ Qui a dit ça ?", vf: "⚖️ Vrai ou Faux", cards: "🃏 Les Repères", match: "🤝 Le Grand Duel", sansfilet: "🖋️ Sans filet", marathon: "🔥 Marathon", examen: "🎓 Examen Blanc", errors: "♻️ Mes erreurs", battle: "⚡ Battle" };
+    const SOCIAL = [
+      ["defi-envoye", "Défis envoyés"], ["defi-accepte", "Défis relevés"],
+      ["battle-creee", "Battles créées"], ["battle-rejointe", "Battles rejointes"],
+      ["partage", "Scores partagés"], ["classement-rejoint", "Inscrits classement"],
+      ["pwa-installee", "Apps installées"], ["objectif-quotidien-atteint", "Objectifs du jour"]
+    ];
+    const ficheTitle = id => { try { return COURS.find(c => c.id === id)?.title || id; } catch (e) { return id; } };
+
+    const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+    const lastDays = n => { const a = []; const d = new Date(); for (let i = n-1; i >= 0; i--) { const x = new Date(d); x.setDate(d.getDate()-i); a.push(`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`); } return a; };
+
+    function sumPrefix(rows, prefix) {
+      const m = {};
+      rows.forEach(r => Object.keys(r).forEach(k => { if (k.startsWith(prefix)) { const id = k.slice(prefix.length); m[id] = (m[id]||0) + (r[k]||0); } }));
+      return m;
+    }
+    const card = (n, l) => `<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+
+    function bars(el, map, labelFn, alt) {
+      const entries = Object.entries(map).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]);
+      if (!entries.length) { el.innerHTML = `<p class="empty">Pas encore de données.</p>`; return; }
+      const max = entries[0][1];
+      el.innerHTML = entries.map(([id,v]) => `
+        <div class="bar-row ${alt?"alt":""}">
+          <span class="lab">${labelFn(id)}</span>
+          <span class="bar-track"><span class="bar-fill" style="width:${Math.max(3, v/max*100)}%"></span></span>
+          <span class="val">${v}</span>
+        </div>`).join("");
+    }
+
+    let leaderboardCount = 0;
+
+    function render(byDate) {
+      const rows = Object.values(byDate);
+      $("status").style.display = "none";
+      $("board").style.display = "block";
+      $("live").style.display = "inline";
+
+      const today = byDate[todayStr()] || {};
+      const totalVisites = rows.reduce((s,r) => s + (r.visite||0), 0);
+      const totalParties = rows.reduce((s,r) => s + Object.keys(r).reduce((a,k) => a + (k.startsWith("fin-") ? r[k] : 0), 0), 0);
+      const totalActions = rows.reduce((s,r) => s + (r.total||0), 0);
+
+      $("cards-audience").innerHTML =
+        card(today.visite||0, "Visiteurs aujourd'hui") +
+        card(totalVisites, "Visiteurs (cumul)") +
+        card(totalParties, "Parties terminées") +
+        card(leaderboardCount, "Joueurs au classement") +
+        card(totalActions, "Actions totales");
+
+      // graphe 14 jours (visites)
+      const days = lastDays(14);
+      const maxV = Math.max(1, ...days.map(d => (byDate[d]?.visite)||0));
+      $("daygrid").innerHTML = days.map(d => {
+        const v = (byDate[d]?.visite)||0;
+        const [ , mo, da] = d.split("-");
+        return `<div class="daycol" title="${d} : ${v} visiteurs"><span class="dv">${v||""}</span><span class="db" style="height:${v/maxV*100}%"></span><span class="dd">${da}/${mo}</span></div>`;
+      }).join("");
+
+      bars($("bars-games"), sumPrefix(rows, "jeu-"), id => GAME_LABELS[id] || id, false);
+      bars($("bars-fiches"), sumPrefix(rows, "fiche-"), ficheTitle, true);
+      bars($("bars-revision"), sumPrefix(rows, "revision-"), ficheTitle, false);
+
+      const social = {};
+      rows.forEach(r => SOCIAL.forEach(([k]) => { if (r[k]) social[k] = (social[k]||0) + r[k]; }));
+      $("cards-social").innerHTML = SOCIAL.map(([k,l]) => card(social[k]||0, l)).join("");
+
+      const t = new Date();
+      $("updated").textContent = "Mis à jour à " + t.toLocaleTimeString("fr-FR");
+    }
+
+    (async () => {
+      try {
+        const app = initializeApp(cfg);
+        await signInAnonymously(getAuth(app));
+        const db = getFirestore(app);
+        // taille du classement (lecture unique)
+        try { const s = await getDocs(query(collection(db, "players"), limit(1000))); leaderboardCount = s.size; } catch (e) {}
+        // tableau de bord en direct
+        onSnapshot(collection(db, "stats"), snap => {
+          const byDate = {};
+          snap.forEach(d => byDate[d.id] = d.data());
+          render(byDate);
+        }, () => { $("status").textContent = "Tableau de bord indisponible (connexion ?)."; });
+      } catch (e) {
+        $("status").textContent = "Connexion impossible — vérifie ta connexion ou un bloqueur de pub.";
+      }
+    })();
+  </script>
+</body>
+</html>
