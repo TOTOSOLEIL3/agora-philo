@@ -535,9 +535,9 @@ const ANNALES = [
 const LEVELS = [
   { xp: 0, name: "Apprenti sophiste" },
   { xp: 100, name: "Disciple de Socrate" },
-  { xp: 250, name: "Stoïcien du dimanche" },
-  { xp: 500, name: "Esprit critique" },
-  { xp: 800, name: "Lumière des Lumières" },
-  { xp: 1200, name: "Surhumain nietzschéen" },
-  { xp: 2000, name: "Sage absolu — 20/20 au bac" }
+  { xp: 700, name: "Stoïcien du dimanche" },
+  { xp: 1300, name: "Esprit critique" },
+  { xp: 2000, name: "Lumière des Lumières" },
+  { xp: 2500, name: "Surhumain nietzschéen" },
+  { xp: 3500, name: "Sage absolu — 20/20 au bac" }
 ];
