@@ -421,6 +421,31 @@ function buildDrill(c) {
     });
   });
 
+  // Étymologie → notion
+  if (c.etym) {
+    const shortEtym = e => e.split(". ")[0].slice(0, 110);
+    const others = shuffle(COURS.filter(x => x.id !== c.id && x.etym)).slice(0, 3).map(x => shortEtym(x.etym));
+    pool.push({
+      kind: "qcm", label: "Étymologie", q: `Quelle est l'étymologie de « ${c.title} » ?`,
+      answer: shortEtym(c.etym), opts: shuffle([shortEtym(c.etym), ...others]),
+      why: c.etym
+    });
+  }
+
+  // Vrai sujet de bac → quelle notion ? (seulement les sujets qui ne contiennent pas le mot)
+  if (typeof ANNALES !== "undefined") {
+    const keyword = normalize(c.title).replace(/^l[ae]? ?/, "");
+    const candidats = ANNALES.filter(a => a.n.includes(c.id) && !normalize(a.s).includes(keyword));
+    pick(candidats, 2).forEach(a => {
+      const distract = shuffle(COURS.filter(x => !a.n.includes(x.id))).slice(0, 3).map(x => x.title);
+      pool.push({
+        kind: "qcm", label: "Vrai sujet de bac : quelle notion ?", q: `« ${a.s} » (${a.loc}, ${a.y})`,
+        answer: c.title, opts: shuffle([c.title, ...distract]),
+        why: `Ce sujet (${a.loc} ${a.y}) porte sur ${a.n.map(id => (COURS.find(x => x.id === id) || {}).title || id).join(" et ")}.`
+      });
+    });
+  }
+
   // Repère → définition à trous
   c.reperes.forEach(r => {
     const card = FLASHCARDS.find(f => f.front.toLowerCase() === r.toLowerCase());

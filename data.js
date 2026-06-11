@@ -170,6 +170,192 @@ const QUIZ = [
     opts: ["une imitation d'imitation, éloignée du vrai", "trop cher à produire", "réservé aux aristocrates", "contraire aux lois de la cité"],
     ok: 0,
     why: "Le lit peint imite le lit du menuisier, qui imite l'Idée de lit : l'art est à deux degrés du réel et flatte les passions (République, livre X)."
+  },
+  {
+    q: "Chez Hannah Arendt, qu'est-ce qui distingue l'œuvre du travail ?",
+    opts: ["L'œuvre produit du durable, le travail est aussitôt consommé", "L'œuvre est payée, pas le travail", "Le travail est intellectuel, l'œuvre manuelle", "Il n'y a aucune différence"],
+    ok: 0,
+    why: "Arendt distingue le travail (cycle de la consommation : cuisiner, nettoyer — rien ne reste), l'œuvre (fabriquer un monde durable : la table, le livre) et l'action (la politique)."
+  },
+  {
+    q: "Chez Aristote, l'équité sert à…",
+    opts: ["corriger la généralité de la loi dans un cas particulier", "remplacer définitivement les lois", "punir plus sévèrement", "garantir l'égalité absolue des parts"],
+    ok: 0,
+    why: "La loi est générale ; appliquée mécaniquement à un cas singulier, elle peut devenir injuste. L'équité est « la justice du cas particulier »."
+  },
+  {
+    q: "Le « voile d'ignorance » de Rawls est un dispositif pour…",
+    opts: ["choisir des règles justes sans connaître sa future place dans la société", "cacher la vérité aux citoyens", "ignorer les lois injustes", "protéger la vie privée"],
+    ok: 0,
+    why: "Sans savoir si je serai riche ou pauvre, doué ou non, je choisis des règles qui protègent même les plus défavorisés : le test d'impartialité parfait."
+  },
+  {
+    q: "Pour Popper, une théorie est scientifique si elle est…",
+    opts: ["réfutable par une expérience concevable", "vérifiée par de nombreuses observations", "acceptée par la majorité des savants", "utile à la société"],
+    ok: 0,
+    why: "Une théorie qui n'interdit rien (astrologie, qui explique tout après coup) ne risque rien : elle n'est pas scientifique. La science accepte le risque d'être contredite."
+  },
+  {
+    q: "Un « paradigme » chez Kuhn désigne…",
+    opts: ["le cadre théorique partagé par une communauté scientifique", "une expérience décisive", "une erreur de raisonnement", "un instrument de mesure"],
+    ok: 0,
+    why: "La « science normale » travaille dans un paradigme jusqu'à ce que les anomalies s'accumulent : alors survient une révolution scientifique (Ptolémée → Copernic)."
+  },
+  {
+    q: "L'« arraisonnement » chez Heidegger désigne…",
+    opts: ["la mise en demeure de la nature de se livrer comme stock d'énergie", "l'art de bien raisonner", "l'arrestation des criminels", "le calcul des probabilités"],
+    ok: 0,
+    why: "La technique moderne ne contemple plus la nature : elle la somme de livrer ses ressources. Le Rhin devient fournisseur de pression hydraulique — et l'homme, « ressource humaine »."
+  },
+  {
+    q: "Bergson distingue la morale close et la morale ouverte. La morale close est…",
+    opts: ["la pression sociale qui maintient la cohésion du groupe", "la morale des grands réformateurs", "une morale secrète", "l'absence de morale"],
+    ok: 0,
+    why: "La morale close conserve le groupe par l'obligation ; la morale ouverte, incarnée par les héros et les saints, appelle au-delà du groupe vers l'humanité entière."
+  },
+  {
+    q: "La justice commutative concerne…",
+    opts: ["les échanges, selon une égalité arithmétique", "la distribution des honneurs selon le mérite", "le droit de vote", "les relations internationales"],
+    ok: 0,
+    why: "Commutative : rendre l'équivalent dans les échanges et réparations (égalité stricte). Distributive : répartir selon une proportion (mérite, besoins). Distinction d'Aristote."
+  },
+  {
+    q: "L'intentionnalité (Husserl) signifie que…",
+    opts: ["toute conscience est conscience de quelque chose", "nous agissons toujours volontairement", "nos intentions sont toujours bonnes", "la conscience peut se fermer au monde"],
+    ok: 0,
+    why: "La conscience n'est pas une boîte close contenant des images : elle est un mouvement qui vise les choses, une ouverture au monde."
+  },
+  {
+    q: "Les « petites perceptions » de Leibniz prouvent que…",
+    opts: ["des perceptions inconscientes agissent sur nous", "nous percevons tout ce qui nous entoure", "les sens sont toujours trompeurs", "l'âme est mortelle"],
+    ok: 0,
+    why: "Mille impressions trop faibles pour être remarquées (chaque vague dans le grondement de la mer) nous affectent sans que nous en ayons conscience — bien avant Freud."
+  },
+  {
+    q: "Quelle est la différence entre contrainte et obligation ?",
+    opts: ["La contrainte force de l'extérieur, l'obligation suppose la liberté", "Ce sont deux synonymes", "L'obligation est physique, la contrainte morale", "La contrainte est toujours légitime"],
+    ok: 0,
+    why: "On ne peut pas faire autrement face à une contrainte ; on peut désobéir à une obligation — c'est pourquoi seul un être libre peut être obligé."
+  },
+  {
+    q: "Le fatalisme se distingue du déterminisme car il affirme que…",
+    opts: ["ce qui doit arriver arrivera quoi que l'on fasse", "tout phénomène a des causes", "l'homme est entièrement libre", "la science peut tout prédire"],
+    ok: 0,
+    why: "Le déterminisme dit : des causes produisent des effets (agir sur les causes change les effets). Le fatalisme dit : l'issue est fixée d'avance, inutile d'agir — c'est une démission, pas une thèse scientifique."
+  },
+  {
+    q: "Être rationnel et être raisonnable, est-ce pareil ?",
+    opts: ["Non : rationnel = conforme à la logique, raisonnable = conforme à la sagesse pratique", "Oui, parfaitement synonymes", "Non : raisonnable est péjoratif", "Oui, sauf en mathématiques"],
+    ok: 0,
+    why: "Un plan de cambriolage peut être parfaitement rationnel (cohérent, calculé) sans être raisonnable. L'écart entre les deux fait des sujets entiers."
+  },
+  {
+    q: "Ce qui distingue la punition de la vengeance, c'est…",
+    opts: ["un tiers impartial, une règle préalable et une proportion", "la sévérité du châtiment", "le fait qu'elle soit secrète", "rien, c'est identique"],
+    ok: 0,
+    why: "La vengeance est privée, passionnelle, sans mesure. La punition est publique, prononcée par un tiers selon une règle proportionnée — l'institution judiciaire naît pour briser le cycle de la vengeance."
+  },
+  {
+    q: "Le mot « travail » vient du latin tripalium, qui désignait…",
+    opts: ["un instrument de torture", "un outil agricole", "un chant de labeur", "une monnaie romaine"],
+    ok: 0,
+    why: "Le tripalium était un instrument de torture à trois pieux. L'étymologie porte la peine et la contrainte — à interroger : le travail s'y réduit-il ?"
+  },
+  {
+    q: "En grec, la vérité se dit alètheia, c'est-à-dire littéralement…",
+    opts: ["le dévoilement (ce qui est arraché à l'oubli)", "la lumière du soleil", "la parole des dieux", "l'exactitude du calcul"],
+    ok: 0,
+    why: "A- privatif + lèthè (l'oubli, le voile) : la vérité comme dé-voilement, ce qui sort de la dissimulation. Une étymologie très utilisée en dissertation."
+  },
+  {
+    q: "Les Grecs distinguaient chronos et kairos. Le kairos désigne…",
+    opts: ["le moment opportun, l'occasion à saisir", "le temps qui s'écoule et se mesure", "l'éternité divine", "le passé révolu"],
+    ok: 0,
+    why: "Chronos est le temps quantitatif des horloges ; kairos est le moment qualitatif où il faut agir — le temps du stratège, du médecin, de l'orateur."
+  },
+  {
+    q: "Le « sophisme naturaliste » consiste à…",
+    opts: ["déduire ce qui doit être de ce qui est", "nier l'existence de la nature", "imiter les animaux", "confondre nature et culture"],
+    ok: 0,
+    why: "Du fait, on ne peut pas tirer le droit : que quelque chose soit « naturel » ne le rend ni bon ni obligatoire (Mill : la nature noie et brûle avec indifférence)."
+  },
+  {
+    q: "La skholè grecque désigne…",
+    opts: ["le loisir studieux, condition de la pensée", "l'école obligatoire", "l'esclavage", "le travail des champs"],
+    ok: 0,
+    why: "Le loisir libéré de la nécessité (d'où vient notre mot « école ») : pour les Anciens, penser et faire de la politique exigent d'être libre du travail."
+  },
+  {
+    q: "Chez Saussure, le signe linguistique est « arbitraire » parce que…",
+    opts: ["aucun lien naturel n'unit le son au concept", "chacun invente ses propres mots", "les langues n'ont pas de règles", "le sens change à chaque phrase"],
+    ok: 0,
+    why: "Rien dans le son « arbre » ne ressemble à un arbre — preuve : chaque langue dit autre chose (tree, Baum). Le lien signifiant-signifié est une convention sociale."
+  },
+  {
+    q: "Un énoncé « performatif » (Austin) est un énoncé qui…",
+    opts: ["accomplit l'acte qu'il énonce", "décrit très précisément la réalité", "exprime une émotion forte", "pose une question rhétorique"],
+    ok: 0,
+    why: "« Je le jure », « la séance est ouverte », « je vous déclare unis » : dire, c'est faire. Le langage n'est pas qu'un outil de description."
+  },
+  {
+    q: "La « perfectibilité » chez Rousseau désigne…",
+    opts: ["la capacité indéfinie de l'homme à se transformer", "le fait que l'homme soit parfait", "le progrès technique inévitable", "la perfection de la nature"],
+    ok: 0,
+    why: "Contrairement à l'animal, fixé par l'instinct, l'homme peut tout devenir — pour le meilleur et pour le pire. C'est ce qui le distingue, plus qu'aucune qualité fixe."
+  },
+  {
+    q: "Pour Max Weber, l'État moderne se définit par…",
+    opts: ["le monopole de la violence physique légitime", "la richesse de son territoire", "l'élection au suffrage universel", "la séparation de l'Église et de l'État"],
+    ok: 0,
+    why: "Lui seul peut légalement contraindre, punir, lever l'impôt — et toute la question tient dans le mot « légitime » : la force brute ne suffit pas."
+  },
+  {
+    q: "Un « État de droit » est un État…",
+    opts: ["lui-même soumis aux lois, avec des pouvoirs séparés", "qui possède simplement des lois", "dirigé par des juristes", "sans aucune police"],
+    ok: 0,
+    why: "Tout État a des lois ; l'État de droit est celui dont le pouvoir est limité par elles (recours possibles, séparation des pouvoirs — Montesquieu : « le pouvoir arrête le pouvoir »)."
+  },
+  {
+    q: "La catharsis, chez Aristote, désigne…",
+    opts: ["la purgation des passions par la représentation théâtrale", "la purification religieuse par l'eau", "la critique de l'art", "l'inspiration du poète"],
+    ok: 0,
+    why: "En éprouvant terreur et pitié au théâtre, le spectateur purge ces passions au lieu de les subir dans la vie — l'art a une fonction, contre Platon."
+  },
+  {
+    q: "Pour Kant, le jugement « c'est beau » est…",
+    opts: ["subjectif mais à prétention universelle", "purement personnel, comme un goût alimentaire", "objectif et démontrable", "réservé aux experts"],
+    ok: 0,
+    why: "Aucun concept ne prouve la beauté (subjectif), mais quand je dis « c'est beau », j'attends que tous en conviennent — sinon je dirais juste « ça me plaît »."
+  },
+  {
+    q: "Le surmoi, chez Freud, est…",
+    opts: ["l'intériorisation des interdits parentaux et sociaux", "la partie la plus intelligente du moi", "le réservoir des pulsions", "la conscience du monde extérieur"],
+    ok: 0,
+    why: "Héritier de l'autorité parentale, il juge et censure le moi — la sévérité de la conscience morale vient de là, pas du ciel. Le ça est le pôle pulsionnel, le moi l'instance médiatrice."
+  },
+  {
+    q: "L'« heuristique de la peur » de Hans Jonas recommande de…",
+    opts: ["prendre au sérieux le pire scénario pour guider nos choix techniques", "avoir peur de toute nouveauté", "interdire la recherche scientifique", "cacher les risques au public"],
+    ok: 0,
+    why: "Face à des techniques aux effets irréversibles et globaux (nucléaire, climat, génétique), mieux vaut écouter la prophétie de malheur que celle du bonheur : principe de responsabilité envers les générations futures."
+  },
+  {
+    q: "Chez Spinoza, le conatus désigne…",
+    opts: ["l'effort de chaque être pour persévérer dans son être", "le doute méthodique", "la peur de la mort", "le contrat social"],
+    ok: 0,
+    why: "Chaque chose s'efforce de persévérer dans son être : c'est l'essence même de l'individu. Chez l'homme, ce conatus conscient de lui-même s'appelle le désir."
+  },
+  {
+    q: "Le « triple présent » d'Augustin se compose de…",
+    opts: ["la mémoire, l'attention et l'attente", "hier, aujourd'hui et demain", "la naissance, la vie et la mort", "le passé, le présent et l'éternité"],
+    ok: 0,
+    why: "Le passé n'est plus, le futur pas encore : le temps n'existe que dans l'âme — présent du passé (mémoire), présent du présent (attention), présent de l'avenir (attente)."
+  },
+  {
+    q: "Dans la dialectique du maître et de l'esclave (Hegel), qui se forme et s'émancipe ?",
+    opts: ["L'esclave, par son travail", "Le maître, par sa domination", "Les deux également", "Aucun des deux"],
+    ok: 0,
+    why: "En transformant le monde, l'esclave discipline son désir et prend conscience de sa puissance ; le maître, qui ne fait que jouir, devient dépendant de celui qui travaille."
   }
 ];
 
