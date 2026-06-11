@@ -303,6 +303,14 @@ const PAIRS = [
 
 /* ---------- ANNALES — sujets de dissertation tombés au bac (Métropole) ---------- */
 const ANNALES = [
+  { y: 2026, loc: "Amérique du Nord", s: "La science doit-elle être utile ?", n: ["science", "technique"] },
+  { y: 2026, loc: "Amérique du Nord", s: "L'artiste sait-il ce qu'il fait ?", n: ["art", "conscience"] },
+  { y: 2025, loc: "Asie", s: "La justice a-t-elle besoin de la force ?", n: ["justice", "etat"] },
+  { y: 2025, loc: "Asie", s: "La science nous éloigne-t-elle de la réalité ?", n: ["science", "verite"] },
+  { y: 2025, loc: "Amérique du Nord", s: "Une œuvre d'art doit-elle toujours plaire ?", n: ["art"] },
+  { y: 2025, loc: "Amérique du Nord", s: "Suffit-il de faire son devoir pour être juste ?", n: ["devoir", "justice"] },
+  { y: 2025, loc: "Polynésie", s: "La fréquentation des œuvres d'art est-elle une perte de temps ?", n: ["art", "temps"] },
+  { y: 2025, loc: "Polynésie", s: "Le but de l'artiste est-il de plaire au plus grand nombre ?", n: ["art"] },
   { y: 2025, loc: "Métropole", s: "Notre avenir dépend-il de la technique ?", n: ["technique"] },
   { y: 2025, loc: "Métropole", s: "La vérité est-elle toujours convaincante ?", n: ["verite", "raison"] },
   { y: 2024, loc: "Métropole", s: "La science peut-elle satisfaire notre besoin de vérité ?", n: ["science", "verite"] },
