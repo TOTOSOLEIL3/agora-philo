@@ -215,6 +215,17 @@ function buildDrill(c) {
     });
   });
 
+  // Vocabulaire → terme
+  (c.vocab || []).forEach(v => {
+    const distract = shuffle(c.vocab.filter(x => x !== v)).slice(0, 3).map(x => x.m);
+    if (distract.length < 3) return;
+    pool.push({
+      kind: "qcm", label: "Quel terme correspond à cette définition ?", q: v.d,
+      answer: v.m, opts: shuffle([v.m, ...distract]),
+      why: `${v.m} : ${v.d}`
+    });
+  });
+
   // Repère → définition à trous
   c.reperes.forEach(r => {
     const card = FLASHCARDS.find(f => f.front.toLowerCase() === r.toLowerCase());
@@ -345,6 +356,28 @@ function openFiche(id) {
       <div class="sec-title">Les problématiques</div>
       <ul class="prob-list">${c.problematiques.map(p => `<li>${p}</li>`).join("")}</ul>
     </section>
+
+    ${c.cours ? `
+    <section class="fiche-sec">
+      <div class="sec-title">L'essentiel du cours</div>
+      ${c.cours.map(p => `
+        <article class="cours-part">
+          <h3>${p.t}</h3>
+          <p>${p.d}</p>
+        </article>`).join("")}
+    </section>` : ""}
+
+    ${c.vocab ? `
+    <section class="fiche-sec">
+      <div class="sec-title">Le vocabulaire à maîtriser</div>
+      <dl class="vocab-list">
+        ${c.vocab.map(v => `
+        <div class="vocab-row">
+          <dt>${v.m}</dt>
+          <dd>${v.d}</dd>
+        </div>`).join("")}
+      </dl>
+    </section>` : ""}
 
     <section class="fiche-sec">
       <div class="sec-title">Les auteurs incontournables</div>

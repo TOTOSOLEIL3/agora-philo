@@ -591,6 +591,44 @@ body::after {
   transform: translateY(0.1rem);
 }
 
+.cours-part { margin-bottom: 1.6rem; }
+
+.cours-part h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin-bottom: 0.45rem;
+}
+
+.cours-part h3::before { content: "§ "; color: var(--red); }
+
+.cours-part p {
+  font-size: 0.99rem;
+  line-height: 1.65;
+}
+
+.vocab-list { display: grid; gap: 0.6rem; }
+
+.vocab-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 200px) 1fr;
+  gap: 0.9rem;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-deep);
+  padding: 0.7rem 1rem;
+}
+
+.vocab-row dt {
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.vocab-row dd { font-size: 0.93rem; }
+
+@media (max-width: 560px) {
+  .vocab-row { grid-template-columns: 1fr; gap: 0.2rem; }
+}
+
 .auteur-card {
   border: 2px solid var(--ink);
   background: #fbf7ec;

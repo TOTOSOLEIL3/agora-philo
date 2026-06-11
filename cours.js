@@ -33,6 +33,18 @@ const COURS = [
       "Une œuvre d'art doit-elle être belle ?",
       "Peut-on discuter des goûts ?"
     ],
+    cours: [
+      { t: "1. L'art n'est pas la technique", d: "L'artisan produit un objet utile, selon des règles connues d'avance : on peut apprendre à faire une chaise. L'artiste crée une œuvre sans mode d'emploi préalable — c'est pourquoi Kant parle de génie : un talent qui donne ses règles à l'art au lieu de les suivre. L'œuvre ne vaut pas par son usage (un tableau ne « sert » à rien) mais par elle-même : elle est unique, là où le produit technique est reproductible. Première distinction à poser dans toute copie : art / artisanat / industrie." },
+      { t: "2. Le beau n'est pas l'agréable", d: "« J'aime le chocolat » : plaisir privé, indiscutable. « Cette toile est belle » : je prétends que tout le monde devrait en convenir — sinon je dirais juste « elle me plaît ». C'est l'analyse de Kant : le jugement de goût est subjectif (aucun concept ne prouve la beauté) mais à prétention universelle, et désintéressé — je ne veux ni posséder ni consommer l'objet, je le contemple. Voilà pourquoi on discute du beau depuis toujours, alors qu'on ne discute pas des goûts alimentaires." },
+      { t: "3. L'art dit-il le vrai ?", d: "Platon condamne l'art comme copie de copie qui flatte les passions. Mais l'objection vaut surtout pour l'art réaliste : depuis, la peinture abstraite ou la poésie ne « copient » rien. Renversement moderne : l'art révèle ce que l'habitude nous cache. Pour Bergson, nous percevons des étiquettes utiles, pas les choses — l'artiste, lui, voit et nous fait voir le singulier. Pour Hegel, l'œuvre rend l'esprit visible à lui-même. L'art n'est pas un mensonge sur le réel : un autre accès au réel que le concept." }
+    ],
+    vocab: [
+      { m: "Esthétique", d: "Partie de la philosophie qui réfléchit sur le beau et sur l'art." },
+      { m: "Mimésis", d: "Imitation de la nature ou des apparences, conçue comme principe des arts chez les Grecs." },
+      { m: "Catharsis", d: "Purgation des passions opérée chez le spectateur par la représentation (théorisée par Aristote pour la tragédie)." },
+      { m: "Jugement de goût", d: "Jugement par lequel on déclare une chose belle : subjectif, sans concept, mais à prétention universelle." },
+      { m: "Désintéressement", d: "Caractère d'un plaisir pris sans désir de posséder, d'utiliser ni de consommer l'objet contemplé." }
+    ],
     piege: "« Des goûts et des couleurs, on ne discute pas » : c'est précisément ce que Kant conteste. Il distingue l'agréable (purement privé : le goût du chocolat) du beau, qui prétend à l'assentiment de tous. Confondre les deux, c'est rater l'essentiel du problème esthétique."
   },
 
@@ -64,6 +76,18 @@ const COURS = [
       "Faut-il vouloir être heureux ?",
       "Le bonheur dépend-il de nous ?",
       "Sommes-nous condamnés à chercher le bonheur sans jamais l'atteindre ?"
+    ],
+    cours: [
+      { t: "1. Plaisir, joie, bonheur : trois choses", d: "Le plaisir est ponctuel et lié à la satisfaction d'un désir ou d'un besoin ; la joie est intense mais passagère ; le bonheur, lui, est un état global et durable de satisfaction — on dit d'une vie qu'elle est heureuse, pas d'une minute. D'où le premier problème : additionner des plaisirs ne fait pas un bonheur (une soirée réussie n'est pas une vie réussie), et certains plaisirs détruisent le bonheur. Hédonisme (le plaisir comme bien suprême) et eudémonisme (le bonheur comme fin) ne sont donc pas synonymes." },
+      { t: "2. Les sagesses antiques : le bonheur s'apprend", d: "Point commun des écoles antiques : le bonheur ne dépend pas des biens extérieurs mais du rapport qu'on entretient avec eux. Épicure trie les désirs : satisfaire les naturels et nécessaires, congédier les vains (richesse, gloire) qui rendent l'âme insatiable. Les stoïciens tracent la frontière ailleurs : ne vouloir que ce qui dépend de nous (nos jugements), consentir au reste. Dans les deux cas, le malheur vient d'une erreur de jugement — et la philosophie est une médecine de l'âme." },
+      { t: "3. Les modernes : un idéal introuvable ?", d: "Kant constate que le bonheur est un concept indéterminé : nul ne peut dire ce qui le rendrait vraiment heureux (la richesse ? les soucis qui viennent avec ?). Ce n'est donc pas sur lui qu'on peut fonder la morale — la morale rend digne du bonheur, sans le promettre. Pascal va plus loin : incapables de supporter le présent, nous fuyons dans le divertissement. Et Schopenhauer enferme le désir dans l'alternative manque/ennui. Reste la voie d'Alain : le bonheur n'est pas un état qu'on attend, c'est une pratique qu'on entretient." }
+    ],
+    vocab: [
+      { m: "Eudémonisme", d: "Doctrine qui fait du bonheur le but de l'existence et de la morale." },
+      { m: "Hédonisme", d: "Doctrine qui fait du plaisir le bien suprême." },
+      { m: "Ataraxie", d: "Absence de trouble de l'âme, idéal des sagesses antiques." },
+      { m: "Souverain bien", d: "Ce qui est recherché pour soi-même et jamais comme moyen en vue d'autre chose." },
+      { m: "Divertissement", d: "Chez Pascal : toute occupation qui détourne l'homme de penser à sa condition mortelle." }
     ],
     piege: "Confondre épicurisme et hédonisme débridé. Dans le langage courant, « épicurien » désigne le bon vivant ; chez Épicure, c'est presque l'inverse : une ascèse du désir, du pain, de l'eau et des amis. Le contresens coûte cher en dissertation."
   },
@@ -97,6 +121,18 @@ const COURS = [
       "Puis-je me connaître moi-même ?",
       "Vaut-il mieux une conscience tranquille ou une conscience lucide ?"
     ],
+    cours: [
+      { t: "1. Les degrés de la conscience", d: "Conscience immédiate : être présent au monde, sentir, percevoir — l'animal en est capable. Conscience réfléchie : se prendre soi-même pour objet, savoir que l'on sait — dire « je ». Conscience morale : juger ses actes en bien ou en mal. L'enjeu de la notion tient dans le passage de l'une à l'autre : c'est la réflexion qui fait le sujet, c'est-à-dire un être qui ne se contente pas de vivre mais se rapporte à sa propre vie, peut s'en étonner, la juger, la transformer." },
+      { t: "2. La conscience fonde le sujet", d: "Chez Descartes, la conscience survit au doute le plus radical : le cogito est la première certitude, le socle de tout savoir. Kant en tire la définition de la personne : parce qu'il possède le « Je » dans sa représentation, l'homme n'est pas une chose qu'on possède mais un sujet de droits, responsable de ses actes — fondement de la morale et du droit. La conscience n'est pas un simple fait psychologique : elle institue la dignité." },
+      { t: "3. Conscience de soi n'est pas connaissance de soi", d: "Être sûr que j'existe ne dit pas qui je suis. L'introspection est partielle (je ne vois pas mes habitudes, mes mobiles profonds) et partiale (je suis juge et partie). Nietzsche ajoute que la conscience arrive tard : elle est la surface d'un jeu de forces qui la précède ; Husserl, qu'elle est toujours tournée vers autre chose qu'elle-même (intentionnalité). Se connaître exige donc des médiations : le regard d'autrui, ses actes, ses œuvres — on se découvre dans ce qu'on fait, pas en se contemplant." }
+    ],
+    vocab: [
+      { m: "Conscience réfléchie", d: "Retour de la pensée sur elle-même : non seulement savoir, mais savoir que l'on sait." },
+      { m: "Intentionnalité", d: "Structure de la conscience qui fait qu'elle est toujours visée de quelque chose d'autre qu'elle." },
+      { m: "Introspection", d: "Observation de soi par soi-même, dont la fiabilité est contestée." },
+      { m: "Sujet", d: "Être capable de dire « je », support de pensées et d'actes dont il répond." },
+      { m: "Solipsisme", d: "Position selon laquelle seule l'existence de mon propre moi est certaine." }
+    ],
     piege: "Ne pas confondre conscience psychologique (présence à soi et au monde) et conscience morale (capacité de juger le bien et le mal). Un sujet sur « la bonne conscience » porte sur la seconde — y répondre par Descartes seul serait à côté."
   },
 
@@ -128,6 +164,18 @@ const COURS = [
       "Faut-il toujours faire son devoir ?",
       "Agir moralement, est-ce nécessairement lutter contre ses désirs ?",
       "Le devoir est-il l'ennemi du bonheur ?"
+    ],
+    cours: [
+      { t: "1. Obligation n'est pas contrainte", d: "La contrainte est une force qui me soumet de l'extérieur : je ne peux pas faire autrement. L'obligation suppose au contraire que je puisse désobéir — on n'oblige pas une pierre à tomber. C'est pourquoi le devoir, loin de nier la liberté, la présuppose : seul un être libre peut être obligé. Toute la question devient alors : d'où cette exigence tire-t-elle son autorité ? Pourquoi « je dois » me lie-t-il, alors que rien ne m'y force physiquement ?" },
+      { t: "2. Trois fondements rivaux", d: "Réponse sentimentale (Rousseau) : la conscience morale est un sentiment immédiat du juste, antérieur au raisonnement. Réponse rationaliste (Kant) : le devoir est un commandement de la raison — n'agis que selon une maxime universalisable, traite l'humanité toujours aussi comme une fin. Réponse sociologique et généalogique (Durkheim, Freud, Nietzsche) : le « devoir » est la société intériorisée, avec son histoire et ses intérêts. L'enjeu : si la morale a une origine sociale, garde-t-elle une valeur absolue ?" },
+      { t: "3. Le devoir et ses conflits", d: "Le rigorisme kantien interdit le mensonge même pour sauver un ami : le devoir ne souffre aucune exception, sous peine de s'autodétruire. À l'opposé, l'utilitarisme juge les actes à leurs conséquences : est juste ce qui maximise le bien-être du plus grand nombre. Entre les deux, les cas de conscience — conflits de devoirs (vérité contre protection, loyauté contre justice) — montrent que la vie morale n'est pas l'application d'un code mais un jugement en situation. Bergson distingue d'ailleurs la morale close (pression du groupe) de la morale ouverte (appel des héros et des saints)." }
+    ],
+    vocab: [
+      { m: "Impératif catégorique", d: "Commandement inconditionné : il oblige absolument, quelles que soient nos fins." },
+      { m: "Impératif hypothétique", d: "Commandement conditionnel : il n'oblige que si l'on vise une certaine fin (« si tu veux X, fais Y »)." },
+      { m: "Autonomie", d: "Capacité de se donner à soi-même sa propre loi." },
+      { m: "Hétéronomie", d: "Situation d'une volonté qui reçoit sa loi d'autre chose qu'elle-même (désirs, société, autorité)." },
+      { m: "Déontologie", d: "Morale qui juge les actes d'après des devoirs et des principes, indépendamment des conséquences." }
     ],
     piege: "Chez Kant, une action simplement conforme au devoir n'a pas de valeur morale : l'épicier honnête par calcul (pour garder ses clients) agit bien, mais pas moralement. Seule compte l'action faite par devoir. Cette distinction conforme/par devoir est une machine à points en dissertation."
   },
@@ -161,6 +209,18 @@ const COURS = [
       "Un État peut-il être juste ?",
       "La société peut-elle exister sans État ?"
     ],
+    cours: [
+      { t: "1. Ce qu'est l'État (et ce qu'il n'est pas)", d: "L'État est l'institution qui détient la souveraineté : le pouvoir de décider en dernier ressort sur un territoire. Il ne se confond ni avec le gouvernement (l'équipe provisoire qui exerce le pouvoir), ni avec la société (l'ensemble des relations entre individus), ni avec la nation (communauté de culture ou d'histoire). Weber en donne le critère moderne : l'État revendique avec succès le monopole de la violence physique légitime — lui seul peut légalement punir, contraindre, lever l'impôt." },
+      { t: "2. Pourquoi obéir ? Les justifications", d: "Pour les contractualistes, l'État naît d'un pacte : par peur de la mort violente (Hobbes), pour protéger ses droits naturels (Locke), pour fonder la liberté sur la loi commune (Rousseau). Contre eux, Aristote tient la cité pour naturelle : l'homme est fait pour vivre en communauté politique. La version moderne du compromis s'appelle État de droit : un État soumis lui-même aux lois, où les pouvoirs sont séparés (Montesquieu) pour que « le pouvoir arrête le pouvoir » — l'obéissance s'y échange contre des garanties." },
+      { t: "3. Les critiques de l'État", d: "L'anarchisme (Bakounine) tient toute domination étatique pour une oppression à abolir : l'ordre peut naître de la libre association. Le marxisme y voit l'instrument d'une classe : derrière la neutralité affichée, l'État protège la propriété. Le libéralisme, sans vouloir le détruire, veut le minimal (sécurité, justice) contre l'État-providence qui redistribue et protège. À l'autre extrême, le totalitarisme du XXe siècle a montré ce qu'est un État qui absorbe tout : parti unique, idéologie obligatoire, terreur — la disparition même de la sphère privée." }
+    ],
+    vocab: [
+      { m: "Souveraineté", d: "Pouvoir suprême de décider en dernier ressort, sans autorité supérieure." },
+      { m: "État de droit", d: "État dont le pouvoir est lui-même soumis aux lois, avec séparation des pouvoirs et recours pour les citoyens." },
+      { m: "Contractualisme", d: "Doctrine qui fonde le pouvoir politique sur une convention passée entre les hommes." },
+      { m: "Société civile", d: "Sphère des relations et initiatives privées, distincte des institutions étatiques." },
+      { m: "Totalitarisme", d: "Régime qui vise la domination totale de la société, jusque dans les consciences." }
+    ],
     piege: "Confondre État, société et gouvernement. La société existe sans État (sociétés « sans État » étudiées par les anthropologues) ; le gouvernement n'est que l'organe qui exerce le pouvoir, pas l'institution elle-même. Un sujet sur l'État n'est pas un sujet sur « la politique » en général."
   },
 
@@ -192,6 +252,18 @@ const COURS = [
       "L'inconscient est-il une excuse ?",
       "Sommes-nous responsables de ce que nous ignorons de nous-mêmes ?",
       "La conscience peut-elle tout connaître du sujet ?"
+    ],
+    cours: [
+      { t: "1. De l'adjectif au substantif", d: "Dire qu'un geste est inconscient (fait sans attention) est banal ; affirmer qu'il existe en moi UN inconscient — un système de représentations refoulées qui pense, désire et agit à mon insu — est une thèse forte. C'est le pas que franchit Freud : les rêves, lapsus, actes manqués et symptômes ne sont pas des accidents mais des effets qui ont un sens. Avant lui, Leibniz (petites perceptions) et Nietzsche (le corps, les pulsions) avaient déjà fissuré l'équation cartésienne entre pensée et conscience." },
+      { t: "2. Le dispositif freudien", d: "Première topique : inconscient / préconscient / conscient, séparés par la censure. Seconde topique : le ça (réservoir pulsionnel), le surmoi (interdits intériorisés) et le moi, qui négocie entre les deux et la réalité. Le refoulement rejette hors de la conscience les représentations inacceptables — qui font retour, déguisées : c'est le « retour du refoulé ». La cure psychanalytique parie qu'en parlant librement, le sujet peut réintégrer ce qui le gouverne à son insu : « là où était le ça, le moi doit advenir »." },
+      { t: "3. Le débat : science ? excuse ?", d: "Trois attaques classiques. Alain : l'inconscient est une faute de méthode — on fabrique « un autre moi » commode ; il n'y a que le corps et ses mécanismes. Sartre : la censure doit savoir ce qu'elle censure, donc elle est consciente — l'inconscient est une mauvaise foi qui se fuit. Popper : la psychanalyse explique tout, donc n'interdit rien, donc n'est pas réfutable — pas une science. Réponse possible : même contestée comme science, l'hypothèse a changé la connaissance de soi — le sujet n'est plus transparent, il doit s'interpréter. Et elle n'excuse rien : elle déplace la responsabilité vers le travail qu'on fait (ou pas) sur soi." }
+    ],
+    vocab: [
+      { m: "Refoulement", d: "Mécanisme qui rejette hors de la conscience les représentations inacceptables." },
+      { m: "Ça / Moi / Surmoi", d: "Les trois instances de la seconde topique : pulsions, instance médiatrice, interdits intériorisés." },
+      { m: "Acte manqué", d: "Acte raté en apparence (oubli, lapsus, maladresse) qui réalise un désir inavoué." },
+      { m: "Censure", d: "Instance qui filtre ce qui peut accéder à la conscience et déguise le reste." },
+      { m: "Déterminisme psychique", d: "Principe freudien selon lequel rien n'est gratuit dans la vie psychique : tout a un sens et une cause." }
     ],
     piege: "Trois « inconscients » à ne pas confondre : l'inconscience (état : être évanoui, étourdi), l'inconscient physiologique (la digestion, les réflexes) et l'inconscient psychique freudien (des représentations refoulées qui font sens). Seul le troisième fait débat philosophique."
   },
@@ -225,6 +297,18 @@ const COURS = [
       "Peut-on être juste sans être équitable ?",
       "Se venger, est-ce se faire justice ?"
     ],
+    cours: [
+      { t: "1. Un mot, deux réalités", d: "La justice désigne une institution (lois, tribunaux, juges : le droit positif) et une valeur (l'idée du juste, le droit idéal ou naturel). Tant que les deux coïncident, pas de problème philosophique. Mais une loi peut être injuste (lois esclavagistes, lois de Vichy) et un acte illégal peut être juste : c'est l'écart entre légalité et légitimité qui ouvre toute la réflexion. Sans idée du juste au-dessus des lois, impossible de critiquer une loi ; mais qui définit ce juste idéal, et au nom de quoi ?" },
+      { t: "2. La justice comme égalité — mais laquelle ?", d: "Aristote distingue l'égalité arithmétique (à chacun la même chose : les échanges, la réparation) et l'égalité proportionnelle (à chacun selon son mérite, ses besoins, sa contribution : la distribution). Toute la question de la justice sociale tient dans le choix du critère de proportion. Rawls propose un test : choisissez les règles sous un voile d'ignorance, sans savoir quelle place vous occuperez — vous protégerez alors les plus faibles. Et comme la loi est générale, l'équité doit la plier au cas particulier : appliquer mécaniquement la règle peut être la pire injustice." },
+      { t: "3. Obéir, désobéir, punir", d: "Pourquoi obéir à la loi ? Parce qu'elle vaut mieux que la loi du plus fort, et qu'en démocratie j'en suis le coauteur (Rousseau). Mais quand la loi viole gravement le juste, la désobéissance civile devient défendable — à conditions strictes : publique, non violente, en appel à des principes supérieurs, en assumant la sanction (Thoreau, Gandhi, Martin Luther King). Quant à la punition, elle n'est pas la vengeance : un tiers impartial, une règle préalable, une proportion — et un but qui dépasse la souffrance : dissuader, réparer, réinsérer." }
+    ],
+    vocab: [
+      { m: "Droit positif", d: "Ensemble des règles juridiques effectivement en vigueur dans un État donné." },
+      { m: "Droit naturel", d: "Normes idéales que l'on suppose fondées sur la nature de l'homme, au-dessus des lois écrites." },
+      { m: "Équité", d: "Ajustement de la règle générale au cas particulier." },
+      { m: "Justice distributive", d: "Répartition des biens, des honneurs et des charges selon une proportion (mérite, besoins…)." },
+      { m: "Désobéissance civile", d: "Refus public, non violent et assumé d'une loi jugée gravement injuste." }
+    ],
     piege: "Vengeance ≠ punition. La vengeance est privée, passionnelle, sans mesure ni tiers ; la punition est publique, proportionnée, prononcée par un tiers impartial selon une règle. L'institution judiciaire naît précisément pour arracher la justice au cycle de la vengeance."
   },
 
@@ -256,6 +340,18 @@ const COURS = [
       "Le langage sert-il seulement à communiquer ?",
       "Peut-on tout dire ?",
       "Les mots nous éloignent-ils des choses ?"
+    ],
+    cours: [
+      { t: "1. Langage, langue, parole", d: "Saussure distingue le langage (la faculté humaine universelle de symboliser), la langue (un système de signes propre à une communauté : le français, le swahili) et la parole (l'acte individuel). Le signe unit un signifiant (sons, lettres) et un signifié (concept), et ce lien est arbitraire : rien ne ressemble à un arbre dans le mot « arbre » — preuve : chaque langue dit autre chose. Conséquence énorme : chaque langue découpe le monde à sa manière ; parler n'est pas coller des étiquettes sur des choses déjà classées." },
+      { t: "2. Le propre de l'homme ?", d: "Les animaux communiquent : la danse des abeilles transmet une direction et une distance. Mais c'est un code fixe : pas de dialogue, pas de réponse, pas de message sur le message (Benveniste). Le langage humain, lui, est créatif : avec un stock fini de mots, nous produisons des phrases neuves et adaptées — ce que Descartes tenait déjà pour la preuve de la pensée, et que ni la bête ni la machine de son temps ne savaient faire. La différence n'est pas de degré mais de nature : signal d'un côté, signe de l'autre." },
+      { t: "3. Pouvoirs et limites des mots", d: "Le langage ne se contente pas de décrire : il agit. « Je le jure », « la séance est ouverte » — dire, c'est faire (Austin). Il peut aussi manipuler : la rhétorique persuade sans prouver, l'euphémisme maquille (« plan social » pour licenciements), nommer c'est déjà classer. Limite inverse : les mots généralisent, et le singulier leur échappe — ce que je ressens exactement, aucun mot commun ne le dit (Bergson). Réponse de Hegel : l'ineffable n'est pas un trésor trop profond, c'est une pensée encore confuse ; c'est en cherchant le mot que la pensée se précise." }
+    ],
+    vocab: [
+      { m: "Signe linguistique", d: "Union conventionnelle et arbitraire d'un signifiant (forme sonore) et d'un signifié (concept)." },
+      { m: "Signal", d: "Stimulus qui déclenche un comportement fixe, sans dialogue possible." },
+      { m: "Performatif", d: "Énoncé qui accomplit l'acte qu'il énonce (« je promets », « je vous déclare mariés »)." },
+      { m: "Polysémie", d: "Propriété d'un mot qui possède plusieurs sens selon le contexte." },
+      { m: "Ineffable", d: "Ce qui se ressent mais ne se laisserait pas exprimer par les mots." }
     ],
     piege: "Communication animale ≠ langage. Les abeilles de von Frisch transmettent une information (direction, distance du nectar), mais leur danse est un code fixe : pas de dialogue, pas de réponse, pas de message sur le message. Benveniste y voit un signal, non un signe — différence de nature, pas de degré."
   },
@@ -289,6 +385,18 @@ const COURS = [
       "La liberté est-elle absence de contraintes ?",
       "Peut-on apprendre à être libre ?"
     ],
+    cours: [
+      { t: "1. Trois niveaux de liberté", d: "Liberté d'action : faire ce que je veux, sans obstacle extérieur (le prisonnier en est privé). Libre arbitre : pouvoir choisir ma volonté elle-même — j'aurais pu vouloir autrement. Autonomie : me donner ma propre loi, au lieu de subir mes impulsions. Les confondre ruine les sujets : un drogué a la liberté d'action (personne ne le force) sans être libre ; un citoyen soumis à la loi commune perd en licence ce qu'il gagne en liberté civile. Liberté n'est pas absence de règle." },
+      { t: "2. Le défi du déterminisme", d: "Tout phénomène a des causes — pourquoi mes choix feraient-ils exception ? Spinoza : le sentiment de liberté n'est que l'ignorance des causes qui nous poussent. Les réponses divergent : Descartes oppose l'évidence intérieure du libre arbitre ; Kant distingue l'homme-phénomène (déterminé) et l'homme-noumène (libre), la morale exigeant la liberté ; Sartre déplace le problème — même déterminée par sa situation, la conscience choisit le sens qu'elle lui donne ; Bergson réserve l'acte libre aux moments rares où le moi profond tout entier s'exprime, contre les automatismes du moi superficiel." },
+      { t: "3. La liberté se conquiert", d: "Sortie du débat métaphysique : la liberté n'est pas un acquis mais un devenir. On se libère par la connaissance (comprendre ses déterminismes, c'est déjà leur échapper en partie — Spinoza), par l'éducation, par la maîtrise des désirs (stoïciens), et politiquement par la loi commune : obéir à la règle qu'on s'est prescrite, c'est la liberté du citoyen (Rousseau). La servitude volontaire (La Boétie) rappelle l'envers : on peut tenir à ses chaînes. La liberté est moins un état qu'une tâche." }
+    ],
+    vocab: [
+      { m: "Libre arbitre", d: "Pouvoir de se déterminer soi-même, sans y être contraint par aucune cause." },
+      { m: "Déterminisme", d: "Thèse selon laquelle tout phénomène résulte nécessairement de causes antérieures." },
+      { m: "Fatalisme", d: "Croyance que ce qui doit arriver arrivera quoi qu'on fasse — à ne pas confondre avec le déterminisme." },
+      { m: "Autonomie", d: "Fait d'obéir à la loi que l'on s'est soi-même donnée." },
+      { m: "Liberté d'indifférence", d: "Choix effectué sans aucune raison de préférer un parti à l'autre — plus bas degré de la liberté selon Descartes." }
+    ],
     piege: "Réduire la liberté à l'absence de contraintes (liberté « négative »). Pour Rousseau ou Kant, c'est un contresens : la règle n'est pas l'ennemie de la liberté mais sa condition — sans loi commune, c'est la loi du plus fort, donc la servitude de tous."
   },
 
@@ -320,6 +428,18 @@ const COURS = [
       "Y a-t-il une nature humaine ?",
       "La nature est-elle bonne ?",
       "L'homme est-il un être à part dans la nature ?"
+    ],
+    cours: [
+      { t: "1. Démêler les sens du mot", d: "« Nature » désigne : l'ensemble de ce qui existe sans l'homme (forêts, climat, vivant) ; l'essence d'une chose (la « nature humaine ») ; le spontané par opposition à l'acquis (naturel vs culturel, artificiel). L'homme brouille toutes ces frontières : être naturel (un corps, des besoins), il ne survit que par la culture — langue, techniques, règles. Sa « nature » est peut-être de ne pas en avoir de fixe : c'est la perfectibilité de Rousseau, capacité indéfinie de se transformer, pour le meilleur et pour le pire." },
+      { t: "2. Du cosmos à la machine", d: "Les Anciens voyaient la nature comme un ordre finalisé (chaque être tend vers sa fin — Aristote) qu'il s'agissait de contempler et d'imiter. La science moderne change tout : la nature devient une machine régie par des lois mathématiques, sans intention ni mystère — et donc exploitable. Le projet cartésien (s'en rendre « comme maître et possesseur ») fonde trois siècles de technique. Bacon ajoute la condition : « on ne commande à la nature qu'en lui obéissant » — la dominer suppose de connaître ses lois, pas de les ignorer." },
+      { t: "3. La nature, norme ou responsabilité ?", d: "Faut-il « suivre la nature » ? Mill objecte que la nature noie, brûle et tue avec indifférence : toute civilisation est victoire sur elle, et tirer une morale de ce qui est, c'est le sophisme naturaliste (du fait au droit). Attention donc aux usages idéologiques du mot (« contre nature »). Mais la crise écologique renverse la perspective : la nature, jadis menaçante, est devenue vulnérable. Jonas propose un nouvel impératif — agir de sorte qu'une vie authentiquement humaine reste possible sur terre : non pas obéir à la nature, mais en répondre." }
+    ],
+    vocab: [
+      { m: "Essence", d: "Ce qui fait qu'une chose est ce qu'elle est, ses caractères constitutifs." },
+      { m: "Perfectibilité", d: "Capacité indéfinie de l'homme à se transformer et à progresser (ou régresser)." },
+      { m: "Finalisme", d: "Explication des êtres et des phénomènes par les fins qu'ils poursuivraient." },
+      { m: "Mécanisme", d: "Explication de la nature par les seules causes matérielles et lois du mouvement." },
+      { m: "Sophisme naturaliste", d: "Erreur consistant à déduire ce qui doit être de ce qui est." }
     ],
     piege: "Le mot « nature » a (au moins) deux sens qu'un bon devoir distingue d'emblée : la nature-monde (l'ensemble des phénomènes physiques et vivants) et la nature-essence (ce qui définit une chose). « La nature humaine » ne parle pas d'écologie."
   },
@@ -353,6 +473,18 @@ const COURS = [
       "Faut-il toujours être rationnel ?",
       "La passion est-elle l'ennemie de la raison ?"
     ],
+    cours: [
+      { t: "1. Ce qu'on appelle raison", d: "La raison est la faculté de lier, calculer, juger — de donner et demander des raisons. Elle s'appuie sur des principes : identité, non-contradiction (une chose ne peut être et ne pas être en même temps sous le même rapport), raison suffisante (rien n'est sans raison). Distinguer d'emblée rationnel (conforme à la logique et au calcul — un plan de cambriolage peut l'être) et raisonnable (conforme à la sagesse pratique et à la mesure). Tout l'enjeu de la notion circule entre ces deux pôles." },
+      { t: "2. Ses pouvoirs", d: "La raison fonde la science (expliquer par des causes, démontrer), la morale universaliste (Kant : une maxime vaut si tous peuvent la vouloir) et la critique : elle examine opinions, préjugés et superstitions au lieu de les recevoir. Descartes la dit également partagée entre tous les hommes — l'erreur ne vient pas d'un manque de raison mais de son mauvais usage, d'où la nécessité d'une méthode. Conséquence politique : si tous sont doués de raison, tous peuvent discuter, juger, voter — la raison est démocratique en droit." },
+      { t: "3. Ses limites", d: "Pascal : les premiers principes se sentent et ne se prouvent pas — la dernière démarche de la raison est de reconnaître ce qui la dépasse. Hume : la raison calcule les moyens mais ne fixe aucune fin ; sans désir, elle ne fait rien vouloir. Kant : elle s'égare dès qu'elle quitte l'expérience possible (l'âme, le monde en soi, Dieu). Et l'ethnologie (Lévi-Strauss) rappelle qu'il n'y a pas UNE rationalité occidentale : la « pensée sauvage » classe et raisonne autrement, mais rigoureusement. La raison qui s'absolutise — le scientisme — devient elle-même une croyance non critique." }
+    ],
+    vocab: [
+      { m: "Rationnel", d: "Conforme à la logique, au calcul, à la cohérence." },
+      { m: "Raisonnable", d: "Conforme à la sagesse pratique, au sens de la mesure et de l'à-propos." },
+      { m: "Principe de non-contradiction", d: "Une chose ne peut pas être et ne pas être en même temps sous le même rapport." },
+      { m: "Scientisme", d: "Croyance selon laquelle la science peut tout connaître et résoudre tous les problèmes." },
+      { m: "Entendement", d: "Faculté de former des concepts et de juger, distinguée de la sensibilité." }
+    ],
     piege: "Rationnel ≠ raisonnable. Est rationnel ce qui est conforme à la logique et au calcul (un plan criminel peut l'être) ; est raisonnable ce qui est conforme à la sagesse pratique et à la mesure. L'écart entre les deux fait des sujets entiers."
   },
 
@@ -384,6 +516,18 @@ const COURS = [
       "La croyance religieuse est-elle incompatible avec la raison ?",
       "L'homme a-t-il besoin de religion ?",
       "Expliquer la religion, est-ce la réfuter ?"
+    ],
+    cours: [
+      { t: "1. Définir sans trancher", d: "Deux étymologies en débat : religare (relier — les hommes entre eux, l'homme au divin) et relegere (recueillir, observer scrupuleusement les rites). Une définition neutre tient en trois éléments : des croyances relatives au sacré, des rites qui les mettent en pratique, une communauté qu'elles rassemblent. Durkheim insiste : ce qui définit la religion, c'est la séparation du sacré et du profane — pas nécessairement un dieu (le bouddhisme ancien n'en a pas). La foi, elle, est une confiance qui excède les preuves : ni un savoir, ni automatiquement une déraison." },
+      { t: "2. Les fonctions, les critiques", d: "Pourquoi toutes les sociétés connues ont-elles eu du religieux ? Réponses fonctionnelles : la religion fait le lien social (Durkheim), console face à la mort et au mal, donne un sens au monde. D'où les grandes critiques du XIXe : Dieu serait la projection des perfections humaines (Feuerbach), l'opium d'un peuple souffrant (Marx), une illusion née du désir de protection (Freud). Mais attention au sophisme génétique : expliquer l'origine psychologique ou sociale d'une croyance ne démontre pas qu'elle est fausse — la critique décrit le besoin, pas l'objet." },
+      { t: "3. Foi, raison, cité", d: "Foi et raison peuvent s'exclure (fidéisme : croire sans raisons ; rationalisme antireligieux : ne rien croire sans preuve) ou s'articuler — Kant limite le savoir aux phénomènes, laissant la question de Dieu hors de portée de la science, en débat. Politiquement, la laïcité ne combat pas la religion : elle neutralise l'État pour garantir à chacun la liberté de croire ou non. Reste le diagnostic de Nietzsche : « Dieu est mort » — non un triomphe, mais une crise des valeurs où le religieux se survit sous d'autres formes (idoles, idéologies, sacralisations nouvelles)." }
+    ],
+    vocab: [
+      { m: "Sacré", d: "Ce qui est séparé du commun, inviolable, objet d'un respect absolu." },
+      { m: "Profane", d: "Le domaine ordinaire de l'existence, par opposition au sacré." },
+      { m: "Foi", d: "Adhésion confiante qui ne se réduit pas aux preuves dont on dispose." },
+      { m: "Agnosticisme", d: "Position qui suspend le jugement sur l'existence de Dieu, jugée indécidable." },
+      { m: "Laïcité", d: "Neutralité religieuse de l'État, garantissant la liberté de conscience et de culte." }
     ],
     piege: "Croire et savoir ne s'opposent pas terme à terme : il y a des croyances rationnelles (j'ai de bonnes raisons sans preuve) et la science elle-même repose sur des principes non démontrés. Et attention : expliquer l'origine psychologique ou sociale d'une croyance ne prouve pas qu'elle soit fausse (ce serait le « sophisme génétique »)."
   },
@@ -417,6 +561,18 @@ const COURS = [
       "La science se limite-t-elle à constater les faits ?",
       "Peut-on tout connaître scientifiquement ?"
     ],
+    cours: [
+      { t: "1. Du fait à la loi : le problème de la méthode", d: "La science vise des lois universelles — mais elle n'observe jamais que des cas particuliers. Passer des uns aux autres, c'est l'induction, et Hume a montré sa fragilité : mille confirmations ne prouvent pas la millième-et-unième. De plus, l'observation n'est jamais « pure » : on observe avec une question, des instruments, une théorie en tête. D'où la méthode expérimentale (Claude Bernard) : un fait suggère une hypothèse, l'hypothèse dicte une expérience, l'expérience tranche. La science est un dialogue réglé entre la raison qui propose et le réel qui dispose." },
+      { t: "2. Qu'est-ce qui est scientifique ?", d: "Popper donne le critère : une théorie est scientifique si elle est réfutable — si elle interdit des résultats possibles et accepte le risque d'être contredite. « Tous les corbeaux sont noirs » est scientifique : un corbeau blanc la tuerait. L'astrologie, qui explique tout après coup, ne risque rien : pseudo-science. Bachelard complète côté histoire : le fait scientifique est construit contre les évidences premières (le soleil « se lève ») — la science progresse en rectifiant ses erreurs. Et Kuhn décrit la dynamique : longues périodes de « science normale » dans un paradigme, puis révolutions quand les anomalies s'accumulent." },
+      { t: "3. Ce que la science peut — et pas", d: "La science ne décrit pas le réel « en soi » : elle construit des modèles qui prédisent les phénomènes (Kant : nous connaissons ce qui nous apparaît, structuré par notre esprit). Ses vérités sont provisoires mais pas arbitraires : chaque correction conserve et dépasse l'acquis — c'est un progrès par erreurs rectifiées, pas un relativisme. Enfin, la science dit ce qui est, jamais ce qui doit être : aucune équation ne décide s'il faut cloner, ni qui sauver en premier. Les questions de fins restent à la philosophie, au droit, à la démocratie — le scientisme est l'oubli de cette frontière." }
+    ],
+    vocab: [
+      { m: "Induction", d: "Passage de cas particuliers observés à une loi générale." },
+      { m: "Déduction", d: "Raisonnement qui tire d'un principe général des conséquences particulières." },
+      { m: "Réfutabilité", d: "Propriété d'une théorie qui peut être contredite par une expérience concevable." },
+      { m: "Paradigme", d: "Cadre théorique et méthodologique partagé par une communauté de chercheurs à une époque." },
+      { m: "Obstacle épistémologique", d: "Évidence familière ou image qui bloque la formation de l'esprit scientifique." }
+    ],
     piege: "Croire qu'une expérience « prouve » une théorie. Chez Popper, mille corbeaux noirs ne prouvent pas que tous les corbeaux sont noirs ; un seul corbeau blanc suffit à réfuter. La science est l'art d'énoncer des hypothèses audacieuses et de tout faire pour les démolir."
   },
 
@@ -448,6 +604,18 @@ const COURS = [
       "La technique n'est-elle qu'un moyen ?",
       "Dépendons-nous de la technique ?",
       "Faut-il avoir peur du progrès technique ?"
+    ],
+    cours: [
+      { t: "1. Qu'est-ce que la technique ?", d: "Un ensemble de moyens et de procédés réglés en vue d'une fin : tailler, cultiver, calculer, coder. L'outil prolonge l'organe (le marteau, le poing), la machine s'en affranchit (elle a sa propre force motrice), la technologie moderne naît du mariage avec la science. L'homme est homo faber avant d'être sapiens (Bergson) : pas d'humanité sans technique — le feu, le vêtement et la parole sont déjà des techniques. Le mythe de Prométhée le disait : l'homme, animal sans qualités, survit par l'artifice." },
+      { t: "2. Libération… et nouvelles dépendances", d: "La technique nous a affranchis de la faim, du froid, de la distance, des tâches épuisantes : qui voudrait revenir avant l'anesthésie ? Mais chaque pouvoir crée sa dépendance : l'outil qu'on ne sait plus ne pas utiliser, les savoir-faire perdus, l'accélération qui dévore le temps gagné. Surtout, la technique n'est pas une boîte à outils neutre : elle reconfigure nos fins elles-mêmes — le smartphone n'a pas « répondu » à un besoin, il l'a créé. Heidegger radicalise : la technique moderne est une manière de voir le monde entier comme stock disponible, y compris l'homme (« ressources humaines »)." },
+      { t: "3. Réguler la puissance", d: "Nos pouvoirs (nucléaire, génétique, climat, IA) dépassent désormais nos prévisions — et leurs effets sont parfois irréversibles et globaux. Jonas en tire une éthique nouvelle : la responsabilité envers ce qui n'existe pas encore (les générations futures), guidée par une « heuristique de la peur » — prendre au sérieux le pire scénario. Traduction politique : principe de précaution, évaluation démocratique des techniques, bioéthique. Ni technophobie ni technolâtrie : la question n'est jamais « pour ou contre la technique » mais quelles techniques, pour quelles fins, décidées par qui." }
+    ],
+    vocab: [
+      { m: "Homo faber", d: "L'homme défini par sa capacité de fabriquer des outils, avant même la pensée abstraite." },
+      { m: "Technoscience", d: "Fusion moderne de la science et de la technique, chacune nourrissant l'autre." },
+      { m: "Arraisonnement", d: "Chez Heidegger : mise en demeure de la nature de se livrer comme stock d'énergie disponible." },
+      { m: "Principe de précaution", d: "Exigence de s'abstenir ou d'encadrer une action en cas de risque grave et incertain." },
+      { m: "Ambivalence de la technique", d: "Caractère de la technique qui libère et asservit, soigne et menace, selon ses usages et ses structures." }
     ],
     piege: "« La technique est neutre, tout dépend de l'usage » : c'est précisément la thèse que Heidegger et Jonas contestent. Une technique n'est jamais un simple instrument : elle transforme nos manières de voir, de vouloir et de vivre (le smartphone n'est pas un téléphone amélioré). En faire une évidence, c'est éviter le problème."
   },
@@ -481,6 +649,18 @@ const COURS = [
       "Peut-on échapper au temps ?",
       "Perdre son temps, est-ce ne rien faire ?"
     ],
+    cours: [
+      { t: "1. Le temps qu'on mesure", d: "Le temps objectif est celui des horloges et de la physique : homogène (toutes les secondes se valent), divisible, irréversible — la flèche du temps interdit le retour en arrière, contrairement à l'espace où l'on revient sur ses pas. Aristote le définissait déjà par le mouvement : le temps est ce qu'on compte quand quelque chose change. Paradoxe d'Augustin : le passé n'est plus, le futur pas encore, le présent fuit — où donc « est » le temps ? Sa réponse : dans l'âme, qui retient (mémoire), fait attention (présent) et attend (avenir)." },
+      { t: "2. Le temps qu'on vit", d: "Une minute d'attente chez le dentiste et une minute de fou rire n'ont pas la même épaisseur : c'est la durée de Bergson, qualitative, où les moments s'interpénètrent comme les notes d'une mélodie — irréductible au temps spatialisé des horloges. Kant ajoute un niveau : le temps n'est pas une chose du monde mais la forme a priori de notre sensibilité — nous ne percevons pas le temps, nous percevons tout dans le temps. Le temps social enfin nous discipline : calendriers, horaires, urgence moderne — l'accélération est un fait de civilisation, pas de physique." },
+      { t: "3. Habiter sa finitude", d: "Le temps détruit (vieillissement, oubli, mort) mais il rend tout possible : mûrir, apprendre, pardonner, créer supposent la durée. Face à la finitude, trois stratégies classiques : vivre le présent (sagesses antiques — le passé n'est plus à moi, l'avenir pas encore), se projeter (l'existence comme projet), et s'inscrire dans ce qui dure plus que soi — œuvres, institutions, transmission. Pascal pointe le piège inverse : occupés du souvenir et de l'attente, « nous ne vivons jamais, mais nous espérons de vivre ». Et Nietzsche réhabilite l'oubli : sans lui, pas d'action ni de bonheur possibles." }
+    ],
+    vocab: [
+      { m: "Durée", d: "Le temps qualitatif tel que la conscience le vit, par opposition au temps mesuré." },
+      { m: "Irréversibilité", d: "Impossibilité de revenir en arrière dans le temps, contrairement à l'espace." },
+      { m: "Finitude", d: "Condition d'un être limité dans le temps, voué à la mort." },
+      { m: "Instant", d: "Limite sans épaisseur entre le passé et l'avenir." },
+      { m: "Éternité", d: "Ce qui est hors du temps — sans commencement, sans fin, sans changement." }
+    ],
     piege: "Confondre le temps objectif (celui de la physique et des horloges, mesurable) et le temps vécu (la durée bergsonienne, qualitative). Les deux sont vrais, mais pas du même point de vue — un devoir qui n'articule pas les deux reste à la surface du problème."
   },
 
@@ -513,6 +693,18 @@ const COURS = [
       "Peut-on s'accomplir sans travailler ?",
       "Gagne-t-on sa vie en la perdant au travail ?"
     ],
+    cours: [
+      { t: "1. Qu'est-ce que travailler ?", d: "Le travail est l'activité par laquelle l'homme transforme la nature pour satisfaire ses besoins — et se transforme lui-même en retour. Il suppose l'effort, le temps, des règles : c'est une médiation, contrairement à la cueillette immédiate ou au jeu (qui a sa fin en lui-même). Arendt affine la carte : le travail (cycle de la consommation, rien ne reste : cuisiner, nettoyer), l'œuvre (fabriquer un monde durable : la table, le livre, le pont) et l'action (parler et agir entre les hommes : la politique). Réduire toute activité au seul travail-emploi est déjà un choix de société." },
+      { t: "2. Malédiction ou accomplissement ?", d: "La tradition penche pour la peine : tripalium, « à la sueur de ton front », mépris antique du travail manuel réservé aux esclaves — la vie libre étant celle du loisir studieux (skholè). Renversement moderne : chez Hegel, c'est l'esclave qui, en travaillant, discipline son désir, forme le monde et s'y reconnaît — il devient maître de soi quand le maître oisif s'engourdit. Marx en hérite : le travail est l'essence de l'homme (l'architecte conçoit avant de bâtir, l'abeille non)… ce qui rend le salariat accablant : dépossédé du produit, du rythme et du sens, le travailleur « ne s'affirme pas, il se nie ». Le même mot couvre l'atelier de l'artisan et la chaîne." },
+      { t: "3. Le travail aujourd'hui en question", d: "La division du travail (Smith) décuple la productivité au prix de la fragmentation : l'ouvrier d'une seule opération « devient aussi stupide qu'il est possible de le devenir » — Smith lui-même le redoutait. L'automation relance la vieille promesse de la fin du travail : libération ou crise du sens et du revenu ? S'y ajoutent le travail invisible (domestique, bénévole, non compté), la quête de sens des nouvelles générations, et la question politique : faut-il travailler moins (partage), autrement (autogestion), ou garantir un revenu sans emploi ? Le travail reste le lieu où se nouent économie, identité et justice." }
+    ],
+    vocab: [
+      { m: "Aliénation", d: "Processus par lequel on devient étranger à soi-même dans sa propre activité." },
+      { m: "Division du travail", d: "Répartition des tâches entre individus, métiers ou opérations, source de productivité et de dépendance mutuelle." },
+      { m: "Force de travail", d: "Capacité de produire que le salarié loue contre un salaire." },
+      { m: "Skholè", d: "Loisir studieux des Grecs : temps libéré de la nécessité, condition de la pensée et de la citoyenneté." },
+      { m: "Œuvre", d: "Chez Arendt : production durable qui bâtit un monde stable, par opposition aux biens aussitôt consommés." }
+    ],
     piege: "Réduire le travail à l'emploi salarié. Le travail domestique, l'étude, la création non rémunérée sont du travail — et Arendt rappelle qu'entre l'ouvrier à la chaîne et l'artisan qui œuvre, la différence est philosophique, pas seulement économique."
   },
 
@@ -544,6 +736,18 @@ const COURS = [
       "La vérité dépend-elle de nous ?",
       "Une illusion peut-elle être préférable à la vérité ?",
       "Toutes les opinions se valent-elles ?"
+    ],
+    cours: [
+      { t: "1. Où loge la vérité ?", d: "La vérité n'est pas dans les choses : une pierre n'est ni vraie ni fausse, elle est. La vérité est une propriété de nos jugements : un énoncé est vrai s'il dit ce qui est. Deux grandes définitions : la correspondance (l'accord du jugement et du réel — mais comment comparer mon idée au réel, puisque je n'y accède que par mes idées ?) et la cohérence (l'accord du discours avec lui-même — mais un roman peut être cohérent et faux). D'où la quête de critères : l'évidence (Descartes), la preuve, la vérification expérimentale, l'accord des esprits compétents." },
+      { t: "2. Une conquête contre l'opinion", d: "La vérité ne se ramasse pas : elle s'arrache à la doxa — l'opinion commune, mélange d'habitudes, d'on-dit et de préjugés que l'allégorie de la caverne met en scène. Les armes : le doute méthodique, qui suspend tout ce qui n'est pas certain ; la démonstration, qui contraint l'assentiment par la seule logique ; l'expérimentation, qui soumet l'hypothèse au verdict des faits ; et l'examen public — une vérité qui refuse la discussion et le contrôle ressemble fort à un dogme. La vérité est intersubjective en droit : vraie pour tous, ou pas vraie." },
+      { t: "3. Relativisme, illusion, valeur du vrai", d: "« À chacun sa vérité » s'auto-réfute : si tout est relatif, cette phrase l'est aussi. Ne pas confondre la relativité des opinions (réelle) et celle de la vérité (contradictoire). Restent deux vraies questions. Le perspectivisme de Nietzsche : tout savoir part d'un point de vue — mais multiplier les perspectives n'abolit pas le vrai, cela l'affine. Et la valeur du vrai : faut-il toujours le préférer ? L'illusion console, l'art enchante, certains mensonges protègent. Vouloir la vérité est moins un instinct qu'une éthique — celle de la lucidité, qui accepte de payer le prix du réel." }
+    ],
+    vocab: [
+      { m: "Adéquation", d: "Correspondance entre ce que le jugement affirme et ce qui est." },
+      { m: "Doxa", d: "Opinion commune, reçue sans examen." },
+      { m: "Évidence", d: "Ce qui s'impose immédiatement et clairement à l'esprit, sans démonstration." },
+      { m: "Relativisme", d: "Thèse selon laquelle toute vérité dépend du point de vue, de la culture ou de l'individu." },
+      { m: "Véracité", d: "Qualité de celui qui dit ce qu'il croit vrai — on peut être véridique et se tromper." }
     ],
     piege: "Vrai ≠ réel ≠ sincère. Le réel est (les choses), le vrai se dit (les jugements), le sincère se vit (je crois ce que je dis — mais je peux me tromper sincèrement). Un mensonge peut énoncer le vrai par accident ; une erreur n'est pas un mensonge. Ces distinctions ouvrent presque tous les sujets sur la vérité."
   }

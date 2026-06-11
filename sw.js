@@ -1,5 +1,5 @@
 /* AGORA — service worker : hors ligne + installable */
-const CACHE = "agora-v1";
+const CACHE = "agora-v2";
 const ASSETS = [
   "./",
   "./index.html",
