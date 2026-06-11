@@ -186,6 +186,7 @@ function parseChallenge() {
     pseudo: decodeURIComponent(m[5]).slice(0, 16)
   };
   history.replaceState(null, "", location.pathname + location.search);
+  track("defi-recu");
   renderDefiBanner();
 }
 
@@ -199,6 +200,7 @@ function renderDefiBanner() {
   el.style.display = "flex";
   $("#defi-go").addEventListener("click", () => {
     el.style.display = "none";
+    track("defi-accepte");
     const key = pendingChallenge.game;
     if (key.startsWith("drill:")) startNotionDrill(key.slice(6));
     else nav(key);
@@ -297,6 +299,7 @@ function startBattleSetup(prefillCode) {
     try {
       const seed = Math.floor(Math.random() * 2147483647);
       const code = await window.battle.create(b.dataset.bgame, seed);
+      track("battle-creee");
       battleLobby(code, true);
     } catch (e) { $("#battle-error").textContent = "Création impossible — réessaie."; b.disabled = false; }
   }));
@@ -310,6 +313,7 @@ function startBattleSetup(prefillCode) {
       if (!b) { $("#battle-error").textContent = "Aucune battle avec ce code."; return; }
       if (b.status !== "waiting") { $("#battle-error").textContent = "Cette battle a déjà commencé."; return; }
       await window.battle.enter(code);
+      track("battle-rejointe");
       battleLobby(code, false);
     } catch (e) { $("#battle-error").textContent = "Connexion impossible — réessaie."; }
   };
@@ -358,7 +362,7 @@ function battleLobby(code, isHost) {
     });
 
   const go = $("#battle-go");
-  if (go) go.addEventListener("click", () => { go.disabled = true; window.battle.start(code); });
+  if (go) go.addEventListener("click", () => { go.disabled = true; track("battle-lancee"); window.battle.start(code); });
 }
 
 function battleCountdown(code, b) {
@@ -450,6 +454,7 @@ function refreshErrorBadges() {
 
 /* ---------- partage de score ---------- */
 async function shareScore(text, url = "https://agora-philo.fr") {
+  track(url.includes("#defi=") ? "defi-envoye" : url.includes("#battle=") ? "battle-invitation" : "partage");
   const full = text + "\n" + url;
   try {
     if (navigator.share) { await navigator.share({ text: full }); return; }
@@ -457,6 +462,16 @@ async function shareScore(text, url = "https://agora-philo.fr") {
   try { await navigator.clipboard.writeText(full); toast("Copié ! Colle-le à tes potes 📋"); }
   catch { prompt("Copie ce texte :", full); }
 }
+
+/* ---------- statistiques d'usage (événements GoatCounter, sans cookies) ---------- */
+function track(name) {
+  try {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  } catch (e) {}
+}
+window.track = track;
 
 function toast(msg) {
   const t = document.createElement("div");
@@ -492,6 +507,7 @@ function bumpDaily() {
   const daily = JSON.parse(localStorage.getItem("agora_daily") || "{}");
   const n = (daily.d === t ? daily.n : 0) + 1;
   localStorage.setItem("agora_daily", JSON.stringify({ d: t, n }));
+  if (n === DAILY_GOAL) track("objectif-quotidien-atteint");
 
   const st = JSON.parse(localStorage.getItem("agora_streak") || "{}");
   if (st.last !== t) {
@@ -553,6 +569,7 @@ function nav(target) {
   }
   const game = GAMES[target];
   if (!game) return;
+  track("jeu-" + target);
   $("#game-title").textContent = game.title;
   setMeta("", "");
   setProgress(0);
@@ -683,6 +700,7 @@ function startNotionDrill(id) {
   const c = COURS.find(x => x.id === id);
   if (!c) return;
   beginRun("drill:" + id);
+  track("revision-" + id);
   $("#game-title").textContent = "Révision · " + c.title;
   setMeta("", "");
   setProgress(0);
@@ -775,6 +793,7 @@ function startNotionDrill(id) {
 function openFiche(id) {
   const i = COURS.findIndex(c => c.id === id);
   if (i === -1) return;
+  track("fiche-" + id);
   const c = COURS[i];
   const prev = COURS[(i - 1 + COURS.length) % COURS.length];
   const next = COURS[(i + 1) % COURS.length];
@@ -879,6 +898,7 @@ function openFiche(id) {
    ============================================================ */
 function openMethodo(id) {
   const m = METHODO.find(x => x.id === id) || METHODO[0];
+  track("methodo-" + m.id);
 
   $("#methodo-stage").innerHTML = `
     <div class="fiche-back"><button class="btn ghost" data-nav="home">← Retour à l'arène</button></div>
@@ -957,6 +977,7 @@ function mentionFor(score, total) {
 }
 
 function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
+  track("fin-" + (currentRun && currentRun.game ? currentRun.game.split(":")[0] : "jeu"));
   const [mention, comment] = mentionFor(score, total);
   const lvlUp = gainXp(xp);
   const errN = errStore.count();
@@ -1352,6 +1373,7 @@ function runMatch(mode) {
   });
 
   function finish() {
+    track("fin-match");
     const perfect = pairs.length;
     const xp = Math.max(20, 120 - (moves - perfect) * 10);
     const isRecord = updateBest("match", moves, true);
@@ -1454,6 +1476,7 @@ function startErrors() {
 
   function finish() {
     setProgress(1);
+    track("fin-erreurs");
     const xp = corrected * 8;
     const lvlUp = xp > 0 ? gainXp(xp) : false;
     const remaining = errStore.count();
@@ -1559,6 +1582,7 @@ function startExamen() {
 
   function finish() {
     setProgress(1);
+    track("fin-examen");
     const [mention, comment] = bacMention(score);
     const xp = score * 15;
     const isRecord = updateBest("examen", score);
@@ -1760,6 +1784,7 @@ function startMarathon() {
   }
 
   function finish() {
+    track("fin-marathon");
     const xp = streak * 10;
     const isRecord = updateBest("marathon", streak);
     const lvlUp = xp > 0 ? gainXp(xp) : false;
@@ -1822,3 +1847,4 @@ parseBattleHash();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
+window.addEventListener("appinstalled", () => track("pwa-installee"));

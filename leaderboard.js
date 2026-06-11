@@ -55,6 +55,7 @@ function renderJoin() {
       const v = $id("lb-pseudo").value.trim();
       if (v.length < 2 || v.length > 16) { $id("lb-pseudo").focus(); return; }
       localStorage.setItem("agora_pseudo", v);
+      if (window.track) window.track("classement-rejoint");
       push();
       renderJoin();
     };
