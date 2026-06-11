@@ -3,7 +3,6 @@
 **En ligne : [agora-philo.fr](https://agora-philo.fr/)**
 
 Site de révision pour l'épreuve de philosophie du bac, sous forme de mini-jeux.
-Inspiré de [philolingo.com](https://philolingo.com/), en version arcade.
 
 ## Lancer le site
 
