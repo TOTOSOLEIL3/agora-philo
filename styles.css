@@ -321,6 +321,93 @@ body::after {
 }
 
 /* ============================================================
+   BANNIÈRE DE DÉFI & RÉSULTAT DE DUEL
+   ============================================================ */
+.defi-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.2rem;
+  background: var(--red);
+  color: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  text-align: center;
+  animation: drop-in 0.4s ease both;
+}
+
+.defi-banner .defi-txt { font-size: 0.97rem; }
+.defi-banner strong { color: #ffe3a3; }
+.defi-banner .btn.danger { background: var(--paper); color: var(--red); border-color: var(--ink); }
+
+.duel-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 2px solid var(--ink);
+  padding: 1.1rem 1.3rem;
+  margin: 0 auto 1.6rem;
+  max-width: 420px;
+  background: var(--paper);
+}
+
+.duel-result .vs {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+}
+
+.duel-result .scores { font-size: 1.05rem; }
+
+.duel-result .verdict {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+
+.duel-result.win { border-color: var(--green); box-shadow: 5px 5px 0 var(--green); }
+.duel-result.win .vs, .duel-result.win .verdict { color: var(--green); }
+.duel-result.lose { border-color: var(--red); box-shadow: 5px 5px 0 var(--red); }
+.duel-result.lose .vs, .duel-result.lose .verdict { color: var(--red); }
+.duel-result.tie { border-color: var(--gold); box-shadow: 5px 5px 0 var(--gold); }
+.duel-result.tie .vs, .duel-result.tie .verdict { color: var(--gold); }
+
+/* ============================================================
+   ANNALES (sur les fiches)
+   ============================================================ */
+.annales-list { list-style: none; display: grid; gap: 0.55rem; }
+
+.annales-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  border: 1.5px solid var(--ink);
+  background: #fbf7ec;
+  padding: 0.65rem 0.9rem;
+}
+
+.annales-list .an-year {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--paper);
+  background: var(--blue);
+  padding: 0.15rem 0.5rem;
+  flex: none;
+}
+
+.annales-list .an-sub { flex: 1; font-weight: 600; min-width: 200px; }
+
+.annales-list .an-loc {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* ============================================================
    CITATION DU JOUR
    ============================================================ */
 .quote-day {

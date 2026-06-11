@@ -4,15 +4,27 @@
 
 /* ---------- utilitaires ---------- */
 const $ = sel => document.querySelector(sel);
+
+/* RNG seedable : un même seed rejoue exactement les mêmes questions (défis) */
+let rand = Math.random;
+const mulberry32 = a => () => {
+  a |= 0; a = a + 0x6D2B79F5 | 0;
+  let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+};
+
 const shuffle = arr => {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 };
 const pick = (arr, n) => shuffle(arr).slice(0, n);
+
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 // "Kant (formule attribuée)" → "Kant", "d'après Hegel" → "Hegel"
 const cleanName = s => s.replace(/^d'après /i, "").split(" (")[0].trim();
@@ -78,6 +90,80 @@ function gainXp(amount) {
   return levelFor(store.xp).name !== before; // niveau franchi ?
 }
 
+/* ============================================================
+   DÉFIS ENTRE POTES — un lien rejoue les mêmes questions
+   ============================================================ */
+let currentRun = null;        // { game, seed } de la partie en cours
+let challengeCtx = null;      // { score, total, pseudo } si on joue un défi
+let pendingChallenge = null;  // défi reçu via l'URL, pas encore accepté
+
+const CHALLENGEABLE = key => /^(quotes|quiz|vf|examen|drill:)/.test(key || "");
+
+function beginRun(key) {
+  if (pendingChallenge && pendingChallenge.game === key) {
+    currentRun = { game: key, seed: pendingChallenge.seed };
+    challengeCtx = { score: pendingChallenge.score, total: pendingChallenge.total, pseudo: pendingChallenge.pseudo };
+    pendingChallenge = null;
+  } else {
+    currentRun = { game: key, seed: Math.floor(Math.random() * 2147483647) };
+    challengeCtx = null;
+  }
+  rand = mulberry32(currentRun.seed);
+}
+
+function gameTitleFor(key) {
+  if (key.startsWith("drill:")) {
+    const c = COURS.find(x => x.id === key.slice(6));
+    return c ? "Révision · " + c.title : "Révision ciblée";
+  }
+  return (GAMES[key] || {}).title || key;
+}
+
+function challengeLink(score, total) {
+  const p = encodeURIComponent((localStorage.getItem("agora_pseudo") || "Un·e pote").slice(0, 16));
+  return `https://agora-philo.fr/#defi=${currentRun.game}_${currentRun.seed.toString(36)}_${score}_${total}_${p}`;
+}
+
+function parseChallenge() {
+  const m = location.hash.match(/^#defi=([a-z:]+)_([0-9a-z]+)_(\d+)_(\d+)_(.+)$/i);
+  if (!m) return;
+  pendingChallenge = {
+    game: m[1], seed: parseInt(m[2], 36),
+    score: Number(m[3]), total: Number(m[4]),
+    pseudo: decodeURIComponent(m[5]).slice(0, 16)
+  };
+  history.replaceState(null, "", location.pathname + location.search);
+  renderDefiBanner();
+}
+
+function renderDefiBanner() {
+  const el = $("#defi-banner");
+  if (!el || !pendingChallenge) return;
+  const c = pendingChallenge;
+  el.innerHTML = `
+    <span class="defi-txt">⚔️ <strong>${escapeHtml(c.pseudo)}</strong> te défie sur <strong>${gameTitleFor(c.game)}</strong> — son score : <strong>${c.score}/${c.total}</strong>. Mêmes questions, à toi de faire mieux.</span>
+    <button class="btn danger" id="defi-go">Relever le défi ⚔️</button>`;
+  el.style.display = "flex";
+  $("#defi-go").addEventListener("click", () => {
+    el.style.display = "none";
+    const key = pendingChallenge.game;
+    if (key.startsWith("drill:")) startNotionDrill(key.slice(6));
+    else nav(key);
+  });
+}
+
+function duelBlock(score, total) {
+  if (!challengeCtx) return "";
+  const c = challengeCtx;
+  const win = score > c.score, tie = score === c.score;
+  return `
+    <div class="duel-result ${win ? "win" : tie ? "tie" : "lose"}">
+      <span class="vs">⚔️ RÉSULTAT DU DUEL</span>
+      <span class="scores">${escapeHtml(c.pseudo)} : <strong>${c.score}/${c.total}</strong> — Toi : <strong>${score}/${total}</strong></span>
+      <span class="verdict">${win ? "VICTOIRE ! 🏆" : tie ? "Égalité parfaite — l'agora retient son souffle" : "Défaite… vengeance immédiate ?"}</span>
+    </div>`;
+}
+
 /* ---------- mes erreurs : les questions ratées, à re-réviser ---------- */
 const errStore = {
   all() { return JSON.parse(localStorage.getItem("agora_errors") || "[]"); },
@@ -105,8 +191,8 @@ function refreshErrorBadges() {
 }
 
 /* ---------- partage de score ---------- */
-async function shareScore(text) {
-  const full = text + "\nhttps://agora-philo.fr";
+async function shareScore(text, url = "https://agora-philo.fr") {
+  const full = text + "\n" + url;
   try {
     if (navigator.share) { await navigator.share({ text: full }); return; }
   } catch (e) { if (e && e.name === "AbortError") return; }
@@ -255,9 +341,9 @@ function buildDrill(c) {
       });
     }
     // Vrai/Faux : attribution correcte ou piégée
-    const truth = Math.random() < 0.5;
+    const truth = rand() < 0.5;
     const wrongPool = names.filter(n => n !== nm);
-    const shown = truth ? nm : wrongPool[Math.floor(Math.random() * wrongPool.length)];
+    const shown = truth ? nm : wrongPool[Math.floor(rand() * wrongPool.length)];
     pool.push({
       kind: "vf", label: "Vrai ou faux ?",
       q: `Cette idée est défendue par ${shown} : « ${firstSentence(a.these)} »`,
@@ -310,6 +396,7 @@ function buildDrill(c) {
 function startNotionDrill(id) {
   const c = COURS.find(x => x.id === id);
   if (!c) return;
+  beginRun("drill:" + id);
   $("#game-title").textContent = "Révision · " + c.title;
   setMeta("", "");
   setProgress(0);
@@ -468,8 +555,19 @@ function openFiche(id) {
       <div class="repere-chips">${c.reperes.map(r => `<span>${r}</span>`).join("")}</div>
     </section>
 
+    ${(() => {
+      const ann = (typeof ANNALES !== "undefined" ? ANNALES.filter(a => a.n.includes(c.id)) : []).sort((a, b) => b.y - a.y);
+      return ann.length ? `
     <section class="fiche-sec">
-      <div class="sec-title">Sujets de bac possibles</div>
+      <div class="sec-title">Tombé au bac — les vrais sujets</div>
+      <ul class="annales-list">
+        ${ann.map(a => `<li><span class="an-year">${a.y}</span><span class="an-sub">${a.s}</span><span class="an-loc">${a.loc}</span></li>`).join("")}
+      </ul>
+    </section>` : "";
+    })()}
+
+    <section class="fiche-sec">
+      <div class="sec-title">Sujets d'entraînement possibles</div>
       <ul class="sujet-list">${c.sujets.map(s => `<li>${s}</li>`).join("")}</ul>
     </section>
 
@@ -581,9 +679,11 @@ function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
       <div class="big-score">${score}/${total}</div>
       <div class="mention">${mention}</div>
       <p class="comment">${comment}</p>
+      ${duelBlock(score, total)}
       ${bestLine ? `<p class="mono" style="margin-bottom:1.4rem">${bestLine}</p>` : ""}
       <div class="actions">
         <button class="btn primary" id="btn-replay">Rejouer</button>
+        ${CHALLENGEABLE(currentRun && currentRun.game) ? `<button class="btn" id="btn-defi">⚔️ Défier un pote</button>` : ""}
         <button class="btn" id="btn-share">Partager 📤</button>
         ${extra ? `<button class="btn" data-nav="${extra.nav}">${extra.label}</button>` : ""}
         ${errN ? `<button class="btn danger" data-nav="errors">Mes erreurs (${errN})</button>` : ""}
@@ -593,7 +693,12 @@ function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
   $("#btn-replay").addEventListener("click", replay);
   $("#btn-share").addEventListener("click", () =>
     shareScore(share || `🦉 ${score}/${total} en révision de philo sur AGORA. Tu fais mieux ?`));
-  if (bestLine && bestLine.includes("★")) confetti();
+  const defiBtn = $("#btn-defi");
+  if (defiBtn) defiBtn.addEventListener("click", () =>
+    shareScore(`⚔️ Je te défie sur « ${gameTitleFor(currentRun.game)} » : j'ai fait ${score}/${total}. Mêmes questions, à toi de jouer :`, challengeLink(score, total)));
+  if (challengeCtx && score > challengeCtx.score) confetti();
+  else if (bestLine && bestLine.includes("★")) confetti();
+  challengeCtx = null;
 }
 
 function updateBest(game, value, lowerIsBetter = false) {
@@ -607,6 +712,7 @@ function updateBest(game, value, lowerIsBetter = false) {
    JEU 01 · QUI A DIT ÇA ?
    ============================================================ */
 function startQuotes() {
+  beginRun("quotes");
   const rounds = pick(QUOTES, 10);
   let i = 0, score = 0, streak = 0, maxStreak = 0;
 
@@ -667,6 +773,7 @@ function startQuotes() {
    JEU 02 · LE GRAND QCM
    ============================================================ */
 function startQuiz() {
+  beginRun("quiz");
   const rounds = pick(QUIZ, 10);
   let i = 0, score = 0, streak = 0;
 
@@ -723,6 +830,7 @@ function startQuiz() {
    JEU 03 · VRAI OU FAUX
    ============================================================ */
 function startVF() {
+  beginRun("vf");
   const rounds = pick(TRUEFALSE, 10);
   let i = 0, score = 0, streak = 0;
 
@@ -782,6 +890,7 @@ function startVF() {
    JEU 04 · LES REPÈRES (flashcards)
    ============================================================ */
 function startCards() {
+  beginRun("cards");
   let queue = shuffle(FLASHCARDS.map(c => ({ ...c, fresh: true })));
   const total = queue.length;
   let mastered = 0, seen = 0;
@@ -847,6 +956,7 @@ function startCards() {
    JEU 05 · LE GRAND DUEL (association)
    ============================================================ */
 function startMatch() {
+  beginRun("match");
   const pairs = pick(PAIRS, 8);
   const tiles = shuffle([
     ...pairs.map((p, id) => ({ id, text: p.a, kind: "philo" })),
@@ -941,6 +1051,7 @@ function startMatch() {
    MES ERREURS — re-réviser les questions ratées
    ============================================================ */
 function startErrors() {
+  beginRun("errors");
   const queue = shuffle(errStore.all());
   const total = queue.length;
   let i = 0, corrected = 0;
@@ -1054,6 +1165,7 @@ function bacMention(n) {
 }
 
 function startExamen() {
+  beginRun("examen");
   // 10 notions tirées au sort, 2 questions chacune
   const notions = pick(COURS, 10);
   const rounds = shuffle(notions.flatMap(c =>
@@ -1135,6 +1247,7 @@ function startExamen() {
         <div class="big-score">${score}/20</div>
         <div class="mention">${mention}</div>
         <p class="comment">${comment}</p>
+        ${duelBlock(score, 20)}
         <p class="mono" style="margin-bottom:1.4rem">${isRecord ? "★ Nouveau record !" : "Record : " + store.best("examen") + "/20"}</p>
         ${aRevoir.length ? `
         <div class="exam-recap">
@@ -1149,6 +1262,7 @@ function startExamen() {
         </div>` : `<p class="mono" style="margin-bottom:1.4rem">SANS-FAUTE SUR TOUTES LES NOTIONS. RESPECT ÉTERNEL.</p>`}
         <div class="actions">
           <button class="btn primary" id="btn-replay">Repasser un examen</button>
+          <button class="btn" id="btn-defi-ex">⚔️ Défier un pote</button>
           <button class="btn" id="btn-share">Partager 📤</button>
           ${errStore.count() ? `<button class="btn danger" data-nav="errors">Mes erreurs (${errStore.count()})</button>` : ""}
           <button class="btn" data-nav="home">Retour à l'arène</button>
@@ -1157,6 +1271,10 @@ function startExamen() {
     $("#btn-replay").addEventListener("click", startExamen);
     $("#btn-share").addEventListener("click", () =>
       shareScore(`🎓 J'ai eu ${score}/20 à l'examen blanc de philo sur AGORA (${mention}). Viens me battre !`));
+    $("#btn-defi-ex").addEventListener("click", () =>
+      shareScore(`⚔️ Je te défie sur l'Examen Blanc de philo : j'ai eu ${score}/20. Mêmes 20 questions, à toi :`, challengeLink(score, 20)));
+    if (challengeCtx && score > challengeCtx.score) confetti();
+    challengeCtx = null;
   }
 
   round();
@@ -1166,6 +1284,7 @@ function startExamen() {
    BONUS · LE MARATHON (mort subite)
    ============================================================ */
 function startMarathon() {
+  beginRun("marathon");
   let streak = 0;
   let pool = buildMarathonPool();
 
@@ -1300,6 +1419,7 @@ function initHome() {
 }
 
 initHome();
+parseChallenge();
 
 /* ---------- PWA : installable + hors ligne ---------- */
 if ("serviceWorker" in navigator) {

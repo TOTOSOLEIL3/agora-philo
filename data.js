@@ -301,6 +301,42 @@ const PAIRS = [
   { a: "La Boétie", b: "La servitude volontaire" }
 ];
 
+/* ---------- ANNALES — sujets de dissertation tombés au bac (Métropole) ---------- */
+const ANNALES = [
+  { y: 2025, loc: "Métropole", s: "Notre avenir dépend-il de la technique ?", n: ["technique"] },
+  { y: 2025, loc: "Métropole", s: "La vérité est-elle toujours convaincante ?", n: ["verite", "raison"] },
+  { y: 2024, loc: "Métropole", s: "La science peut-elle satisfaire notre besoin de vérité ?", n: ["science", "verite"] },
+  { y: 2024, loc: "Métropole", s: "L'État nous doit-il quelque chose ?", n: ["etat", "justice"] },
+  { y: 2023, loc: "Métropole", s: "Le bonheur est-il affaire de raison ?", n: ["bonheur", "raison"] },
+  { y: 2023, loc: "Métropole", s: "Vouloir la paix, est-ce vouloir la justice ?", n: ["justice"] },
+  { y: 2022, loc: "Métropole", s: "Les pratiques artistiques transforment-elles le monde ?", n: ["art"] },
+  { y: 2022, loc: "Métropole", s: "Revient-il à l'État de décider de ce qui est juste ?", n: ["etat", "justice"] },
+  { y: 2021, loc: "Métropole", s: "Discuter, est-ce renoncer à la violence ?", n: ["langage"] },
+  { y: 2021, loc: "Métropole", s: "L'inconscient échappe-t-il à toute forme de connaissance ?", n: ["inconscient", "science"] },
+  { y: 2021, loc: "Métropole", s: "Sommes-nous responsables de l'avenir ?", n: ["devoir", "temps"] },
+  { y: 2019, loc: "Métropole · série L", s: "Est-il possible d'échapper au temps ?", n: ["temps"] },
+  { y: 2019, loc: "Métropole · série L", s: "À quoi bon expliquer une œuvre d'art ?", n: ["art"] },
+  { y: 2019, loc: "Métropole · série ES", s: "La morale est-elle la meilleure des politiques ?", n: ["devoir", "etat"] },
+  { y: 2019, loc: "Métropole · série ES", s: "Le travail divise-t-il les hommes ?", n: ["travail"] },
+  { y: 2019, loc: "Métropole · série S", s: "Reconnaître ses devoirs, est-ce renoncer à sa liberté ?", n: ["devoir", "liberte"] },
+  { y: 2018, loc: "Métropole · série L", s: "Peut-on renoncer à la vérité ?", n: ["verite"] },
+  { y: 2018, loc: "Métropole · série ES", s: "Toute vérité est-elle définitive ?", n: ["verite", "science"] },
+  { y: 2018, loc: "Métropole · série ES", s: "Peut-on être insensible à l'art ?", n: ["art"] },
+  { y: 2018, loc: "Métropole · série S", s: "Éprouver l'injustice, est-ce nécessaire pour savoir ce qui est juste ?", n: ["justice"] },
+  { y: 2017, loc: "Métropole · série L", s: "Suffit-il d'observer pour connaître ?", n: ["science", "raison"] },
+  { y: 2017, loc: "Métropole · série L", s: "Tout ce que j'ai le droit de faire est-il juste ?", n: ["justice"] },
+  { y: 2017, loc: "Métropole · série ES", s: "La raison peut-elle rendre raison de tout ?", n: ["raison"] },
+  { y: 2017, loc: "Métropole · série ES", s: "Une œuvre d'art est-elle nécessairement belle ?", n: ["art"] },
+  { y: 2016, loc: "Métropole · série L", s: "Notre conscience morale n'est-elle que le fruit de l'éducation ?", n: ["conscience", "devoir"] },
+  { y: 2016, loc: "Métropole · série S", s: "Travailler moins, est-ce vivre mieux ?", n: ["travail", "bonheur"] },
+  { y: 2016, loc: "Métropole · série S", s: "Faut-il démontrer pour savoir ?", n: ["science", "raison"] },
+  { y: 2015, loc: "Métropole · série L", s: "Respecter tout être vivant, est-ce un devoir moral ?", n: ["nature", "devoir"] },
+  { y: 2015, loc: "Métropole · série L", s: "Suis-je ce que mon passé a fait de moi ?", n: ["temps", "conscience", "liberte"] },
+  { y: 2015, loc: "Métropole · série S", s: "Une œuvre d'art a-t-elle toujours un sens ?", n: ["art"] },
+  { y: 2015, loc: "Métropole · série S", s: "La politique échappe-t-elle à une exigence de vérité ?", n: ["etat", "verite"] },
+  { y: 2015, loc: "Métropole · série ES", s: "La conscience de l'individu n'est-elle que le reflet de la société à laquelle il appartient ?", n: ["conscience"] }
+];
+
 /* ---------- NIVEAUX XP ---------- */
 const LEVELS = [
   { xp: 0, name: "Apprenti sophiste" },
