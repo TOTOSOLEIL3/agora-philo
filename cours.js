@@ -8,6 +8,7 @@ const COURS = [
     id: "art",
     title: "L'art",
     tag: "Esthétique",
+    etym: "Latin ars, artis : habileté, savoir-faire — traduction du grec tekhnè. À l'origine, l'art et la technique ne font qu'un ; leur séparation (beaux-arts vs artisanat) est moderne.",
     intro: "L'art ne sert à rien — et pourtant aucune société ne s'en est jamais passée. Voilà le scandale : une activité sans utilité apparente, qui mobilise pourtant le génie, l'argent et la mémoire des civilisations. Imitation trompeuse ou accès privilégié à la vérité ? Simple affaire de goût ou prétention à l'universel ?",
     problematiques: [
       "L'art est-il une imitation du réel ou une création véritable ?",
@@ -52,6 +53,7 @@ const COURS = [
     id: "bonheur",
     title: "Le bonheur",
     tag: "Morale",
+    etym: "« Bon » + « heur », du latin augurium : le présage, la chance. Littéralement, le bonheur est une « bonne fortune » — ce qui pose d'emblée la question : dépend-il de nous ou du hasard ?",
     intro: "Tout le monde veut être heureux — c'est même, disait Aristote, le seul but qu'on ne poursuit jamais en vue d'autre chose. Mais personne ne s'accorde sur ce qu'il est : plaisir, absence de trouble, vertu, réussite ? Et s'il dépendait moins des circonstances que de nous-mêmes ?",
     problematiques: [
       "Le bonheur est-il le but de l'existence humaine ?",
@@ -96,6 +98,7 @@ const COURS = [
     id: "conscience",
     title: "La conscience",
     tag: "Métaphysique · Le sujet",
+    etym: "Latin cum scientia : « avec savoir ». La conscience est un savoir qui accompagne — je ne fais pas que vivre, je sais que je vis. Le mot contient déjà la réflexivité.",
     intro: "Être conscient, c'est être présent à soi-même : je ne fais pas que vivre, je sais que je vis. Cette réflexivité fonde la dignité du sujet — mais elle est aussi une charge (l'angoisse, la responsabilité) et peut-être un leurre : suis-je vraiment ce que j'ai conscience d'être ?",
     problematiques: [
       "La conscience fait-elle la grandeur ou la misère de l'homme ?",
@@ -140,6 +143,7 @@ const COURS = [
     id: "devoir",
     title: "Le devoir",
     tag: "Morale",
+    etym: "Latin debere : « être débiteur de » (de + habere, tenir de quelqu'un). Le devoir est d'abord une dette — ce qu'on doit rendre. Toute la question : à qui, et pourquoi ?",
     intro: "« Tu dois » : la voix du devoir parle en nous avec une autorité étrange. D'où vient-elle — de Dieu, de la société, de la raison ? Et surtout : obéir au devoir, est-ce renoncer à sa liberté et à son bonheur, ou au contraire les accomplir ?",
     problematiques: [
       "Le devoir s'oppose-t-il à la liberté ?",
@@ -184,6 +188,7 @@ const COURS = [
     id: "etat",
     title: "L'État",
     tag: "Philosophie politique",
+    etym: "Latin status : « ce qui se tient debout », la position stable. L'État est ce qui fait tenir la société dans la durée, par-delà les individus qui passent — d'où sa majuscule.",
     intro: "L'État nous précède, nous encadre et peut nous contraindre par la force — police, tribunaux, impôts. Comment une telle puissance peut-elle être légitime ? Est-elle l'ennemie de la liberté, ou au contraire sa seule garantie contre la loi du plus fort ?",
     problematiques: [
       "L'État est-il l'ennemi de la liberté ?",
@@ -228,6 +233,7 @@ const COURS = [
     id: "inconscient",
     title: "L'inconscient",
     tag: "Métaphysique · Le sujet",
+    etym: "In- privatif + conscience (latin cum scientia, « avec savoir ») : ce qui échappe au savoir que j'ai de moi-même. Le mot dit la négation — reste à savoir si c'est un simple manque ou une force positive.",
     intro: "Et si une partie de ma vie psychique m'échappait par principe ? L'hypothèse freudienne de l'inconscient inflige au sujet une blessure : « le moi n'est pas maître dans sa propre maison ». Découverte scientifique majeure ou excuse commode pour fuir sa responsabilité ?",
     problematiques: [
       "L'hypothèse de l'inconscient ruine-t-elle la liberté du sujet ?",
@@ -272,6 +278,7 @@ const COURS = [
     id: "justice",
     title: "La justice",
     tag: "Philosophie politique & morale",
+    etym: "Latin justitia, dérivé de jus : « le droit ». Dans le mot même, la justice est liée au droit — mais l'écart entre les deux (une loi peut être injuste) fait tout le problème de la notion.",
     intro: "La justice désigne à la fois une institution (tribunaux, lois, juges) et une exigence morale (l'idée du juste). Les deux peuvent entrer en conflit : une loi peut être injuste, un acte illégal peut être juste. Que faire quand le droit et le juste divergent ?",
     problematiques: [
       "La justice se réduit-elle à l'application des lois ?",
@@ -316,6 +323,7 @@ const COURS = [
     id: "langage",
     title: "Le langage",
     tag: "La culture",
+    etym: "Latin lingua : la langue (l'organe et l'idiome). Les Grecs disaient logos — qui signifie à la fois parole ET raison : pour eux, parler et penser sont indissociables.",
     intro: "Le langage semble n'être qu'un outil pour transmettre ce que je pense. Mais y a-t-il une pensée sans mots ? Et les mots disent-ils vraiment les choses — ou les remplacent-ils ? Entre le cri animal et la parole humaine, la différence est-elle de degré ou de nature ?",
     problematiques: [
       "Le langage est-il le propre de l'homme ?",
@@ -360,6 +368,7 @@ const COURS = [
     id: "liberte",
     title: "La liberté",
     tag: "Métaphysique & morale",
+    etym: "Latin liber : l'homme libre, par opposition à l'esclave (servus). À l'origine, la liberté est un statut social avant d'être une faculté intérieure — les deux sens traversent toute la notion.",
     intro: "Rien ne nous semble plus évident que notre liberté : je sens que je choisis. Mais ce sentiment prouve-t-il quoi que ce soit ? Le déterminisme — des causes psychologiques, sociales, neuronales — pourrait bien agir dans mon dos. Et si être libre, c'était autre chose que faire ce que l'on veut ?",
     problematiques: [
       "Le libre arbitre est-il une illusion ?",
@@ -404,6 +413,7 @@ const COURS = [
     id: "nature",
     title: "La nature",
     tag: "La culture & le monde",
+    etym: "Latin natura, du verbe nasci : « naître ». La nature est ce qui naît et croît de soi-même. Le grec phusis (de phuein, pousser) dit la même chose : ce qui se développe sans intervention humaine.",
     intro: "La nature, c'est à la fois ce qui nous entoure (forêts, climat, vivant), ce qui existe sans l'homme, et l'essence d'une chose (« la nature humaine »). L'homme, être de culture, est-il encore un être naturel ? Et la nature est-elle un modèle à suivre, une matière à dominer, ou un équilibre à protéger ?",
     problematiques: [
       "L'homme peut-il sortir de la nature ?",
@@ -448,6 +458,7 @@ const COURS = [
     id: "raison",
     title: "La raison",
     tag: "La connaissance",
+    etym: "Latin ratio : le calcul, le compte (d'où « rationnel »). Traduit le grec logos, qui est aussi la parole : la raison compte, ordonne, et rend compte — donner ses raisons, c'est les dire.",
     intro: "La raison est la faculté de lier, calculer, juger, donner des raisons. Elle fonde la science, la morale, le droit — bref, ce que l'humanité a de plus fier. Mais peut-elle tout connaître ? Doit-elle tout gouverner ? Et que faire de ce qui lui résiste : les passions, la croyance, l'intuition ?",
     problematiques: [
       "La raison peut-elle tout expliquer ?",
@@ -492,6 +503,7 @@ const COURS = [
     id: "religion",
     title: "La religion",
     tag: "La culture",
+    etym: "Deux étymologies latines en débat : religare, « relier » (les hommes entre eux, l'homme au divin) ou relegere, « recueillir, observer avec scrupule » (les rites). Chacune éclaire une face de la notion.",
     intro: "Aucune société connue n'a vécu sans rites, sans sacré, sans récits sur l'invisible. D'où vient cette universalité ? Réponse à une angoisse, lien social, ouverture à la transcendance ? Et la critique moderne de la religion — illusion, opium, projection — l'a-t-elle réfutée ou seulement expliquée ?",
     problematiques: [
       "La religion est-elle contraire à la raison ?",
@@ -536,6 +548,7 @@ const COURS = [
     id: "science",
     title: "La science",
     tag: "La connaissance",
+    etym: "Latin scientia, du verbe scire : « savoir ». La science est LE savoir par excellence — distingué de l'opinion, de la croyance et du savoir-faire. Reste à définir ce qui mérite ce titre.",
     intro: "La science passe pour le modèle du savoir : preuves, expériences, prédictions. Pourtant ses vérités sont révisables — Newton corrigé par Einstein —, et sa méthode pose question : comment fonder des lois universelles sur des observations toujours particulières ?",
     problematiques: [
       "L'expérience suffit-elle à fonder la science ?",
@@ -580,6 +593,7 @@ const COURS = [
     id: "technique",
     title: "La technique",
     tag: "La culture",
+    etym: "Grec tekhnè : art, habileté, savoir-faire — la même racine que l'art (latin ars). Les Grecs ne séparaient pas l'artiste de l'artisan : tous deux possèdent un savoir-faire réglé en vue d'une fin.",
     intro: "Du silex taillé à l'intelligence artificielle, la technique prolonge le corps et décuple la puissance humaine. Elle nous a libérés de la faim, du froid, de la distance — mais nous voilà dépendants de nos machines, et capables pour la première fois de détruire nos propres conditions d'existence.",
     problematiques: [
       "La technique nous libère-t-elle de la nature ou nous en sépare-t-elle ?",
@@ -624,6 +638,7 @@ const COURS = [
     id: "temps",
     title: "Le temps",
     tag: "Métaphysique",
+    etym: "Latin tempus, apparenté au grec temnein : « couper ». Le temps découpe la durée en moments. Les Grecs distinguaient chronos (le temps qui s'écoule et se mesure) et kairos (le moment opportun à saisir).",
     intro: "« Qu'est-ce donc que le temps ? Si personne ne me le demande, je le sais ; si on me le demande et que je veuille l'expliquer, je ne le sais plus » (Augustin). Le temps est l'évidence la plus familière et l'énigme la plus coriace : il passe, mais vers où ? Il détruit tout — mais sans lui, rien n'adviendrait.",
     problematiques: [
       "Le temps existe-t-il en dehors de la conscience ?",
@@ -668,6 +683,7 @@ const COURS = [
     id: "travail",
     title: "Le travail",
     tag: "La culture",
+    etym: "Latin tripalium : un instrument de torture à trois pieux. Le mot porte la peine et la contrainte — tout l'enjeu de la notion est de savoir si le travail se réduit à cette souffrance originelle.",
     intro: "Le mot vient (dit-on) de tripalium, un instrument de torture — tout un programme. Peine, contrainte, nécessité de gagner sa vie : le travail semble l'ennemi du bonheur. Et pourtant, par lui, l'homme transforme le monde et se transforme lui-même. Malédiction ou accomplissement ?",
     problematiques: [
       "Le travail n'est-il qu'une contrainte ?",
@@ -712,6 +728,7 @@ const COURS = [
     id: "verite",
     title: "La vérité",
     tag: "La connaissance",
+    etym: "Latin veritas (de verus, vrai). Le grec alètheia est plus parlant : a- privatif + lèthè, l'oubli, le voile — la vérité comme « dé-voilement » : ce qui est arraché à l'oubli et à la dissimulation.",
     intro: "La vérité n'est pas le réel : elle est une propriété de nos jugements sur le réel — un discours est vrai quand il dit ce qui est. Mais comment le vérifier, puisque nous n'avons jamais accès aux choses qu'à travers nos représentations ? Et la vérité vaut-elle toujours mieux que l'illusion ?",
     problematiques: [
       "Y a-t-il des vérités définitives ?",

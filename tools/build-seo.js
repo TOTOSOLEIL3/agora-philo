@@ -21,7 +21,7 @@ const { COURS, METHODO, ANNALES } = vm.runInNewContext(src, {});
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const desc = s => esc(s.replace(/\s+/g, " ").trim().slice(0, 155).replace(/\s\S*$/, "") + "…");
 
-function page({ url, title, description, h1, tag, lead, body, jsonld }) {
+function page({ url, title, description, h1, tag, lead, body, jsonld, etym }) {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -53,6 +53,7 @@ function page({ url, title, description, h1, tag, lead, body, jsonld }) {
     <header class="fiche-head">
       <span class="tag">${esc(tag)}</span>
       <h1>${esc(h1)}</h1>
+      ${etym ? `<p class="etym-line"><span class="etym-label">Étymologie</span> ${esc(etym)}</p>` : ""}
       <p class="lead">${esc(lead)}</p>
       <div class="fiche-cta">
         <a class="btn primary" href="/" style="text-decoration:none">⚔ Réviser cette fiche en jouant sur AGORA</a>
@@ -105,6 +106,7 @@ for (const c of COURS) {
     h1: `${c.title} — fiche de révision pour le bac de philosophie`,
     tag: `${c.tag} · Programme de Terminale`,
     lead: c.intro,
+    etym: c.etym,
     body,
     jsonld: {
       "@context": "https://schema.org",

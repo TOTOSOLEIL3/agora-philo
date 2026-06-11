@@ -545,6 +545,7 @@ function openFiche(id) {
     <header class="fiche-head">
       <span class="tag">${c.tag} · Notion ${String(i + 1).padStart(2, "0")}/${COURS.length}</span>
       <h1>${c.title}</h1>
+      ${c.etym ? `<p class="etym-line"><span class="etym-label">Étymologie</span> ${c.etym}</p>` : ""}
       <p class="lead">${c.intro}</p>
       <div class="fiche-cta">
         <button class="btn primary" data-nav="drill:${c.id}">⚔ Réviser cette notion · 10 questions</button>
