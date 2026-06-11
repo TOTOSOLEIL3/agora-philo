@@ -957,10 +957,39 @@ function startCards() {
    ============================================================ */
 function startMatch() {
   beginRun("match");
-  const pairs = pick(PAIRS, 8);
+  setMeta("", "");
+  setProgress(0);
+  stage().innerHTML = `
+    <div class="q-card">
+      <div class="label">Le Grand Duel · choisis ton arène</div>
+      <div class="question" style="font-size:1.15rem;font-family:var(--font-body)">Associer les philosophes… à quoi ?</div>
+    </div>
+    <div class="options">
+      <button class="opt" data-mode="concepts"><span class="key">A</span><span>🤝 Leurs concepts fétiches</span></button>
+      <button class="opt" data-mode="citations"><span class="key">B</span><span>🗣️ Leurs citations cultes</span></button>
+      <button class="opt" data-mode="mix"><span class="key">C</span><span>🎲 Mélange des deux</span></button>
+    </div>`;
+  document.querySelectorAll("[data-mode]").forEach(b =>
+    b.addEventListener("click", () => runMatch(b.dataset.mode)));
+}
+
+function runMatch(mode) {
+  // 8 paires selon le mode — un seul item par auteur pour éviter toute ambiguïté
+  const dedup = {};
+  shuffle(QUOTES.filter(q => q.q.length <= 90)).forEach(q => { if (!dedup[q.a]) dedup[q.a] = q; });
+  const citPairs = Object.values(dedup).map(q => ({ a: q.a, b: `« ${q.q} »`, cit: true }));
+
+  let pairs;
+  if (mode === "citations") pairs = pick(citPairs, 8);
+  else if (mode === "mix") {
+    const part1 = pick(PAIRS, 4);
+    const used = part1.map(p => p.a);
+    pairs = [...part1, ...pick(citPairs.filter(p => !used.includes(p.a)), 4)];
+  } else pairs = pick(PAIRS, 8);
+
   const tiles = shuffle([
     ...pairs.map((p, id) => ({ id, text: p.a, kind: "philo" })),
-    ...pairs.map((p, id) => ({ id, text: p.b, kind: "concept" }))
+    ...pairs.map((p, id) => ({ id, text: p.b, kind: p.cit ? "concept cit" : "concept" }))
   ]);
   let selected = null, moves = 0, matched = 0, locked = false;
 
@@ -1043,7 +1072,7 @@ function startMatch() {
           <button class="btn" data-nav="home">Retour à l'arène</button>
         </div>
       </div>`;
-    $("#btn-replay").addEventListener("click", startMatch);
+    $("#btn-replay").addEventListener("click", () => runMatch(mode));
   }
 }
 

@@ -1294,6 +1294,7 @@ body::after {
 }
 
 .match-tile.concept { font-style: italic; font-weight: 400; background: #fbf7ec; }
+.match-tile.cit { font-size: 0.72rem; line-height: 1.35; padding: 0.7rem 0.6rem; }
 .match-tile:hover:not(.matched):not(.selected) { transform: translate(-2px, -2px); }
 .match-tile.selected { background: var(--blue); color: var(--paper); transform: scale(0.97); }
 .match-tile.matched {
