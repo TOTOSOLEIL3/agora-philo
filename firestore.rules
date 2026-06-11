@@ -55,11 +55,12 @@ service cloud.firestore {
     }
 
     match /stats/{date} {
-      // Lecture réservée à l'admin authentifié et vérifié (verrou serveur, incontournable).
+      // Lecture réservée au seul compte admin (verrou serveur, incontournable).
+      // Le compte étant déjà créé par Théo, l'email ne peut plus être enregistré par
+      // un tiers, et le mot de passe n'est nulle part dans le code → sûr sans vérif email.
       // L'écriture (compteurs) reste ouverte aux sessions anonymes des joueurs.
       allow read: if request.auth != null
-        && request.auth.token.email == 'manzellatheo@gmail.com'
-        && request.auth.token.email_verified == true;
+        && request.auth.token.email == 'manzellatheo@gmail.com';
       allow create: if request.auth != null && request.resource.data.keys().size() <= 100;
       allow update: if request.auth != null &&
         request.resource.data.keys().size() <= 100 &&

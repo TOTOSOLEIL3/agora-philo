@@ -241,11 +241,12 @@
       }
     }
 
-    /* ---- vraie connexion Firebase : seul l'admin vérifié peut lire (verrou serveur) ---- */
+    /* ---- vraie connexion Firebase : seul le compte admin peut lire (verrou serveur) ---- */
+    const ADMIN_EMAIL = "manzellatheo@gmail.com";
     const err = m => { $("gate-err").textContent = m; };
 
     onAuthStateChanged(auth, user => {
-      if (user && user.emailVerified) boot();
+      if (user && user.email === ADMIN_EMAIL) boot();
     });
 
     $("gate-go").addEventListener("click", async () => {
@@ -253,11 +254,12 @@
       const email = $("gate-email").value.trim(), pwd = $("gate-pwd").value;
       if (!email || !pwd) { err("Email et mot de passe requis."); return; }
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, pwd);
-        if (!cred.user.emailVerified) { err("Vérifie d'abord ton email (lien envoyé à ta création de compte)."); return; }
+        await signInWithEmailAndPassword(auth, email, pwd);
         boot();
       } catch (e) {
-        err("Identifiants incorrects.");
+        err(e.code === "auth/invalid-credential" || e.code === "auth/wrong-password" ? "Mot de passe incorrect."
+          : e.code === "auth/user-not-found" ? "Aucun compte — clique « Créer le compte admin »."
+          : "Connexion impossible : " + (e.code || e.message));
       }
     });
 
@@ -269,11 +271,11 @@
       const email = $("gate-email").value.trim(), pwd = $("gate-pwd").value;
       if (!email || pwd.length < 6) { err("Entre ton email et un mot de passe d'au moins 6 caractères, puis clique ici."); return; }
       try {
-        const cred = await createUserWithEmailAndPassword(auth, email, pwd);
-        await sendEmailVerification(cred.user);
-        err("✓ Compte créé ! Un lien de vérification a été envoyé à " + email + ". Clique-le, puis reconnecte-toi.");
+        await createUserWithEmailAndPassword(auth, email, pwd);
+        boot(); // connecté directement, pas de vérif email nécessaire
       } catch (e2) {
-        err(e2.code === "auth/email-already-in-use" ? "Ce compte existe déjà — connecte-toi." : "Création impossible : " + (e2.code || e2.message));
+        err(e2.code === "auth/email-already-in-use" ? "Ce compte existe déjà — connecte-toi avec ton mot de passe."
+          : "Création impossible : " + (e2.code || e2.message));
       }
     });
   </script>
