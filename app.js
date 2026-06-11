@@ -74,6 +74,7 @@ function gainXp(amount) {
   const before = levelFor(store.xp).name;
   store.xp = store.xp + amount;
   refreshHud();
+  if (window.lbSync) try { window.lbSync(); } catch (e) {}
   return levelFor(store.xp).name !== before; // niveau franchi ?
 }
 

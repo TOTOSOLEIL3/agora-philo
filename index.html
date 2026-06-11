@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Karla:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 
@@ -153,6 +153,19 @@
       </div>
     </section>
 
+    <section class="games" id="classement">
+      <div class="section-head">
+        <h2>Le classement</h2>
+        <span class="rule"></span>
+        <span class="mono">XP cumulée · top 50 · en direct</span>
+      </div>
+      <p class="section-pitch">Choisis un pseudo, joue, et grimpe. Le classement se met à jour en direct — parfait pour les duels à distance.</p>
+      <div class="lb-join" id="lb-join"></div>
+      <p class="mono lb-status" id="lb-status">Connexion au classement…</p>
+      <ol class="lb-list" id="lb-list"></ol>
+      <p class="mono lb-status" id="lb-me"></p>
+    </section>
+
     <section class="games" id="cours">
       <div class="section-head">
         <h2>Le cours</h2>
@@ -218,9 +231,10 @@
     <p class="madeby">AGORA · révision du bac de philosophie · fait avec 🦉 et zéro publicité</p>
   </footer>
 
-  <script src="data.js?v=4"></script>
-  <script src="cours.js?v=4"></script>
-  <script src="app.js?v=4"></script>
+  <script src="data.js?v=5"></script>
+  <script src="cours.js?v=5"></script>
+  <script src="app.js?v=5"></script>
+  <script type="module" src="leaderboard.js?v=5"></script>
   <script data-goatcounter="https://totosoleil3.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

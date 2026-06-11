@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /players/{uid} {
+      allow read: if true;
+      allow create, update: if
+        request.auth != null &&
+        request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly(['pseudo', 'xp', 'level', 'ts']) &&
+        request.resource.data.pseudo is string &&
+        request.resource.data.pseudo.size() >= 2 &&
+        request.resource.data.pseudo.size() <= 16 &&
+        request.resource.data.xp is int &&
+        request.resource.data.xp >= 0 &&
+        request.resource.data.xp <= 1000000 &&
+        request.resource.data.level is string &&
+        request.resource.data.level.size() <= 48 &&
+        request.resource.data.ts is int;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
