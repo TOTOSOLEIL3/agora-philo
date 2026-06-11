@@ -26,6 +26,52 @@ const pick = (arr, n) => shuffle(arr).slice(0, n);
 
 const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+/* ---------- saisie libre d'un nom d'auteur, tolérante aux fautes ---------- */
+const normalize = s => String(s).toLowerCase()
+  .normalize("NFD").replace(/[̀-ͯ]/g, "")  // épicure → epicure
+  .replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (!m) return n;
+  if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+// Formes acceptées : nom complet, nom de famille seul (« beauvoir » pour Simone de Beauvoir)
+function authorForms(author) {
+  const n = normalize(author);
+  const words = n.split(" ");
+  const forms = new Set([n]);
+  if (words.length > 1) {
+    forms.add(words[words.length - 1]);
+    forms.add(words.slice(-2).join(" "));
+  }
+  return [...forms];
+}
+
+const typoTolerance = len => len <= 4 ? 0 : len <= 7 ? 1 : len <= 10 ? 2 : 3;
+
+// → { ok, exact } : exact = orthographe parfaite, ok = accepté avec tolérance
+function checkAuthor(input, author) {
+  const inp = normalize(input);
+  if (!inp) return { ok: false, exact: false };
+  let ok = false, exact = false;
+  for (const f of authorForms(author)) {
+    if (inp === f) { ok = true; exact = true; break; }
+    if (levenshtein(inp, f) <= typoTolerance(f.length)) ok = true;
+  }
+  return { ok, exact };
+}
+
 // "Kant (formule attribuée)" → "Kant", "d'après Hegel" → "Hegel"
 const cleanName = s => s.replace(/^d'après /i, "").split(" (")[0].trim();
 
@@ -97,7 +143,7 @@ let currentRun = null;        // { game, seed } de la partie en cours
 let challengeCtx = null;      // { score, total, pseudo } si on joue un défi
 let pendingChallenge = null;  // défi reçu via l'URL, pas encore accepté
 
-const CHALLENGEABLE = key => /^(quotes|quiz|vf|examen|drill:)/.test(key || "");
+const CHALLENGEABLE = key => /^(quotes|quiz|vf|examen|sansfilet|drill:)/.test(key || "");
 
 function beginRun(key) {
   if (pendingChallenge && pendingChallenge.game === key) {
@@ -273,6 +319,7 @@ const GAMES = {
   vf: { title: "Vrai ou Faux", start: startVF },
   cards: { title: "Les Repères", start: startCards },
   match: { title: "Le Grand Duel", start: startMatch },
+  sansfilet: { title: "Sans filet", start: startSansFilet },
   marathon: { title: "Le Marathon", start: startMarathon },
   examen: { title: "L'Examen Blanc", start: startExamen },
   errors: { title: "Mes erreurs", start: startErrors }
@@ -1304,6 +1351,74 @@ function startExamen() {
       shareScore(`⚔️ Je te défie sur l'Examen Blanc de philo : j'ai eu ${score}/20. Mêmes 20 questions, à toi :`, challengeLink(score, 20)));
     if (challengeCtx && score > challengeCtx.score) confetti();
     challengeCtx = null;
+  }
+
+  round();
+}
+
+/* ============================================================
+   JEU 06 · SANS FILET — la citation, ta mémoire, zéro option
+   ============================================================ */
+function startSansFilet() {
+  beginRun("sansfilet");
+  const rounds = pick(QUOTES, 10);
+  let i = 0, score = 0, streak = 0;
+
+  function round() {
+    const cur = rounds[i];
+    setMeta(`${i + 1} / ${rounds.length}`, streak > 1 ? `🔥 série ×${streak}` : "");
+    setProgress(i / rounds.length);
+    stage().innerHTML = `
+      <div class="q-card">
+        <div class="label">Qui a écrit ça ? Sans aide, sans choix.</div>
+        <div class="question is-quote">« ${cur.q} »</div>
+      </div>
+      <div class="type-zone">
+        <input id="type-input" maxlength="30" placeholder="Écris le nom de l'auteur…"
+               autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn primary" id="type-go">Valider</button>
+      </div>
+      <div id="feedback"></div>
+      <div class="next-zone" id="next-zone"></div>`;
+
+    const input = $("#type-input");
+    input.focus();
+
+    const validate = () => {
+      if (!input.value.trim()) { input.focus(); return; }
+      const { ok, exact } = checkAuthor(input.value, cur.a);
+      input.disabled = true;
+      $("#type-go").disabled = true;
+      if (ok) { score++; streak++; } else streak = 0;
+      bumpDaily();
+      if (!ok) {
+        recordError({
+          kind: "qcm", label: "Qui a dit ça ?", q: `« ${cur.q} »`,
+          opts: shuffle([cur.a, ...pick(AUTHORS.filter(x => x !== cur.a), 3)]),
+          answer: cur.a, why: `${cur.a} — ${cur.src}.`
+        });
+      }
+      $("#feedback").innerHTML = explainBlock(ok,
+        ok ? (exact ? "Exact, orthographe parfaite !" : `Accordé ! (orthographe exacte : ${cur.a})`) : `Non — c'était ${cur.a}`,
+        `<em>${cur.src}</em>`);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivante →" : "Voir le verdict"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    };
+
+    $("#type-go").addEventListener("click", validate);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") validate(); });
+  }
+
+  function finish() {
+    setProgress(1);
+    const isRecord = updateBest("sansfilet", score);
+    endScreen({
+      score, total: rounds.length,
+      xp: score * 15,
+      bestLine: isRecord ? "★ Nouveau record !" : `Record : ${store.best("sansfilet")}/10`,
+      replay: startSansFilet,
+      share: `🖋️ ${score}/10 à « Sans filet » sur AGORA — les auteurs écrits de mémoire, sans QCM. Tu tentes ?`
+    });
   }
 
   round();

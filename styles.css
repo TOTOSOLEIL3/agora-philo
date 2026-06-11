@@ -1184,6 +1184,28 @@ body::after {
   padding: 1.2rem;
 }
 
+/* ---------- saisie libre (Sans filet) ---------- */
+.type-zone {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.type-zone input {
+  flex: 1;
+  min-width: 220px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--ink);
+  background: #fbf7ec;
+  border: 2px solid var(--ink);
+  padding: 0.8rem 1rem;
+  outline: none;
+}
+
+.type-zone input:focus { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
+.type-zone input:disabled { opacity: 0.6; }
+
 /* ---------- explication ---------- */
 .explain {
   border-left: 5px solid var(--blue);
