@@ -1,0 +1,892 @@
+/* ============================================================
+   AGORA — moteur de jeu
+   ============================================================ */
+
+/* ---------- utilitaires ---------- */
+const $ = sel => document.querySelector(sel);
+const shuffle = arr => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+const pick = (arr, n) => shuffle(arr).slice(0, n);
+
+// "Kant (formule attribuée)" → "Kant", "d'après Hegel" → "Hegel"
+const cleanName = s => s.replace(/^d'après /i, "").split(" (")[0].trim();
+
+// Première phrase d'une thèse (gère les citations « … » internes)
+const firstSentence = t => {
+  const m = t.match(/^.*?[.!?…](\s*»)?(?=\s|$)/);
+  return m ? m[0] : t.slice(0, 160) + "…";
+};
+
+/* ---------- état persistant ---------- */
+const store = {
+  get xp() { return Number(localStorage.getItem("agora_xp") || 0); },
+  set xp(v) { localStorage.setItem("agora_xp", v); },
+  best(game) { return localStorage.getItem("agora_best_" + game); },
+  setBest(game, v) { localStorage.setItem("agora_best_" + game, v); }
+};
+
+function levelFor(xp) {
+  let lvl = LEVELS[0];
+  for (const l of LEVELS) if (xp >= l.xp) lvl = l;
+  return lvl;
+}
+
+function refreshHud() {
+  $("#hud-xp").textContent = store.xp;
+  $("#hud-level").textContent = levelFor(store.xp).name;
+}
+
+function refreshBests() {
+  document.querySelectorAll("[data-best]").forEach(el => {
+    const g = el.dataset.best;
+    const b = store.best(g);
+    if (b === null) return;
+    if (g === "match") el.textContent = `Record : ${b} coups`;
+    else if (g === "cards") el.textContent = `Maîtrisés : ${b}/${FLASHCARDS.length}`;
+    else if (g === "marathon") el.textContent = `Record : série de ${b}`;
+    else el.textContent = `Record : ${b}/10`;
+  });
+  renderNotionGrid();
+}
+
+function renderNotionGrid() {
+  const grid = $("#notion-grid");
+  if (!grid) return;
+  grid.innerHTML = COURS.map((c, i) => {
+    const best = store.best("notion_" + c.id);
+    return `
+    <button class="notion-chip" data-nav="fiche:${c.id}">
+      <span class="n">N° ${String(i + 1).padStart(2, "0")}${best !== null ? ` · ★ ${best}/10` : ""}</span>
+      <span class="t">${c.title}</span>
+      <span class="c">${c.tag}</span>
+    </button>`;
+  }).join("");
+}
+
+function gainXp(amount) {
+  const before = levelFor(store.xp).name;
+  store.xp = store.xp + amount;
+  refreshHud();
+  return levelFor(store.xp).name !== before; // niveau franchi ?
+}
+
+/* ---------- navigation ---------- */
+const GAMES = {
+  quotes: { title: "Qui a dit ça ?", start: startQuotes },
+  quiz: { title: "Le Grand QCM", start: startQuiz },
+  vf: { title: "Vrai ou Faux", start: startVF },
+  cards: { title: "Les Repères", start: startCards },
+  match: { title: "Le Grand Duel", start: startMatch },
+  marathon: { title: "Le Marathon", start: startMarathon }
+};
+
+function show(viewId) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  $("#" + viewId).classList.add("active");
+  window.scrollTo({ top: 0 });
+}
+
+function nav(target) {
+  if (target === "home") {
+    refreshBests();
+    show("view-home");
+    return;
+  }
+  const game = GAMES[target];
+  if (!game) return;
+  $("#game-title").textContent = game.title;
+  setMeta("", "");
+  setProgress(0);
+  show("view-game");
+  game.start();
+}
+
+document.addEventListener("click", e => {
+  const jump = e.target.closest("[data-jump]");
+  if (jump) {
+    refreshBests();
+    show("view-home");
+    requestAnimationFrame(() => document.getElementById(jump.dataset.jump)?.scrollIntoView({ behavior: "smooth" }));
+    return;
+  }
+  const btn = e.target.closest("[data-nav]");
+  if (!btn) return;
+  const target = btn.dataset.nav;
+  if (target.startsWith("fiche:")) openFiche(target.slice(6));
+  else if (target.startsWith("methodo:")) openMethodo(target.slice(8));
+  else if (target.startsWith("drill:")) startNotionDrill(target.slice(6));
+  else nav(target);
+});
+
+/* ============================================================
+   RÉVISION PAR NOTION — questions générées depuis la fiche
+   ============================================================ */
+function buildDrill(c) {
+  const pool = [];
+  const names = [...new Set(c.auteurs.map(a => cleanName(a.name)))];
+  const distractors = correct => shuffle(names.filter(n => n !== correct)).slice(0, 3);
+
+  c.auteurs.forEach(a => {
+    const nm = cleanName(a.name);
+    // Thèse → auteur
+    pool.push({
+      kind: "qcm", label: "Qui défend cette thèse ?", q: a.these,
+      answer: nm, opts: shuffle([nm, ...distractors(nm)]),
+      why: `C'est la thèse de ${nm} — ${a.oeuvre}.`
+    });
+    // Œuvre → auteur (si l'œuvre est un vrai titre)
+    if (!/rapporté|fragments|formule|attribué/i.test(a.oeuvre)) {
+      pool.push({
+        kind: "qcm", label: "De qui est cette œuvre ?", q: `« ${a.oeuvre} »`,
+        answer: nm, opts: shuffle([nm, ...distractors(nm)]),
+        why: `${a.oeuvre} : c'est ${nm}.`
+      });
+    }
+    // Vrai/Faux : attribution correcte ou piégée
+    const truth = Math.random() < 0.5;
+    const wrongPool = names.filter(n => n !== nm);
+    const shown = truth ? nm : wrongPool[Math.floor(Math.random() * wrongPool.length)];
+    pool.push({
+      kind: "vf", label: "Vrai ou faux ?",
+      q: `Cette idée est défendue par ${shown} : « ${firstSentence(a.these)} »`,
+      v: truth,
+      why: truth ? `Oui — c'est bien ${nm} (${a.oeuvre}).` : `Non — c'est la thèse de ${nm} (${a.oeuvre}).`
+    });
+  });
+
+  // Citation → auteur
+  c.citations.forEach(q => {
+    const nm = cleanName(q.a);
+    const candidates = [...new Set([...names, ...c.citations.map(x => cleanName(x.a))])].filter(n => n !== nm);
+    pool.push({
+      kind: "qcm", label: "Qui a dit ça ?", q: `« ${q.q} »`,
+      answer: nm, opts: shuffle([nm, ...shuffle(candidates).slice(0, 3)]),
+      why: `${q.a}.`
+    });
+  });
+
+  // Repère → définition à trous
+  c.reperes.forEach(r => {
+    const card = FLASHCARDS.find(f => f.front.toLowerCase() === r.toLowerCase());
+    if (!card) return;
+    let masked = card.back;
+    card.front.split("/").map(s => s.trim()).forEach(t => {
+      masked = masked.replace(new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "______");
+    });
+    const distract = shuffle(FLASHCARDS.filter(f => f !== card)).slice(0, 3).map(f => f.front);
+    pool.push({
+      kind: "qcm", label: "Quel repère officiel correspond à cette définition ?", q: masked,
+      answer: card.front, opts: shuffle([card.front, ...distract]),
+      why: `${card.back}`
+    });
+  });
+
+  return pool;
+}
+
+function startNotionDrill(id) {
+  const c = COURS.find(x => x.id === id);
+  if (!c) return;
+  $("#game-title").textContent = "Révision · " + c.title;
+  setMeta("", "");
+  setProgress(0);
+  show("view-game");
+
+  const rounds = pick(buildDrill(c), 10);
+  let i = 0, score = 0, streak = 0;
+
+  function round() {
+    const cur = rounds[i];
+    setMeta(`${i + 1} / ${rounds.length}`, streak > 1 ? `🔥 série ×${streak}` : "");
+    setProgress(i / rounds.length);
+
+    if (cur.kind === "qcm") {
+      stage().innerHTML = `
+        <div class="q-card">
+          <div class="label">${cur.label}</div>
+          <div class="question" style="font-size:1.15rem">${cur.q}</div>
+        </div>
+        <div class="options">${cur.opts.map(optionButton).join("")}</div>
+        <div id="feedback"></div>
+        <div class="next-zone" id="next-zone"></div>`;
+
+      document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+        const good = cur.opts[btn.dataset.idx] === cur.answer;
+        document.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if (cur.opts[b.dataset.idx] === cur.answer) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+          else b.classList.add("dimmed");
+        });
+        after(good);
+      }));
+    } else {
+      stage().innerHTML = `
+        <div class="q-card">
+          <div class="label">${cur.label}</div>
+          <div class="question" style="font-size:1.15rem">${cur.q}</div>
+        </div>
+        <div class="vf-buttons">
+          <button class="opt" data-v="true"><span>VRAI</span></button>
+          <button class="opt" data-v="false"><span>FAUX</span></button>
+        </div>
+        <div id="feedback"></div>
+        <div class="next-zone" id="next-zone"></div>`;
+
+      document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+        const good = (btn.dataset.v === "true") === cur.v;
+        document.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if ((b.dataset.v === "true") === cur.v) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+          else b.classList.add("dimmed");
+        });
+        after(good);
+      }));
+    }
+
+    function after(good) {
+      if (good) { score++; streak++; } else streak = 0;
+      $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    }
+  }
+
+  function finish() {
+    setProgress(1);
+    const isRecord = updateBest("notion_" + id, score);
+    endScreen({
+      score, total: rounds.length,
+      xp: score * 12,
+      bestLine: isRecord ? "★ Nouveau record sur cette notion !" : `Record : ${store.best("notion_" + id)}/10`,
+      replay: () => startNotionDrill(id),
+      extra: { nav: "fiche:" + id, label: "Relire la fiche" }
+    });
+  }
+
+  round();
+}
+
+/* ============================================================
+   LE COURS — fiches de notions
+   ============================================================ */
+function openFiche(id) {
+  const i = COURS.findIndex(c => c.id === id);
+  if (i === -1) return;
+  const c = COURS[i];
+  const prev = COURS[(i - 1 + COURS.length) % COURS.length];
+  const next = COURS[(i + 1) % COURS.length];
+
+  $("#fiche-stage").innerHTML = `
+    <div class="fiche-back"><button class="btn ghost" data-jump="cours">← Toutes les notions</button></div>
+    <header class="fiche-head">
+      <span class="tag">${c.tag} · Notion ${String(i + 1).padStart(2, "0")}/${COURS.length}</span>
+      <h1>${c.title}</h1>
+      <p class="lead">${c.intro}</p>
+      <div class="fiche-cta">
+        <button class="btn primary" data-nav="drill:${c.id}">⚔ Réviser cette notion · 10 questions</button>
+        <span class="mono">${store.best("notion_" + c.id) !== null ? "Record : " + store.best("notion_" + c.id) + "/10" : "Questions générées depuis cette fiche"}</span>
+      </div>
+    </header>
+
+    <section class="fiche-sec">
+      <div class="sec-title">Les problématiques</div>
+      <ul class="prob-list">${c.problematiques.map(p => `<li>${p}</li>`).join("")}</ul>
+    </section>
+
+    <section class="fiche-sec">
+      <div class="sec-title">Les auteurs incontournables</div>
+      ${c.auteurs.map(a => `
+        <article class="auteur-card">
+          <div class="who"><span class="name">${a.name}</span><span class="oeuvre">${a.oeuvre}</span></div>
+          <p class="these">${a.these}</p>
+        </article>`).join("")}
+    </section>
+
+    <section class="fiche-sec">
+      <div class="sec-title">Citations à caser</div>
+      ${c.citations.map(q => `
+        <div class="cite-block">
+          <p class="txt">${q.q} »</p>
+          <p class="who">${q.a}</p>
+        </div>`).join("")}
+    </section>
+
+    <section class="fiche-sec">
+      <div class="sec-title">Repères liés</div>
+      <div class="repere-chips">${c.reperes.map(r => `<span>${r}</span>`).join("")}</div>
+    </section>
+
+    <section class="fiche-sec">
+      <div class="sec-title">Sujets de bac possibles</div>
+      <ul class="sujet-list">${c.sujets.map(s => `<li>${s}</li>`).join("")}</ul>
+    </section>
+
+    <section class="fiche-sec">
+      <div class="piege-box">
+        <div class="ttl">⚠ Le piège à éviter</div>
+        <p>${c.piege}</p>
+      </div>
+    </section>
+
+    <nav class="fiche-nav">
+      <button class="btn" data-nav="fiche:${prev.id}">← ${prev.title}</button>
+      <button class="btn danger" data-nav="drill:${c.id}">⚔ Réviser</button>
+      <button class="btn primary" data-nav="fiche:${next.id}">${next.title} →</button>
+    </nav>`;
+
+  show("view-fiche");
+}
+
+/* ============================================================
+   MÉTHODOLOGIE
+   ============================================================ */
+function openMethodo(id) {
+  const m = METHODO.find(x => x.id === id) || METHODO[0];
+
+  $("#methodo-stage").innerHTML = `
+    <div class="fiche-back"><button class="btn ghost" data-nav="home">← Retour à l'arène</button></div>
+    <div class="methodo-tabs">
+      ${METHODO.map(x => `<button data-nav="methodo:${x.id}" class="${x.id === m.id ? "on" : ""}">${x.title}</button>`).join("")}
+    </div>
+    <header class="fiche-head">
+      <span class="tag">Méthode · ${m.sub}</span>
+      <h1>${m.title}</h1>
+      <p class="lead">${m.intro}</p>
+    </header>
+
+    <section class="fiche-sec">
+      <div class="sec-title">La méthode, étape par étape</div>
+      ${m.etapes.map(e => `
+        <article class="etape-card">
+          <div>
+            <div class="step-t">${e.t}</div>
+            <p class="step-d">${e.d}</p>
+          </div>
+        </article>`).join("")}
+    </section>
+
+    <section class="fiche-sec">
+      <div class="sec-title">Les erreurs qui coûtent cher</div>
+      ${m.erreurs.map(e => `
+        <div class="erreur-card">
+          <div class="err-t">${e.t}</div>
+          <p class="err-d">${e.d}</p>
+        </div>`).join("")}
+    </section>
+
+    <section class="fiche-sec">
+      <div class="astuce-box">
+        <div class="ttl">★ L'astuce du correcteur</div>
+        <p>${m.astuce}</p>
+      </div>
+    </section>`;
+
+  show("view-methodo");
+}
+
+/* ---------- helpers d'interface ---------- */
+const stage = () => $("#game-stage");
+
+function setMeta(counter, streak) {
+  $("#game-counter").textContent = counter;
+  $("#game-streak").textContent = streak;
+}
+
+function setProgress(ratio) {
+  $("#game-progress").style.width = Math.min(100, ratio * 100) + "%";
+}
+
+function optionButton(label, idx) {
+  return `<button class="opt" data-idx="${idx}">
+    <span class="key">${String.fromCharCode(65 + idx)}</span><span>${label}</span>
+  </button>`;
+}
+
+function explainBlock(good, verdict, text) {
+  return `<div class="explain">
+    <span class="verdict ${good ? "good" : "bad"}">${verdict}</span>
+    ${text}
+  </div>`;
+}
+
+function mentionFor(score, total) {
+  const r = score / total;
+  if (r === 1) return ["20/20 — copie parfaite", "Le correcteur a versé une larme. Descartes aussi."];
+  if (r >= 0.8) return ["Mention Très Bien", "L'examinateur hoche la tête avec respect."];
+  if (r >= 0.7) return ["Mention Bien", "Solide. Encore un effort et c'est l'agrégation."];
+  if (r >= 0.6) return ["Mention Assez Bien", "Le socle est là, il reste à polir le marbre."];
+  if (r >= 0.5) return ["Admis·e de justesse", "Ça passe… comme Diogène : sans confort, mais ça passe."];
+  return ["Rattrapage en vue", "Socrate disait « je sais que je ne sais rien ». Toi aussi, visiblement. Rejoue !"];
+}
+
+function endScreen({ score, total, xp, bestLine, replay, extra }) {
+  const [mention, comment] = mentionFor(score, total);
+  const lvlUp = gainXp(xp);
+  stage().innerHTML = `
+    <div class="endscreen">
+      <span class="xp-gain">+${xp} XP${lvlUp ? " · NIVEAU SUPÉRIEUR : " + levelFor(store.xp).name + " !" : ""}</span>
+      <div class="big-score">${score}/${total}</div>
+      <div class="mention">${mention}</div>
+      <p class="comment">${comment}</p>
+      ${bestLine ? `<p class="mono" style="margin-bottom:1.4rem">${bestLine}</p>` : ""}
+      <div class="actions">
+        <button class="btn primary" id="btn-replay">Rejouer</button>
+        ${extra ? `<button class="btn" data-nav="${extra.nav}">${extra.label}</button>` : ""}
+        <button class="btn" data-nav="home">Retour à l'arène</button>
+      </div>
+    </div>`;
+  $("#btn-replay").addEventListener("click", replay);
+}
+
+function updateBest(game, value, lowerIsBetter = false) {
+  const prev = store.best(game);
+  const isRecord = prev === null || (lowerIsBetter ? value < Number(prev) : value > Number(prev));
+  if (isRecord) store.setBest(game, value);
+  return isRecord;
+}
+
+/* ============================================================
+   JEU 01 · QUI A DIT ÇA ?
+   ============================================================ */
+function startQuotes() {
+  const rounds = pick(QUOTES, 10);
+  let i = 0, score = 0, streak = 0, maxStreak = 0;
+
+  function round() {
+    const cur = rounds[i];
+    const distractors = pick(AUTHORS.filter(a => a !== cur.a), 3);
+    const opts = shuffle([cur.a, ...distractors]);
+    setMeta(`${i + 1} / ${rounds.length}`, streak > 1 ? `🔥 série ×${streak}` : "");
+    setProgress(i / rounds.length);
+    stage().innerHTML = `
+      <div class="q-card">
+        <div class="label">Citation à attribuer</div>
+        <div class="question is-quote">« ${cur.q} »</div>
+      </div>
+      <div class="options">${opts.map(optionButton).join("")}</div>
+      <div id="feedback"></div>
+      <div class="next-zone" id="next-zone"></div>`;
+
+    document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+      const choice = opts[btn.dataset.idx];
+      const good = choice === cur.a;
+      document.querySelectorAll(".opt").forEach(b => {
+        b.disabled = true;
+        const v = opts[b.dataset.idx];
+        if (v === cur.a) b.classList.add("correct");
+        else if (b === btn) b.classList.add("wrong");
+        else b.classList.add("dimmed");
+      });
+      if (good) { score++; streak++; maxStreak = Math.max(maxStreak, streak); }
+      else streak = 0;
+      $("#feedback").innerHTML = explainBlock(good,
+        good ? "Exact !" : "Raté — c'était " + cur.a,
+        `<em>${cur.src}</em>`);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    }));
+  }
+
+  function finish() {
+    setProgress(1);
+    const isRecord = updateBest("quotes", score);
+    endScreen({
+      score, total: rounds.length,
+      xp: score * 10 + maxStreak * 5,
+      bestLine: isRecord ? "★ Nouveau record !" : `Record : ${store.best("quotes")}/10`,
+      replay: startQuotes
+    });
+  }
+
+  round();
+}
+
+/* ============================================================
+   JEU 02 · LE GRAND QCM
+   ============================================================ */
+function startQuiz() {
+  const rounds = pick(QUIZ, 10);
+  let i = 0, score = 0, streak = 0;
+
+  function round() {
+    const cur = rounds[i];
+    const order = shuffle(cur.opts.map((_, k) => k));
+    setMeta(`${i + 1} / ${rounds.length}`, streak > 1 ? `🔥 série ×${streak}` : "");
+    setProgress(i / rounds.length);
+    stage().innerHTML = `
+      <div class="q-card">
+        <div class="label">Question ${i + 1}</div>
+        <div class="question">${cur.q}</div>
+      </div>
+      <div class="options">${order.map((k, idx) => optionButton(cur.opts[k], idx)).join("")}</div>
+      <div id="feedback"></div>
+      <div class="next-zone" id="next-zone"></div>`;
+
+    document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+      const chosen = order[btn.dataset.idx];
+      const good = chosen === cur.ok;
+      document.querySelectorAll(".opt").forEach(b => {
+        b.disabled = true;
+        if (order[b.dataset.idx] === cur.ok) b.classList.add("correct");
+        else if (b === btn) b.classList.add("wrong");
+        else b.classList.add("dimmed");
+      });
+      if (good) { score++; streak++; } else streak = 0;
+      $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    }));
+  }
+
+  function finish() {
+    setProgress(1);
+    const isRecord = updateBest("quiz", score);
+    endScreen({
+      score, total: rounds.length,
+      xp: score * 12,
+      bestLine: isRecord ? "★ Nouveau record !" : `Record : ${store.best("quiz")}/10`,
+      replay: startQuiz
+    });
+  }
+
+  round();
+}
+
+/* ============================================================
+   JEU 03 · VRAI OU FAUX
+   ============================================================ */
+function startVF() {
+  const rounds = pick(TRUEFALSE, 10);
+  let i = 0, score = 0, streak = 0;
+
+  function round() {
+    const cur = rounds[i];
+    setMeta(`${i + 1} / ${rounds.length}`, streak > 1 ? `🔥 série ×${streak}` : "");
+    setProgress(i / rounds.length);
+    stage().innerHTML = `
+      <div class="q-card">
+        <div class="label">Vrai ou faux ?</div>
+        <div class="question">${cur.s}</div>
+      </div>
+      <div class="vf-buttons">
+        <button class="opt" data-v="true"><span>VRAI</span></button>
+        <button class="opt" data-v="false"><span>FAUX</span></button>
+      </div>
+      <div id="feedback"></div>
+      <div class="next-zone" id="next-zone"></div>`;
+
+    document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+      const choice = btn.dataset.v === "true";
+      const good = choice === cur.v;
+      document.querySelectorAll(".opt").forEach(b => {
+        b.disabled = true;
+        if ((b.dataset.v === "true") === cur.v) b.classList.add("correct");
+        else if (b === btn) b.classList.add("wrong");
+        else b.classList.add("dimmed");
+      });
+      if (good) { score++; streak++; } else streak = 0;
+      $("#feedback").innerHTML = explainBlock(good,
+        good ? "Exact !" : `Non — c'était ${cur.v ? "VRAI" : "FAUX"}`, cur.why);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    }));
+  }
+
+  function finish() {
+    setProgress(1);
+    const isRecord = updateBest("vf", score);
+    endScreen({
+      score, total: rounds.length,
+      xp: score * 10,
+      bestLine: isRecord ? "★ Nouveau record !" : `Record : ${store.best("vf")}/10`,
+      replay: startVF
+    });
+  }
+
+  round();
+}
+
+/* ============================================================
+   JEU 04 · LES REPÈRES (flashcards)
+   ============================================================ */
+function startCards() {
+  let queue = shuffle(FLASHCARDS.map(c => ({ ...c, fresh: true })));
+  const total = queue.length;
+  let mastered = 0, seen = 0;
+
+  function round() {
+    const cur = queue[0];
+    setMeta(`${mastered} maîtrisés / ${total}`, queue.length + " restantes");
+    setProgress(mastered / total);
+    stage().innerHTML = `
+      <div class="flash-scene">
+        <div class="flash-card" id="flash">
+          <div class="flash-face front">
+            <span class="hint">Repère officiel · clique pour retourner</span>
+            <span class="term">${cur.front}</span>
+          </div>
+          <div class="flash-face back">${cur.back}</div>
+        </div>
+      </div>
+      <div class="flash-grade" id="grade" style="visibility:hidden">
+        <button class="btn danger" id="btn-again">À revoir ↺</button>
+        <button class="btn primary" id="btn-known">Je savais ✓</button>
+      </div>`;
+
+    $("#flash").addEventListener("click", () => {
+      $("#flash").classList.toggle("flipped");
+      $("#grade").style.visibility = "visible";
+    });
+
+    $("#btn-known").addEventListener("click", () => {
+      if (cur.fresh) mastered++;
+      seen++;
+      queue.shift();
+      queue.length ? round() : finish();
+    });
+
+    $("#btn-again").addEventListener("click", () => {
+      seen++;
+      const c = queue.shift();
+      c.fresh = false;
+      queue.push(c);
+      round();
+    });
+  }
+
+  function finish() {
+    setProgress(1);
+    const prev = Number(store.best("cards") || 0);
+    if (mastered > prev) store.setBest("cards", mastered);
+    endScreen({
+      score: mastered, total,
+      xp: mastered * 8 + (total - mastered) * 3,
+      bestLine: mastered > prev ? "★ Nouveau record de cartes maîtrisées du premier coup !" : `Record : ${Math.max(prev, mastered)}/${total}`,
+      replay: startCards
+    });
+  }
+
+  round();
+}
+
+/* ============================================================
+   JEU 05 · LE GRAND DUEL (association)
+   ============================================================ */
+function startMatch() {
+  const pairs = pick(PAIRS, 8);
+  const tiles = shuffle([
+    ...pairs.map((p, id) => ({ id, text: p.a, kind: "philo" })),
+    ...pairs.map((p, id) => ({ id, text: p.b, kind: "concept" }))
+  ]);
+  let selected = null, moves = 0, matched = 0, locked = false;
+
+  setMeta("", "");
+  stage().innerHTML = `
+    <div class="q-card">
+      <div class="label">Associe chaque philosophe à son concept</div>
+      <div class="question" style="font-size:1.1rem;font-family:var(--font-body)">Clique un nom, puis le concept qui lui correspond. Le moins de coups possible !</div>
+    </div>
+    <div class="match-board" id="board">
+      ${tiles.map((t, idx) => `<button class="match-tile ${t.kind}" data-tile="${idx}">${t.text}</button>`).join("")}
+    </div>`;
+
+  function refreshMeta() {
+    setMeta(`${matched} / ${pairs.length} paires`, `${moves} coups`);
+    setProgress(matched / pairs.length);
+  }
+  refreshMeta();
+
+  $("#board").addEventListener("click", e => {
+    const btn = e.target.closest(".match-tile");
+    if (!btn || locked || btn.classList.contains("matched")) return;
+    const idx = Number(btn.dataset.tile);
+
+    if (selected === null) {
+      selected = idx;
+      btn.classList.add("selected");
+      return;
+    }
+    if (selected === idx) {
+      btn.classList.remove("selected");
+      selected = null;
+      return;
+    }
+
+    const a = tiles[selected], b = tiles[idx];
+    const prevBtn = document.querySelector(`[data-tile="${selected}"]`);
+    moves++;
+
+    if (a.id === b.id && a.kind !== b.kind) {
+      matched++;
+      prevBtn.classList.remove("selected");
+      prevBtn.classList.add("matched");
+      btn.classList.add("matched");
+      selected = null;
+      refreshMeta();
+      if (matched === pairs.length) setTimeout(finish, 600);
+    } else {
+      locked = true;
+      btn.classList.add("error");
+      prevBtn.classList.remove("selected");
+      prevBtn.classList.add("error");
+      refreshMeta();
+      setTimeout(() => {
+        btn.classList.remove("error");
+        prevBtn.classList.remove("error");
+        selected = null;
+        locked = false;
+      }, 450);
+    }
+  });
+
+  function finish() {
+    const perfect = pairs.length;
+    const xp = Math.max(20, 120 - (moves - perfect) * 10);
+    const isRecord = updateBest("match", moves, true);
+    stage().innerHTML = `
+      <div class="endscreen">
+        <span class="xp-gain">+${xp} XP${gainXp(xp) ? " · NIVEAU SUPÉRIEUR !" : ""}</span>
+        <div class="big-score">${moves} coups</div>
+        <div class="mention">${moves === perfect ? "Sans-faute absolu" : moves <= perfect + 3 ? "Esprit affûté" : "L'important, c'est de participer"}</div>
+        <p class="comment">${moves === perfect
+          ? "Huit paires, huit coups. Platon t'aurait pris comme disciple."
+          : `Le minimum possible était ${perfect} coups. ${isRecord ? "Mais c'est ton meilleur score !" : "Tu peux faire mieux."}`}</p>
+        ${isRecord ? `<p class="mono" style="margin-bottom:1.4rem">★ Nouveau record !</p>` : `<p class="mono" style="margin-bottom:1.4rem">Record : ${store.best("match")} coups</p>`}
+        <div class="actions">
+          <button class="btn primary" id="btn-replay">Rejouer</button>
+          <button class="btn" data-nav="home">Retour à l'arène</button>
+        </div>
+      </div>`;
+    $("#btn-replay").addEventListener("click", startMatch);
+  }
+}
+
+/* ============================================================
+   BONUS · LE MARATHON (mort subite)
+   ============================================================ */
+function startMarathon() {
+  let streak = 0;
+  let pool = buildMarathonPool();
+
+  function buildMarathonPool() {
+    return shuffle([
+      ...QUOTES.map(q => ({ type: "quote", data: q })),
+      ...QUIZ.map(q => ({ type: "quiz", data: q })),
+      ...TRUEFALSE.map(q => ({ type: "vf", data: q }))
+    ]);
+  }
+
+  function next() {
+    if (!pool.length) pool = buildMarathonPool();
+    const item = pool.pop();
+    setMeta("Mort subite", streak > 0 ? `🔥 série de ${streak}` : "Une erreur = fin");
+    setProgress(Math.min(1, streak / 20));
+
+    if (item.type === "quote") {
+      const cur = item.data;
+      const opts = shuffle([cur.a, ...pick(AUTHORS.filter(x => x !== cur.a), 3)]);
+      stage().innerHTML = `
+        <div class="q-card">
+          <div class="label">Qui a dit ça ?</div>
+          <div class="question is-quote">« ${cur.q} »</div>
+        </div>
+        <div class="options">${opts.map(optionButton).join("")}</div>`;
+      wire(opts.map(o => o === cur.a), `C'était ${cur.a} — <em>${cur.src}</em>`);
+    } else if (item.type === "quiz") {
+      const cur = item.data;
+      const order = shuffle(cur.opts.map((_, k) => k));
+      stage().innerHTML = `
+        <div class="q-card">
+          <div class="label">QCM</div>
+          <div class="question">${cur.q}</div>
+        </div>
+        <div class="options">${order.map((k, idx) => optionButton(cur.opts[k], idx)).join("")}</div>`;
+      wire(order.map(k => k === cur.ok), cur.why);
+    } else {
+      const cur = item.data;
+      stage().innerHTML = `
+        <div class="q-card">
+          <div class="label">Vrai ou faux ?</div>
+          <div class="question">${cur.s}</div>
+        </div>
+        <div class="vf-buttons">
+          <button class="opt" data-idx="0"><span>VRAI</span></button>
+          <button class="opt" data-idx="1"><span>FAUX</span></button>
+        </div>`;
+      wire([cur.v === true, cur.v === false], cur.why);
+    }
+  }
+
+  // goodMask[i] = true si l'option i est la bonne
+  function wire(goodMask, why) {
+    document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.idx);
+      const good = goodMask[idx];
+      document.querySelectorAll(".opt").forEach(b => {
+        b.disabled = true;
+        if (goodMask[Number(b.dataset.idx)]) b.classList.add("correct");
+        else if (b === btn) b.classList.add("wrong");
+        else b.classList.add("dimmed");
+      });
+      if (good) {
+        streak++;
+        setTimeout(next, 650);
+      } else {
+        stage().insertAdjacentHTML("beforeend", explainBlock(false, "Fin de série !", why));
+        setTimeout(() => finish(), 1600);
+      }
+    }));
+  }
+
+  function finish() {
+    const xp = streak * 10;
+    const isRecord = updateBest("marathon", streak);
+    const lvlUp = xp > 0 ? gainXp(xp) : false;
+    stage().innerHTML = `
+      <div class="endscreen">
+        ${xp > 0 ? `<span class="xp-gain">+${xp} XP${lvlUp ? " · NIVEAU SUPÉRIEUR !" : ""}</span>` : ""}
+        <div class="big-score">${streak}</div>
+        <div class="mention">${streak >= 20 ? "Légende de l'agora" : streak >= 12 ? "Endurance socratique" : streak >= 6 ? "Beau souffle" : streak >= 1 ? "Échauffement" : "Faux départ"}</div>
+        <p class="comment">${streak >= 12
+          ? "Une série pareille, même Sisyphe applaudirait."
+          : streak >= 1
+            ? "Chaque marathon commence par un premier pas. Remets ça !"
+            : "Tombé sur la première question : très camusien, très absurde. Rejoue !"}</p>
+        <p class="mono" style="margin-bottom:1.4rem">${isRecord ? "★ Nouveau record !" : "Record : série de " + store.best("marathon")}</p>
+        <div class="actions">
+          <button class="btn primary" id="btn-replay">Rejouer</button>
+          <button class="btn" data-nav="home">Retour à l'arène</button>
+        </div>
+      </div>`;
+    $("#btn-replay").addEventListener("click", startMarathon);
+  }
+
+  next();
+}
+
+/* ============================================================
+   ACCUEIL : marquee + citation du pied de page
+   ============================================================ */
+function initHome() {
+  const items = NOTIONS.map(n => `<span>${n}<i> ✶ </i></span>`).join("");
+  $("#marquee-track").innerHTML = items + items; // boucle continue
+
+  renderNotionGrid();
+
+  const fq = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  $("#footer-quote").textContent = `« ${fq.q} »`;
+  $("#footer-who").textContent = `${fq.a} — ${fq.src}`;
+
+  refreshHud();
+  refreshBests();
+}
+
+initHome();

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGORA — Révise le bac philo en jouant</title>
+  <meta name="description" content="Mini-jeux de révision pour le bac de philosophie : citations, QCM, repères, vrai ou faux. Gratuit, sans pub, sans migraine.">
+  <meta name="theme-color" content="#f4eddd">
+  <meta property="og:title" content="AGORA — Révise le bac philo en jouant 🦉">
+  <meta property="og:description" content="6 mini-jeux + 17 fiches de cours + la méthode. Citations, QCM, repères officiels, vrai/faux… Gratuit, sans pub, sans migraine.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦉</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Karla:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <button class="logo" data-nav="home" aria-label="Retour à l'accueil">
+      <span class="owl">🦉</span> AGORA
+    </button>
+    <nav class="topnav">
+      <button data-jump="jeux">Jeux</button>
+      <button data-jump="cours">Le cours</button>
+      <button data-nav="methodo:dissertation">Méthode</button>
+    </nav>
+    <div class="hud">
+      <span class="level-name" id="hud-level">Apprenti sophiste</span>
+      <span class="xp-pill"><strong id="hud-xp">0</strong> XP</span>
+    </div>
+  </header>
+
+  <!-- ============ ACCUEIL ============ -->
+  <main id="view-home" class="view active">
+
+    <section class="hero">
+      <span class="bg-quote left" aria-hidden="true">«</span>
+      <span class="bg-quote right" aria-hidden="true">»</span>
+      <span class="stamp s1">100% gratuit</span>
+      <span class="stamp s2">Zéro migraine</span>
+      <span class="stamp s3">Conforme au programme Tle</span>
+
+      <span class="surtitre">L'arène des idées · Bac de philosophie</span>
+      <h1>Révise le bac philo <span class="accent">en jouant<svg viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M5 14 Q 75 4, 150 11 T 295 9"/></svg></span></h1>
+      <p class="pitch">Citations à attribuer, repères officiels, thèses à démêler : cinq mini-jeux pour faire entrer Kant et Nietzsche dans ta tête sans t'en rendre compte.</p>
+      <div class="cta">
+        <a class="btn primary" href="#jeux">Entrer dans l'arène ↓</a>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="track" id="marquee-track"></div>
+    </div>
+
+    <section class="games" id="jeux">
+      <div class="section-head">
+        <h2>Les épreuves</h2>
+        <span class="rule"></span>
+        <span class="mono">5 jeux · XP illimitée</span>
+      </div>
+
+      <div class="game-grid">
+        <button class="game-card" data-nav="quotes">
+          <span class="pictogram">🗣️</span>
+          <span class="num">JEU 01</span>
+          <h3>Qui a dit ça ?</h3>
+          <p>Une citation, quatre suspects. Attribue chaque phrase à son auteur — la série de bonnes réponses multiplie les points.</p>
+          <span class="best" data-best="quotes">Record : —</span>
+        </button>
+
+        <button class="game-card" data-nav="quiz">
+          <span class="pictogram">🏛️</span>
+          <span class="num">JEU 02</span>
+          <h3>Le Grand QCM</h3>
+          <p>Doctrines, distinctions, thèses majeures : dix questions tirées du programme, avec explication à chaque coup.</p>
+          <span class="best" data-best="quiz">Record : —</span>
+        </button>
+
+        <button class="game-card" data-nav="vf">
+          <span class="pictogram">⚖️</span>
+          <span class="num">JEU 03</span>
+          <h3>Vrai ou Faux</h3>
+          <p>« Épicure prône tous les plaisirs » — vraiment ? Démonte les contresens classiques qui coûtent des points le jour J.</p>
+          <span class="best" data-best="vf">Record : —</span>
+        </button>
+
+        <button class="game-card" data-nav="cards">
+          <span class="pictogram">🃏</span>
+          <span class="num">JEU 04</span>
+          <h3>Les Repères</h3>
+          <p>Légal/légitime, persuader/convaincre… Les distinctions officielles du programme en cartes à retourner.</p>
+          <span class="best" data-best="cards">Maîtrisés : —</span>
+        </button>
+
+        <button class="game-card" data-nav="match">
+          <span class="pictogram">🤝</span>
+          <span class="num">JEU 05</span>
+          <h3>Le Grand Duel</h3>
+          <p>Relie chaque philosophe à son concept fétiche. Huit paires, le moins de coups possible.</p>
+          <span class="best" data-best="match">Record : —</span>
+        </button>
+
+        <button class="game-card" data-nav="marathon">
+          <span class="pictogram">🔥</span>
+          <span class="num">BONUS</span>
+          <h3>Le Marathon</h3>
+          <p>Un mélange de tout, sans filet : une seule erreur et c'est terminé. Jusqu'où ira ta série ?</p>
+          <span class="best" data-best="marathon">Record : —</span>
+        </button>
+
+        <button class="game-card" data-jump="cours">
+          <span class="pictogram">🎯</span>
+          <span class="num">PAR NOTION</span>
+          <h3>Révision ciblée</h3>
+          <p>Choisis une notion du cours et enchaîne 10 questions générées depuis sa fiche : thèses, œuvres, citations, repères à trous.</p>
+          <span class="best">17 notions · ↓ choisis la tienne</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="games" id="cours">
+      <div class="section-head">
+        <h2>Le cours</h2>
+        <span class="rule"></span>
+        <span class="mono">17 notions · fiches complètes</span>
+      </div>
+      <p class="section-pitch">Chaque fiche : le paradoxe de la notion, les problématiques, les auteurs incontournables avec leurs thèses, les citations à caser, les sujets types — et le piège classique à éviter.</p>
+      <div class="notion-grid" id="notion-grid"></div>
+    </section>
+
+    <section class="games" id="methode">
+      <div class="section-head">
+        <h2>La méthode</h2>
+        <span class="rule"></span>
+        <span class="mono">Les 2 épreuves du bac</span>
+      </div>
+      <div class="methodo-teasers">
+        <button class="game-card" data-nav="methodo:dissertation">
+          <span class="pictogram">✍️</span>
+          <span class="num">ÉPREUVE A</span>
+          <h3>La dissertation</h3>
+          <p>Analyser le sujet, problématiser, construire un plan qui progresse — étape par étape, avec les erreurs qui coûtent des points.</p>
+        </button>
+        <button class="game-card" data-nav="methodo:explication">
+          <span class="pictogram">🔍</span>
+          <span class="num">ÉPREUVE B</span>
+          <h3>L'explication de texte</h3>
+          <p>Thème, thèse, problème, mouvements : faire parler un texte sans le paraphraser ni le noyer sous le cours.</p>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FICHE DE NOTION ============ -->
+  <main id="view-fiche" class="view">
+    <div class="fiche-shell" id="fiche-stage"></div>
+  </main>
+
+  <!-- ============ MÉTHODOLOGIE ============ -->
+  <main id="view-methodo" class="view">
+    <div class="fiche-shell" id="methodo-stage"></div>
+  </main>
+
+  <!-- ============ VUES DE JEU (remplies par app.js) ============ -->
+  <main id="view-game" class="view">
+    <div class="game-shell">
+      <div class="game-topbar">
+        <button class="btn ghost" data-nav="home">← Quitter</button>
+        <h2 id="game-title"></h2>
+        <div class="progress-meta">
+          <span id="game-counter"></span>
+          <span class="streak" id="game-streak"></span>
+        </div>
+      </div>
+      <div class="progress-track"><div class="fill" id="game-progress"></div></div>
+      <div id="game-stage"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p class="quote" id="footer-quote">« Une vie sans examen ne vaut pas la peine d'être vécue. »</p>
+    <p class="who" id="footer-who">Socrate — Apologie de Socrate</p>
+    <p class="madeby">AGORA · révision du bac de philosophie · fait avec 🦉 et zéro publicité</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="cours.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
