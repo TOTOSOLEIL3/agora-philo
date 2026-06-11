@@ -64,10 +64,12 @@
   <div id="gate">
     <span class="lock">🔒</span>
     <h1>Tableau de bord privé</h1>
-    <p class="updated">Réservé à l'administrateur d'AGORA.</p>
+    <p class="updated">Réservé à l'administrateur d'AGORA — connexion sécurisée.</p>
+    <input id="gate-email" type="email" placeholder="Email admin" autocomplete="username" style="margin-bottom:0.6rem">
     <input id="gate-pwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
-    <button id="gate-go">Entrer</button>
+    <button id="gate-go">Se connecter</button>
     <p class="err" id="gate-err"></p>
+    <p class="updated" style="margin-top:0.8rem"><a href="#" id="gate-create" style="color:var(--blue)">Première fois ? Créer le compte admin</a></p>
   </div>
 
   <header>
@@ -114,7 +116,7 @@
   <script src="cours.js?v=15"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const cfg = {
@@ -217,52 +219,63 @@
       $("updated").textContent = "Mis à jour à " + t.toLocaleTimeString("fr-FR");
     }
 
+    const app = initializeApp(cfg);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let booted = false;
+
     async function boot() {
+      if (booted) return;
+      booted = true;
+      document.body.classList.remove("locked");
       renderHisto();
       try {
-        const app = initializeApp(cfg);
-        await signInAnonymously(getAuth(app));
-        const db = getFirestore(app);
-        // taille du classement (lecture unique)
         try { const s = await getDocs(query(collection(db, "players"), limit(1000))); leaderboardCount = s.size; } catch (e) {}
-        // tableau de bord en direct
         onSnapshot(collection(db, "stats"), snap => {
           const byDate = {};
           snap.forEach(d => byDate[d.id] = d.data());
           render(byDate);
-        }, () => { $("status").textContent = "Tableau de bord indisponible (connexion ?)."; });
+        }, () => { $("status").textContent = "Lecture des stats refusée (compte non autorisé ?)."; });
       } catch (e) {
-        $("status").textContent = "Connexion impossible — vérifie ta connexion ou un bloqueur de pub.";
+        $("status").textContent = "Connexion impossible — vérifie ta connexion.";
       }
     }
 
-    /* ---- porte d'entrée : mot de passe (empreinte SHA-256, jamais en clair) ---- */
-    const PWD_HASH = "52c0668ab55b3725561de322529f79f014986261a8d0531b1e575c29c52de29a";
-    async function sha256(s) {
-      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
-    }
-    async function tryUnlock(pwd) {
-      if (await sha256(pwd) === PWD_HASH) {
-        sessionStorage.setItem("agora_stats_ok", "1");
-        document.body.classList.remove("locked");
+    /* ---- vraie connexion Firebase : seul l'admin vérifié peut lire (verrou serveur) ---- */
+    const err = m => { $("gate-err").textContent = m; };
+
+    onAuthStateChanged(auth, user => {
+      if (user && user.emailVerified) boot();
+    });
+
+    $("gate-go").addEventListener("click", async () => {
+      err("");
+      const email = $("gate-email").value.trim(), pwd = $("gate-pwd").value;
+      if (!email || !pwd) { err("Email et mot de passe requis."); return; }
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, pwd);
+        if (!cred.user.emailVerified) { err("Vérifie d'abord ton email (lien envoyé à ta création de compte)."); return; }
         boot();
-        return true;
+      } catch (e) {
+        err("Identifiants incorrects.");
       }
-      return false;
-    }
-    if (sessionStorage.getItem("agora_stats_ok") === "1") {
-      document.body.classList.remove("locked");
-      boot();
-    } else {
-      $("gate-pwd").focus();
-      const submit = async () => {
-        const ok = await tryUnlock($("gate-pwd").value);
-        if (!ok) { $("gate-err").textContent = "Mot de passe incorrect."; $("gate-pwd").value = ""; $("gate-pwd").focus(); }
-      };
-      $("gate-go").addEventListener("click", submit);
-      $("gate-pwd").addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
-    }
+    });
+
+    $("gate-pwd").addEventListener("keydown", e => { if (e.key === "Enter") $("gate-go").click(); });
+
+    $("gate-create").addEventListener("click", async e => {
+      e.preventDefault();
+      err("");
+      const email = $("gate-email").value.trim(), pwd = $("gate-pwd").value;
+      if (!email || pwd.length < 6) { err("Entre ton email et un mot de passe d'au moins 6 caractères, puis clique ici."); return; }
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+        await sendEmailVerification(cred.user);
+        err("✓ Compte créé ! Un lien de vérification a été envoyé à " + email + ". Clique-le, puis reconnecte-toi.");
+      } catch (e2) {
+        err(e2.code === "auth/email-already-in-use" ? "Ce compte existe déjà — connecte-toi." : "Création impossible : " + (e2.code || e2.message));
+      }
+    });
   </script>
 </body>
 </html>

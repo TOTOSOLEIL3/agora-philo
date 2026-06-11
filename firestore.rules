@@ -55,7 +55,11 @@ service cloud.firestore {
     }
 
     match /stats/{date} {
-      allow read: if request.auth != null;
+      // Lecture réservée à l'admin authentifié et vérifié (verrou serveur, incontournable).
+      // L'écriture (compteurs) reste ouverte aux sessions anonymes des joueurs.
+      allow read: if request.auth != null
+        && request.auth.token.email == 'manzellatheo@gmail.com'
+        && request.auth.token.email_verified == true;
       allow create: if request.auth != null && request.resource.data.keys().size() <= 100;
       allow update: if request.auth != null &&
         request.resource.data.keys().size() <= 100 &&
