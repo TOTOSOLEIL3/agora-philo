@@ -24,9 +24,9 @@ const COURS = [
       { name: "Bergson", oeuvre: "Le Rire (1900)", these: "Nous ne voyons pas les choses : nous lisons leurs étiquettes utiles. L'artiste, lui, perçoit ce que l'habitude et le langage voilent — l'art écarte le rideau des conventions et nous rend le réel dans sa singularité." }
     ],
     citations: [
-      { q: "Est beau ce qui plaît universellement sans concept.", a: "Kant" },
-      { q: "Nous avons l'art pour ne pas mourir de la vérité.", a: "Nietzsche" },
-      { q: "L'art est fait pour troubler, la science rassure.", a: "Georges Braque" }
+      { q: "Est beau ce qui plaît universellement sans concept.", a: "Kant", exp: "Le jugement de goût est subjectif — aucune règle ne prouve qu'une chose est belle — mais il prétend valoir pour tous : quand je dis « c'est beau », j'attends l'accord d'autrui, contrairement à « j'aime le chocolat ». Le beau n'est ni l'agréable (privé) ni le bien (intérêt)." },
+      { q: "Nous avons l'art pour ne pas mourir de la vérité.", a: "Nietzsche", exp: "L'illusion artistique n'est pas un mensonge à condamner : elle rend l'existence supportable là où la lucidité pure la nierait. L'art a une fonction vitale — il affirme la vie quand la vérité la briserait." },
+      { q: "L'art est fait pour troubler, la science rassure.", a: "Georges Braque", exp: "La science cherche des certitudes stables et prévisibles ; l'art, lui, déstabilise nos habitudes de perception et nous fait voir le monde autrement. Leurs fonctions s'opposent : rassurer vs. déranger." }
     ],
     reperes: ["Objectif / Subjectif / Intersubjectif", "Idéal / Réel", "Ressemblance / Analogie"],
     sujets: [
@@ -69,9 +69,9 @@ const COURS = [
       { name: "Alain", oeuvre: "Propos sur le bonheur (1925)", these: "Le bonheur n'est pas une loterie mais un travail : « il faut vouloir être heureux et y mettre du sien ». Le pessimisme est d'humeur, l'optimisme est de volonté — on se fait heureux comme on se fait athlète, par exercice." }
     ],
     citations: [
-      { q: "Le bonheur est un idéal non de la raison, mais de l'imagination.", a: "Kant" },
-      { q: "Il faut vouloir être heureux et y mettre du sien.", a: "Alain" },
-      { q: "Quand on n'a pas ce que l'on aime, il faut aimer ce que l'on a.", a: "Thomas Corneille" }
+      { q: "Le bonheur est un idéal non de la raison, mais de l'imagination.", a: "Kant", exp: "Le bonheur est si indéterminé que nul ne peut dire ce qui le rendrait vraiment heureux (la richesse ? avec ses soucis ?). On ne peut donc pas en faire le fondement de la morale : la morale rend digne du bonheur, sans le garantir." },
+      { q: "Il faut vouloir être heureux et y mettre du sien.", a: "Alain", exp: "Le bonheur n'est pas une chance qu'on attend mais une pratique qu'on entretient : « le pessimisme est d'humeur, l'optimisme est de volonté ». On se rend heureux par effort, comme on se fait athlète." },
+      { q: "Quand on n'a pas ce que l'on aime, il faut aimer ce que l'on a.", a: "Thomas Corneille", exp: "Sagesse de l'ajustement du désir, d'inspiration stoïcienne : plutôt que de souffrir de ce qui manque (ce qui ne dépend pas de nous), transformer son rapport à ce qu'on possède déjà." }
     ],
     reperes: ["Absolu / Relatif", "Idéal / Réel", "Contingent / Nécessaire"],
     sujets: [
@@ -114,9 +114,9 @@ const COURS = [
       { name: "Bergson", oeuvre: "L'Énergie spirituelle (1919)", these: "La conscience signifie mémoire et anticipation : elle retient le passé et empiète sur l'avenir. Elle s'intensifie quand nous choisissons et s'endort dans l'habitude — conscience est synonyme de choix." }
     ],
     citations: [
-      { q: "Je pense, donc je suis.", a: "Descartes" },
-      { q: "L'homme n'est qu'un roseau, le plus faible de la nature ; mais c'est un roseau pensant.", a: "Pascal" },
-      { q: "Toute conscience est conscience de quelque chose.", a: "Husserl" }
+      { q: "Je pense, donc je suis.", a: "Descartes", exp: "Au terme du doute le plus radical, une certitude résiste : même trompé par un malin génie, il faut que j'existe pour être trompé. La conscience pensante est le premier savoir indubitable, le socle de toute connaissance." },
+      { q: "L'homme n'est qu'un roseau, le plus faible de la nature ; mais c'est un roseau pensant.", a: "Pascal", exp: "L'homme est physiquement fragile face à l'univers qui peut l'écraser, mais sa grandeur tient à ce qu'il le sait : l'univers, lui, ne sait rien. Toute la dignité de l'homme est dans la pensée." },
+      { q: "Toute conscience est conscience de quelque chose.", a: "Husserl", exp: "C'est l'intentionnalité : la conscience n'est pas une boîte close contenant des images, mais un mouvement qui vise toujours autre chose qu'elle-même. Elle est ouverture au monde, non pure intériorité." }
     ],
     reperes: ["Médiat / Immédiat", "Objectif / Subjectif / Intersubjectif", "En acte / En puissance"],
     sujets: [
@@ -159,9 +159,9 @@ const COURS = [
       { name: "Bergson", oeuvre: "Les Deux Sources de la morale et de la religion (1932)", these: "Deux morales coexistent : la morale close, pression sociale qui maintient le groupe (l'obligation), et la morale ouverte, aspiration incarnée par les héros et les saints, qui appelle au-delà du groupe vers l'humanité." }
     ],
     citations: [
-      { q: "Agis uniquement d'après la maxime qui fait que tu puisses vouloir en même temps qu'elle devienne une loi universelle.", a: "Kant" },
-      { q: "Tu dois, donc tu peux.", a: "Kant (formule attribuée)" },
-      { q: "Conscience ! Conscience ! instinct divin, immortelle et céleste voix.", a: "Rousseau" }
+      { q: "Agis uniquement d'après la maxime qui fait que tu puisses vouloir en même temps qu'elle devienne une loi universelle.", a: "Kant", exp: "C'est l'impératif catégorique : une action n'est morale que si sa règle peut valoir pour tous sans se contredire. Universaliser le mensonge le détruirait (plus personne ne croirait personne) — donc mentir est immoral." },
+      { q: "Tu dois, donc tu peux.", a: "Kant (formule attribuée)", exp: "Le devoir suppose la liberté : on ne peut être obligé à l'impossible. Que je doive prouve que je peux — la morale présuppose donc le libre arbitre, sans quoi elle n'aurait aucun sens." },
+      { q: "Conscience ! Conscience ! instinct divin, immortelle et céleste voix.", a: "Rousseau", exp: "La conscience morale est un sentiment immédiat du bien et du mal, antérieur à tout raisonnement et à toute culture : on sent le juste avant de le démontrer. La morale parle d'abord au cœur." }
     ],
     reperes: ["Obligation / Contrainte", "Légal / Légitime", "Universel / Général / Particulier / Singulier"],
     sujets: [
@@ -204,9 +204,9 @@ const COURS = [
       { name: "Platon", oeuvre: "République", these: "Gouverner est un art qui exige un savoir : la cité juste doit être dirigée par ceux qui connaissent le Bien, les philosophes-rois. La démocratie, règne de l'opinion et des désirs, dégénère en tyrannie." }
     ],
     citations: [
-      { q: "L'homme est né libre, et partout il est dans les fers.", a: "Rousseau" },
-      { q: "L'État est le plus froid de tous les monstres froids.", a: "Nietzsche" },
-      { q: "Le plus fort n'est jamais assez fort pour être toujours le maître, s'il ne transforme sa force en droit et l'obéissance en devoir.", a: "Rousseau" }
+      { q: "L'homme est né libre, et partout il est dans les fers.", a: "Rousseau", exp: "Constat de départ du Contrat social : l'homme naît libre mais subit partout des pouvoirs et des contraintes. Tout l'enjeu est alors de trouver un ordre politique légitime qui concilie liberté et obéissance." },
+      { q: "L'État est le plus froid de tous les monstres froids.", a: "Nietzsche", exp: "Critique de l'État qui prétend incarner le peuple alors qu'il l'écrase sous une machine impersonnelle et bureaucratique. Méfiance envers sa froideur : il parle au nom de tous mais ne vit pour personne." },
+      { q: "Le plus fort n'est jamais assez fort pour être toujours le maître, s'il ne transforme sa force en droit et l'obéissance en devoir.", a: "Rousseau", exp: "La force seule ne fonde aucune légitimité : un pouvoir ne dure que s'il est reconnu comme juste. Céder à la force est une nécessité, pas un devoir — la légitimité est d'un autre ordre que la puissance." }
     ],
     reperes: ["Légal / Légitime", "En fait / En droit", "Obligation / Contrainte", "Public / Privé"],
     sujets: [
@@ -249,9 +249,9 @@ const COURS = [
       { name: "Popper", oeuvre: "Conjectures et réfutations (1963)", these: "La psychanalyse explique tout — et c'est le problème : aucune observation ne peut la réfuter. Or une théorie qui n'est pas falsifiable n'est pas scientifique. L'inconscient serait une hypothèse féconde, mais pas une science." }
     ],
     citations: [
-      { q: "Le moi n'est pas maître dans sa propre maison.", a: "Freud" },
-      { q: "L'inconscient est le psychique lui-même et son essentielle réalité.", a: "Freud" },
-      { q: "La psychanalyse est une méprise sur le corps.", a: "Alain (formule d'esprit)" }
+      { q: "Le moi n'est pas maître dans sa propre maison.", a: "Freud", exp: "Troisième blessure infligée à l'orgueil humain : après Copernic (la Terre n'est pas le centre) et Darwin (l'homme est un animal), Freud montre que le moi conscient est gouverné par des forces — l'inconscient — qui lui échappent." },
+      { q: "L'inconscient est le psychique lui-même et son essentielle réalité.", a: "Freud", exp: "L'inconscient n'est pas un détail marginal de la vie mentale : l'essentiel du psychisme est inconscient, et la conscience n'en est que la surface visible. Renversement de la conception cartésienne du sujet transparent." },
+      { q: "La psychanalyse est une méprise sur le corps.", a: "Alain (formule d'esprit)", exp: "Critique de l'inconscient freudien : pour Alain, ce qu'on appelle « inconscient » n'est qu'une façon trompeuse de parler du corps et de ses mécanismes. En faire un « autre moi » qui penserait à notre place est une faute de méthode." }
     ],
     reperes: ["En fait / En droit", "Croire / Savoir", "Origine / Fondement"],
     sujets: [
@@ -294,9 +294,9 @@ const COURS = [
       { name: "Thoreau", oeuvre: "La Désobéissance civile (1849)", these: "Face à une loi gravement injuste (l'esclavage, en son temps), la conscience prime : refuser publiquement et pacifiquement d'obéir, et en assumer la sanction, c'est en appeler du droit réel au droit idéal. Gandhi et Martin Luther King s'en souviendront." }
     ],
     citations: [
-      { q: "Vérité en deçà des Pyrénées, erreur au-delà.", a: "Pascal" },
-      { q: "Ne pouvant faire que ce qui est juste fût fort, on a fait que ce qui est fort fût juste.", a: "Pascal" },
-      { q: "L'équité est la justice du cas particulier.", a: "d'après Aristote" }
+      { q: "Vérité en deçà des Pyrénées, erreur au-delà.", a: "Pascal", exp: "La justice positive (les lois) varie selon les lieux et les époques : ce qui est juste d'un côté de la frontière est crime de l'autre. Constat relativiste qui interroge l'existence d'une justice universelle au-dessus des coutumes." },
+      { q: "Ne pouvant faire que ce qui est juste fût fort, on a fait que ce qui est fort fût juste.", a: "Pascal", exp: "Faute de pouvoir rendre la justice puissante, les hommes ont légitimé la force : l'ordre social repose souvent sur un rapport de force déguisé en droit. La justice réelle est un compromis entre le juste et le fort." },
+      { q: "L'équité est la justice du cas particulier.", a: "d'après Aristote", exp: "La loi est générale et, appliquée mécaniquement à un cas singulier qu'elle n'avait pas prévu, peut devenir injuste. L'équité corrige alors la règle pour rétablir la justice dans ce cas précis." }
     ],
     reperes: ["Légal / Légitime", "En fait / En droit", "Universel / Général / Particulier / Singulier"],
     sujets: [
@@ -339,9 +339,9 @@ const COURS = [
       { name: "Austin", oeuvre: "Quand dire, c'est faire (1962)", these: "Certains énoncés ne décrivent rien : ils font ce qu'ils disent. « Je vous déclare unis par le mariage », « je promets », « la séance est ouverte » — ce sont des performatifs. Parler n'est pas seulement transmettre de l'information, c'est agir." }
     ],
     citations: [
-      { q: "Les limites de mon langage signifient les limites de mon propre monde.", a: "Wittgenstein" },
-      { q: "C'est dans les mots que nous pensons.", a: "Hegel" },
-      { q: "Ce qui se conçoit bien s'énonce clairement, et les mots pour le dire arrivent aisément.", a: "Boileau" }
+      { q: "Les limites de mon langage signifient les limites de mon propre monde.", a: "Wittgenstein", exp: "Je ne peux penser et découper le monde qu'à travers les mots dont je dispose : ce que ma langue ne nomme pas, je peine à le concevoir. La richesse de mon langage est celle de mon monde accessible." },
+      { q: "C'est dans les mots que nous pensons.", a: "Hegel", exp: "Contre l'idée d'une pensée pure que les mots trahiraient : c'est en cherchant le mot juste que la pensée se forme et se précise. L'« ineffable » n'est pas un trésor trop profond, c'est une pensée encore confuse." },
+      { q: "Ce qui se conçoit bien s'énonce clairement, et les mots pour le dire arrivent aisément.", a: "Boileau", exp: "Une pensée claire trouve naturellement son expression ; la difficulté à dire trahit souvent une idée encore floue. Lien étroit entre la clarté de la pensée et celle du langage." }
     ],
     reperes: ["Intuitif / Discursif", "Persuader / Convaincre", "Abstrait / Concret"],
     sujets: [
@@ -384,9 +384,9 @@ const COURS = [
       { name: "Épictète", oeuvre: "Manuel", these: "La liberté est intérieure : nul ne peut m'ôter mes jugements. Esclave devenu philosophe, il était plus libre que ses maîtres — vouloir ce qui dépend de nous et accepter le reste, c'est être invincible." }
     ],
     citations: [
-      { q: "L'homme est condamné à être libre.", a: "Sartre" },
-      { q: "Les hommes se croient libres parce qu'ils sont conscients de leurs actions et ignorants des causes qui les déterminent.", a: "Spinoza" },
-      { q: "L'obéissance à la loi qu'on s'est prescrite est liberté.", a: "Rousseau" }
+      { q: "L'homme est condamné à être libre.", a: "Sartre", exp: "L'homme n'a pas d'essence fixée d'avance : il se définit par ses choix et ne peut s'y soustraire — même ne pas choisir est un choix. D'où une responsabilité totale et parfois angoissante : nous sommes ce que nous faisons de nous." },
+      { q: "Les hommes se croient libres parce qu'ils sont conscients de leurs actions et ignorants des causes qui les déterminent.", a: "Spinoza", exp: "Le sentiment d'être libre n'est que l'ignorance des causes qui nous poussent à agir : une pierre qui roulerait en se croyant libre. Le libre arbitre est une illusion ; la vraie liberté est de comprendre cette nécessité." },
+      { q: "L'obéissance à la loi qu'on s'est prescrite est liberté.", a: "Rousseau", exp: "Suivre ses impulsions, c'est être l'esclave de ses désirs ; la liberté véritable est d'obéir à une règle dont on est soi-même l'auteur. La loi commune, librement consentie, libère au lieu d'asservir." }
     ],
     reperes: ["Obligation / Contrainte", "Contingent / Nécessaire", "Légal / Légitime"],
     sujets: [
@@ -429,9 +429,9 @@ const COURS = [
       { name: "Hans Jonas", oeuvre: "Le Principe responsabilité (1979)", these: "La puissance technique moderne menace pour la première fois la biosphère et les générations futures : il faut un nouvel impératif — « agis de façon que les effets de ton action soient compatibles avec la permanence d'une vie authentiquement humaine sur terre »." }
     ],
     citations: [
-      { q: "Nous rendre comme maîtres et possesseurs de la nature.", a: "Descartes" },
-      { q: "La coutume est une seconde nature qui détruit la première.", a: "Pascal" },
-      { q: "Tout est bien sortant des mains de l'Auteur des choses, tout dégénère entre les mains de l'homme.", a: "Rousseau" }
+      { q: "Nous rendre comme maîtres et possesseurs de la nature.", a: "Descartes", exp: "Programme fondateur de la modernité technique : la science ne doit plus seulement contempler la nature mais la dominer pour soulager la condition humaine. La nature devient un objet à exploiter, non un cosmos sacré." },
+      { q: "La coutume est une seconde nature qui détruit la première.", a: "Pascal", exp: "Ce qu'on croit naturel est souvent acquis par habitude : la culture façonne l'homme au point de faire passer ses conventions pour sa nature. Difficile alors de démêler ce qui est vraiment naturel de ce qui est appris." },
+      { q: "Tout est bien sortant des mains de l'Auteur des choses, tout dégénère entre les mains de l'homme.", a: "Rousseau", exp: "L'homme à l'état de nature est bon ; c'est la société et la civilisation qui le corrompent. Inversion du progrès : ce qui sort de la nature est bon, l'artifice humain le pervertit." }
     ],
     reperes: ["Essentiel / Accidentel", "Universel / Général / Particulier / Singulier", "Origine / Fondement"],
     sujets: [
@@ -474,9 +474,9 @@ const COURS = [
       { name: "Lévi-Strauss", oeuvre: "La Pensée sauvage (1962)", these: "La « pensée sauvage » des sociétés sans écriture n'est pas pré-rationnelle : c'est une logique du concret, classificatrice et rigoureuse. La raison n'est pas le privilège de l'Occident moderne." }
     ],
     citations: [
-      { q: "Le bon sens est la chose du monde la mieux partagée.", a: "Descartes" },
-      { q: "Le cœur a ses raisons que la raison ne connaît point.", a: "Pascal" },
-      { q: "La raison est, et ne doit qu'être, l'esclave des passions.", a: "Hume" }
+      { q: "Le bon sens est la chose du monde la mieux partagée.", a: "Descartes", exp: "La raison est également distribuée à tous les hommes ; l'erreur ne vient donc pas d'un manque de raison mais de son mauvais usage. D'où la nécessité d'une méthode pour bien conduire sa pensée." },
+      { q: "Le cœur a ses raisons que la raison ne connaît point.", a: "Pascal", exp: "La raison a ses limites : les premiers principes se sentent, ils ne se démontrent pas. Il existe un ordre du cœur — intuition, finesse, foi — irréductible à la raison calculatrice, sans être pour autant déraisonnable." },
+      { q: "La raison est, et ne doit qu'être, l'esclave des passions.", a: "Hume", exp: "La raison calcule les moyens mais ne fixe aucune fin : aucun raisonnement ne fait à lui seul désirer ou vouloir quelque chose. Ce sont les passions qui meuvent l'action ; la raison ne fait que les servir." }
     ],
     reperes: ["Intuitif / Discursif", "Croire / Savoir", "Vrai / Probable / Certain"],
     sujets: [
@@ -519,9 +519,9 @@ const COURS = [
       { name: "Durkheim", oeuvre: "Les Formes élémentaires de la vie religieuse (1912)", these: "La religion est un fait social : un système de croyances et de pratiques relatives au sacré, qui unit les fidèles en une communauté morale. À travers le sacré, c'est la société elle-même que le groupe vénère — d'où sa présence universelle." }
     ],
     citations: [
-      { q: "La religion est l'opium du peuple.", a: "Marx" },
-      { q: "C'est le cœur qui sent Dieu, et non la raison.", a: "Pascal" },
-      { q: "Dieu est mort ! Et c'est nous qui l'avons tué !", a: "Nietzsche" }
+      { q: "La religion est l'opium du peuple.", a: "Marx", exp: "La religion console de la misère réelle par un bonheur illusoire : elle est à la fois « soupir de la créature opprimée » ET protestation contre la souffrance. La critiquer suppose donc de changer les conditions sociales qui la rendent nécessaire." },
+      { q: "C'est le cœur qui sent Dieu, et non la raison.", a: "Pascal", exp: "La foi ne relève pas de la démonstration rationnelle mais d'une expérience intérieure : on ne prouve pas Dieu, on le ressent. Distinction nette entre croire (adhésion du cœur) et savoir (preuve de la raison)." },
+      { q: "Dieu est mort ! Et c'est nous qui l'avons tué !", a: "Nietzsche", exp: "Non un triomphe joyeux de l'athéisme, mais un constat vertigineux : la croyance qui fondait toutes nos valeurs s'est effondrée. Le danger est le nihilisme — il faut désormais créer de nouvelles valeurs, fidèles à la terre." }
     ],
     reperes: ["Croire / Savoir", "Transcendant / Immanent", "Origine / Fondement"],
     sujets: [
@@ -564,9 +564,9 @@ const COURS = [
       { name: "Kuhn", oeuvre: "La Structure des révolutions scientifiques (1962)", these: "La science normale travaille dans un paradigme (cadre admis de concepts et méthodes) jusqu'à ce que les anomalies s'accumulent : alors survient une révolution scientifique qui change la grille de lecture du monde — de Ptolémée à Copernic, de Newton à Einstein." }
     ],
     citations: [
-      { q: "Le fait suggère l'idée, l'idée dirige l'expérience, l'expérience juge l'idée.", a: "Claude Bernard" },
-      { q: "Rien n'est donné, tout est construit.", a: "Bachelard" },
-      { q: "La science ne pense pas.", a: "Heidegger (à manier avec précaution !)" }
+      { q: "Le fait suggère l'idée, l'idée dirige l'expérience, l'expérience juge l'idée.", a: "Claude Bernard", exp: "La méthode expérimentale est un dialogue réglé entre la raison et le réel : l'observation inspire une hypothèse, l'hypothèse guide l'expérience, l'expérience tranche. Ni empirisme passif, ni spéculation sans contrôle." },
+      { q: "Rien n'est donné, tout est construit.", a: "Bachelard", exp: "Le fait scientifique n'est pas cueilli tout fait dans la nature : il est construit par l'esprit, contre les évidences sensibles et l'opinion (« obstacles épistémologiques »). La science progresse par ruptures, en rectifiant ses erreurs." },
+      { q: "La science ne pense pas.", a: "Heidegger (à manier avec précaution !)", exp: "Provocation : la science calcule et mesure avec efficacité, mais ne s'interroge pas sur le sens de ce qu'elle étudie ni sur ses propres fondements — cette tâche revient à la philosophie. À citer avec prudence et explication." }
     ],
     reperes: ["Théorie / Pratique", "Hypothèse / Conséquence / Conclusion", "Vrai / Probable / Certain", "Expliquer / Comprendre"],
     sujets: [
@@ -609,9 +609,9 @@ const COURS = [
       { name: "Hans Jonas", oeuvre: "Le Principe responsabilité (1979)", these: "Nos pouvoirs ont dépassé nos prévisions : nucléaire, génétique, climat. Il faut une « heuristique de la peur » — prêter l'oreille à la prophétie de malheur plutôt qu'à celle du bonheur — et répondre de ce qui n'existe pas encore : les générations futures." }
     ],
     citations: [
-      { q: "La main est l'outil des outils.", a: "Aristote" },
-      { q: "On ne commande à la nature qu'en lui obéissant.", a: "Francis Bacon" },
-      { q: "Science sans conscience n'est que ruine de l'âme.", a: "Rabelais" }
+      { q: "La main est l'outil des outils.", a: "Aristote", exp: "La main n'est pas un organe parmi d'autres : instrument universel capable de saisir tous les autres outils, elle est le signe de l'intelligence humaine. Technique et pensée sont nées ensemble, l'une rendant l'autre possible." },
+      { q: "On ne commande à la nature qu'en lui obéissant.", a: "Francis Bacon", exp: "Pour dominer la nature, il faut d'abord connaître et respecter ses lois : la maîtrise technique passe par l'obéissance au réel, non par la magie ou la force. Le pouvoir vient du savoir." },
+      { q: "Science sans conscience n'est que ruine de l'âme.", a: "Rabelais", exp: "Le savoir et la puissance technique sans réflexion morale mènent à la catastrophe : la connaissance doit s'accompagner d'une conscience qui en règle l'usage. Toujours d'actualité (nucléaire, IA, génétique)." }
     ],
     reperes: ["Théorie / Pratique", "Principe / Cause / Fin", "Idéal / Réel"],
     sujets: [
@@ -654,9 +654,9 @@ const COURS = [
       { name: "Pascal", oeuvre: "Pensées (1670)", these: "« Nous ne vivons jamais, mais nous espérons de vivre » : le divertissement nous jette dans le souvenir ou l'attente, et le présent — seul temps qui soit nôtre — nous échappe toujours. L'homme fuit le présent parce qu'il y rencontrerait sa misère." }
     ],
     citations: [
-      { q: "On ne se baigne jamais deux fois dans le même fleuve.", a: "Héraclite" },
-      { q: "Le temps est l'image mobile de l'éternité.", a: "Platon" },
-      { q: "Nous ne vivons jamais, mais nous espérons de vivre.", a: "Pascal" }
+      { q: "On ne se baigne jamais deux fois dans le même fleuve.", a: "Héraclite", exp: "Tout s'écoule, rien ne demeure : l'eau a changé, et moi aussi. Le réel est un devenir permanent ; la stabilité apparente des choses n'est qu'un moment du changement incessant." },
+      { q: "Le temps est l'image mobile de l'éternité.", a: "Platon", exp: "Le temps est une imitation dégradée de l'éternité immuable des Idées : il en reproduit l'ordre, mais sous la forme d'un déroulement mouvant et nombré. Le temps est donc un moindre être, l'éternité diminuée." },
+      { q: "Nous ne vivons jamais, mais nous espérons de vivre.", a: "Pascal", exp: "Toujours tournés vers le souvenir ou l'attente, nous manquons le présent — pourtant le seul temps réel. Le divertissement nous fait fuir l'instant présent, où nous rencontrerions notre condition." }
     ],
     reperes: ["Objectif / Subjectif / Intersubjectif", "En acte / En puissance", "Absolu / Relatif"],
     sujets: [
@@ -699,9 +699,9 @@ const COURS = [
       { name: "Hannah Arendt", oeuvre: "Condition de l'homme moderne (1958)", these: "Trois activités : le travail (cycle de la consommation, ne laisse rien), l'œuvre (fabrication d'un monde durable), l'action (parole et politique entre les hommes). Tragédie moderne : nous sommes une « société de travailleurs » au moment où le travail se raréfie." }
     ],
     citations: [
-      { q: "Le travail éloigne de nous trois grands maux : l'ennui, le vice et le besoin.", a: "Voltaire" },
-      { q: "C'est par le travail que la conscience vient à soi-même.", a: "d'après Hegel" },
-      { q: "En un certain sens, le travail a créé l'homme lui-même.", a: "Engels" }
+      { q: "Le travail éloigne de nous trois grands maux : l'ennui, le vice et le besoin.", a: "Voltaire", exp: "Même pénible, le travail occupe, structure l'existence et donne un cadre : il préserve de l'ennui, des tentations de l'oisiveté et de la misère. Réhabilitation du travail comme remède, pas seulement comme malédiction." },
+      { q: "C'est par le travail que la conscience vient à soi-même.", a: "d'après Hegel", exp: "En transformant la nature, l'homme imprime sa marque au monde et s'y reconnaît : c'est l'esclave qui, par le travail, prend conscience de sa puissance, tandis que le maître oisif s'endort (dialectique du maître et de l'esclave)." },
+      { q: "En un certain sens, le travail a créé l'homme lui-même.", a: "Engels", exp: "C'est en travaillant — fabriquant des outils, transformant son milieu — que l'espèce s'est humanisée (la main, le langage, le cerveau se développent ensemble). Le travail n'est pas une activité parmi d'autres : il fait l'homme." }
     ],
     reperes: ["Obligation / Contrainte", "En acte / En puissance", "Formel / Matériel"],
     sujets: [
@@ -744,9 +744,9 @@ const COURS = [
       { name: "William James", oeuvre: "Le Pragmatisme (1907)", these: "Le vrai, c'est ce qui réussit : une idée est vraie si elle « paie », si elle guide efficacement l'expérience. La vérité n'est pas une copie statique du réel mais un processus — elle arrive à une idée, par vérification." }
     ],
     citations: [
-      { q: "L'homme est la mesure de toutes choses.", a: "Protagoras" },
-      { q: "Les vérités sont des illusions dont on a oublié qu'elles le sont.", a: "Nietzsche" },
-      { q: "Je ne cherche qu'à connaître la vérité, et à vivre selon elle.", a: "Descartes (correspondance)" }
+      { q: "L'homme est la mesure de toutes choses.", a: "Protagoras", exp: "Thèse relativiste des sophistes : chaque chose est telle qu'elle apparaît à chacun, il n'y a pas de vérité absolue valable pour tous. C'est ce que Socrate combat — car si tout est vrai, alors plus rien ne l'est vraiment." },
+      { q: "Les vérités sont des illusions dont on a oublié qu'elles le sont.", a: "Nietzsche", exp: "Nos « vérités » seraient des métaphores usées, devenues si familières qu'on les prend pour le réel lui-même. Critique de la prétention de la vérité à dire les choses telles qu'elles sont, indépendamment de tout point de vue." },
+      { q: "Je ne cherche qu'à connaître la vérité, et à vivre selon elle.", a: "Descartes (correspondance)", exp: "La recherche de la vérité n'est pas qu'un exercice théorique : elle engage une manière de vivre, une exigence de lucidité et de droiture. Connaître le vrai et y conformer sa conduite vont ensemble." }
     ],
     reperes: ["Vrai / Probable / Certain", "Croire / Savoir", "Objectif / Subjectif / Intersubjectif", "Persuader / Convaincre"],
     sujets: [

@@ -955,6 +955,35 @@ body::after {
   opacity: 0.75;
 }
 
+.cite-exp { margin-top: 0.6rem; }
+
+.cite-exp summary {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0;
+}
+
+.cite-exp summary::-webkit-details-marker { display: none; }
+.cite-exp summary::before { content: "▸"; transition: transform 0.15s ease; }
+.cite-exp[open] summary::before { transform: rotate(90deg); }
+.cite-exp summary:hover { color: var(--red); }
+
+.cite-exp > p {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--blue);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
 .repere-chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 
 .repere-chips span {

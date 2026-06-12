@@ -897,11 +897,12 @@ function openFiche(id) {
     </section>
 
     <section class="fiche-sec">
-      <div class="sec-title">Citations à caser</div>
+      <div class="sec-title">Citations à caser — et à expliquer</div>
       ${c.citations.map(q => `
         <div class="cite-block">
           <p class="txt">« ${q.q} »</p>
           <p class="who">${q.a}</p>
+          ${q.exp ? `<details class="cite-exp"><summary>Comment l'expliquer ?</summary><p>${q.exp}</p></details>` : ""}
         </div>`).join("")}
     </section>
 
