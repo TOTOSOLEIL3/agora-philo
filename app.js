@@ -847,7 +847,7 @@ function openFiche(id) {
       <div class="sec-title">Citations à caser</div>
       ${c.citations.map(q => `
         <div class="cite-block">
-          <p class="txt">${q.q} »</p>
+          <p class="txt">« ${q.q} »</p>
           <p class="who">${q.a}</p>
         </div>`).join("")}
     </section>

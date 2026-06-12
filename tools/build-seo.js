@@ -91,7 +91,7 @@ for (const c of COURS) {
     sec("L'essentiel du cours", c.cours.map(p => `<article class="cours-part"><h2 style="font-family:var(--font-display);font-weight:400;font-size:1.3rem;margin-bottom:.45rem">${esc(p.t)}</h2><p>${esc(p.d)}</p></article>`).join("")),
     sec("Le vocabulaire à maîtriser", `<dl class="vocab-list">${c.vocab.map(v => `<div class="vocab-row"><dt>${esc(v.m)}</dt><dd>${esc(v.d)}</dd></div>`).join("")}</dl>`),
     sec("Les auteurs incontournables", c.auteurs.map(a => `<article class="auteur-card"><div class="who"><span class="name">${esc(a.name)}</span><span class="oeuvre">${esc(a.oeuvre)}</span></div><p class="these">${esc(a.these)}</p></article>`).join("")),
-    sec("Citations à connaître", c.citations.map(q => `<div class="cite-block"><p class="txt">${esc(q.q)} »</p><p class="who">${esc(q.a)}</p></div>`).join("")),
+    sec("Citations à connaître", c.citations.map(q => `<div class="cite-block"><p class="txt">« ${esc(q.q)} »</p><p class="who">${esc(q.a)}</p></div>`).join("")),
     sec("Repères du programme liés", `<div class="repere-chips">${c.reperes.map(r => `<span>${esc(r)}</span>`).join("")}</div>`),
     ann.length ? sec("Tombé au bac — les vrais sujets", `<ul class="annales-list">${ann.map(a => `<li><span class="an-year">${a.y}</span><span class="an-sub">${esc(a.s)}</span><span class="an-loc">${esc(a.loc)}</span></li>`).join("")}</ul>`) : "",
     sec("Sujets d'entraînement", `<ul class="sujet-list">${c.sujets.map(s => `<li>${esc(s)}</li>`).join("")}</ul>`),
