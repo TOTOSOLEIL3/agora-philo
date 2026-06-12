@@ -1,6 +1,6 @@
 /* AGORA — service worker : hors ligne + installable
    Pour publier une mise à jour : bumper V ici ET les ?v= dans index.html */
-const V = 16;
+const V = 17;
 const CACHE = "agora-v" + V;
 const ASSETS = [
   "./",

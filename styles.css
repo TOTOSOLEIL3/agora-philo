@@ -337,6 +337,27 @@ body::after {
   animation: drop-in 0.4s ease both;
 }
 
+.battle-open-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 1rem;
+  background: var(--blue);
+  color: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  text-align: center;
+  font-size: 0.88rem;
+  animation: drop-in 0.3s ease both;
+}
+
+.battle-open-banner strong { color: #ffe3a3; }
+.battle-open-banner .bo-actions { display: flex; align-items: center; gap: 0.5rem; }
+.battle-open-banner .btn { padding: 0.4rem 0.9rem; background: var(--paper); color: var(--blue); border-color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+.battle-open-banner .bo-x { background: none; border: none; color: var(--paper); font-size: 1.05rem; line-height: 1; cursor: pointer; opacity: 0.75; padding: 0.2rem 0.4rem; }
+.battle-open-banner .bo-x:hover { opacity: 1; }
+
 .defi-banner .defi-txt { font-size: 0.97rem; }
 .defi-banner strong { color: #ffe3a3; }
 .defi-banner .btn.danger { background: var(--paper); color: var(--red); border-color: var(--ink); }

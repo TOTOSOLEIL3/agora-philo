@@ -152,6 +152,26 @@ window.battle = {
   report(code, score, progress, done) {
     const pseudo = (localStorage.getItem("agora_pseudo") || "").slice(0, 16);
     setDoc(doc(db, "battles", code, "players", uid), { pseudo, score, progress, done, ts: Date.now() }).catch(() => {});
+  },
+
+  // Surveille les battles ouvertes (en attente, récentes) ; renvoie la plus récente joignable
+  watchOpen(cb) {
+    if (!db) return () => {};
+    return onSnapshot(
+      query(collection(db, "battles"), orderBy("ts", "desc"), limit(10)),
+      snap => {
+        const now = Date.now();
+        let best = null;
+        snap.forEach(d => {
+          const b = d.data();
+          if (b.status === "waiting" && now - (b.ts || 0) < 30 * 60 * 1000) {
+            if (!best || b.ts > best.ts) best = { code: d.id, ...b };
+          }
+        });
+        cb(best);
+      },
+      () => cb(null)
+    );
   }
 };
 

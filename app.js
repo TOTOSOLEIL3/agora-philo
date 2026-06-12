@@ -411,6 +411,58 @@ function renderBattleRank() {
   }
 }
 
+/* ---- bandeau « rejoindre une battle » (discret, sur l'accueil) ---- */
+let openBattle = null;
+
+function renderBattleBanner() {
+  const el = $("#battle-open-banner");
+  if (!el) return;
+  const homeActive = $("#view-home").classList.contains("active");
+  const mine = openBattle && window.battle && openBattle.host === window.battle.myUid();
+  const dismissed = localStorage.getItem("agora_dismiss_battle");
+  if (!openBattle || !homeActive || battleCtx || mine || dismissed === openBattle.code) {
+    el.style.display = "none";
+    return;
+  }
+  const label = (BATTLE_GAMES.find(g => g[0] === openBattle.game) || [, "une battle"])[1];
+  el.innerHTML = `
+    <span class="bo-txt">⚡ Une battle <strong>${escapeHtml(label)}</strong> attend des joueurs — code <strong>${escapeHtml(openBattle.code)}</strong></span>
+    <span class="bo-actions">
+      <button class="btn" id="bo-join">Rejoindre ⚡</button>
+      <button class="bo-x" id="bo-dismiss" aria-label="Masquer">✕</button>
+    </span>`;
+  el.style.display = "flex";
+  $("#bo-join").addEventListener("click", () => joinBattleFromBanner(openBattle.code));
+  $("#bo-dismiss").addEventListener("click", () => {
+    localStorage.setItem("agora_dismiss_battle", openBattle.code);
+    el.style.display = "none";
+  });
+}
+
+async function joinBattleFromBanner(code) {
+  if (!window.battle || !window.battle.ready() || !localStorage.getItem("agora_pseudo")) {
+    startBattleSetup(code);
+    return;
+  }
+  try {
+    const b = await window.battle.get(code);
+    if (!b || b.status !== "waiting") { toast("Cette battle a déjà commencé ou n'existe plus."); openBattle = null; renderBattleBanner(); return; }
+    track("battle-rejointe");
+    await window.battle.enter(code);
+    battleLobby(code, false);
+  } catch (e) { startBattleSetup(code); }
+}
+
+function watchOpenBattles() {
+  let tries = 0;
+  const t = setInterval(() => {
+    if (window.battle && window.battle.ready()) {
+      clearInterval(t);
+      window.battle.watchOpen(b => { openBattle = b; renderBattleBanner(); });
+    } else if (++tries > 30) clearInterval(t);
+  }, 500);
+}
+
 function parseBattleHash() {
   const m = location.hash.match(/^#battle=([A-Z0-9]{4})$/i);
   if (!m) return;
@@ -554,6 +606,7 @@ function show(viewId) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   $("#" + viewId).classList.add("active");
   window.scrollTo({ top: 0 });
+  if (typeof renderBattleBanner === "function") renderBattleBanner();
 }
 
 function nav(target) {
@@ -1838,6 +1891,7 @@ function initHome() {
 initHome();
 parseChallenge();
 parseBattleHash();
+watchOpenBattles();
 
 /* ---------- PWA : installable + hors ligne ---------- */
 if ("serviceWorker" in navigator) {
