@@ -1483,6 +1483,48 @@ body::after {
 
 .endscreen .actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
+.diag-card { border-color: var(--green); box-shadow: 5px 5px 0 var(--green); }
+.diag-card .num { color: var(--green); }
+.diag-card .best { color: var(--green); }
+.diag-card:hover { box-shadow: 8px 8px 0 var(--green); }
+.diag-card:active { box-shadow: 2px 2px 0 var(--green); }
+
+.reco-box { border-color: var(--red); box-shadow: 4px 4px 0 var(--red); }
+.reco-box .recap-title { color: var(--red); }
+
+.diag-list { display: grid; gap: 0.9rem; margin-top: 1.4rem; }
+
+.diag-row {
+  border: 2px solid var(--ink);
+  background: #fbf7ec;
+  padding: 0.8rem 1rem;
+}
+
+.diag-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.8rem; margin-bottom: 0.5rem; }
+.diag-name { font-family: var(--font-display); font-size: 1.15rem; }
+.diag-pct { font-family: var(--font-mono); font-size: 0.74rem; opacity: 0.8; white-space: nowrap; }
+
+.diag-track { height: 9px; border: 1.5px solid var(--ink); background: var(--paper); margin-bottom: 0.6rem; }
+.diag-fill { height: 100%; transition: width 0.5s cubic-bezier(0.34, 1.2, 0.64, 1); }
+.diag-row.good .diag-fill { background: var(--green); }
+.diag-row.mid .diag-fill { background: var(--gold); }
+.diag-row.bad .diag-fill { background: var(--red); }
+
+.diag-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.diag-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1.5px solid currentColor;
+  margin-right: auto;
+}
+.diag-row.good .diag-tag { color: var(--green); }
+.diag-row.mid .diag-tag { color: var(--gold); }
+.diag-row.bad .diag-tag { color: var(--red); }
+.diag-actions .btn { padding: 0.4rem 0.8rem; }
+
 .revenge-card { border-color: var(--red); box-shadow: 5px 5px 0 var(--red); }
 .revenge-card .num { color: var(--red); }
 .revenge-card .best { color: var(--red); }

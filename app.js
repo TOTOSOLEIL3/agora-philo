@@ -497,6 +497,97 @@ const errStore = {
 
 function recordError(item) { errStore.add(item); }
 
+/* ---------- compétences par notion : repérer les lacunes ---------- */
+const skillStore = {
+  all() { return JSON.parse(localStorage.getItem("agora_skills") || "{}"); },
+  record(notion, good) {
+    if (!notion || !COURS.some(c => c.id === notion)) return;
+    const s = this.all();
+    const e = s[notion] || { ok: 0, total: 0 };
+    e.total++; if (good) e.ok++;
+    s[notion] = e;
+    localStorage.setItem("agora_skills", JSON.stringify(s));
+  },
+  // notions travaillées, triées de la plus fragile à la plus solide (min N réponses)
+  ranked(minTotal = 1) {
+    const s = this.all();
+    return Object.entries(s)
+      .filter(([, e]) => e.total >= minTotal)
+      .map(([id, e]) => ({ id, ok: e.ok, total: e.total, rate: e.ok / e.total }))
+      .sort((a, b) => a.rate - b.rate || b.total - a.total);
+  }
+};
+
+// notion la plus ratée d'une session → { id, title } ou null
+function recoFromMiss(miss) {
+  const entries = Object.entries(miss || {});
+  if (!entries.length) return null;
+  entries.sort((a, b) => b[1] - a[1]);
+  const c = COURS.find(x => x.id === entries[0][0]);
+  return c ? { id: c.id, title: c.title } : null;
+}
+
+/* ---------- MON BILAN : diagnostic des lacunes par notion ---------- */
+function startDiagnostic() {
+  $("#game-title").textContent = "Mon bilan par notion";
+  setMeta("", "");
+  setProgress(0);
+  show("view-game");
+  track("diagnostic");
+
+  const ranked = skillStore.ranked(1);
+  if (!ranked.length) {
+    stage().innerHTML = `
+      <div class="endscreen">
+        <div class="big-score">🧭</div>
+        <div class="mention">Pas encore de données</div>
+        <p class="comment">Fais quelques QCM, un examen blanc ou des révisions par notion : ton bilan apparaîtra ici, tes points faibles classés et de quoi les travailler.</p>
+        <div class="actions">
+          <button class="btn primary" data-nav="quiz">Lancer un QCM</button>
+          <button class="btn" data-nav="examen">L'Examen Blanc</button>
+          <button class="btn" data-nav="home">Retour</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const level = r => r >= 0.8 ? "solide" : r >= 0.5 ? "à consolider" : "fragile";
+  const cls = r => r >= 0.8 ? "good" : r >= 0.5 ? "mid" : "bad";
+  const weak = ranked.filter(x => x.rate < 0.5);
+  const seen = skillStore.all();
+  const untouched = COURS.filter(c => !seen[c.id]);
+
+  stage().innerHTML = `
+    <div class="q-card">
+      <div class="label">Diagnostic — d'après toutes tes réponses</div>
+      <div class="question" style="font-size:1.1rem;font-family:var(--font-body)">
+        ${weak.length
+          ? `Tes notions les plus fragiles : <strong>${weak.slice(0, 3).map(w => COURS.find(c => c.id === w.id).title).join(", ")}</strong>. À travailler en priorité avant le jour J.`
+          : "Solide — aucune notion en zone rouge pour l'instant. Continue à élargir ta couverture."}
+      </div>
+    </div>
+    <div class="diag-list">
+      ${ranked.map(r => {
+        const c = COURS.find(x => x.id === r.id);
+        const pct = Math.round(r.rate * 100);
+        return `<div class="diag-row ${cls(r.rate)}">
+          <div class="diag-head">
+            <span class="diag-name">${c.title}</span>
+            <span class="diag-pct">${r.ok}/${r.total} · ${pct}%</span>
+          </div>
+          <div class="diag-track"><div class="diag-fill" style="width:${Math.max(4, pct)}%"></div></div>
+          <div class="diag-actions">
+            <span class="diag-tag">${level(r.rate)}</span>
+            <button class="btn ghost" data-nav="fiche:${r.id}">Relire</button>
+            <button class="btn ghost" data-nav="drill:${r.id}">S'entraîner</button>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+    ${untouched.length ? `<p class="mono" style="opacity:.65;margin-top:1.4rem">Pas encore testé : ${untouched.map(c => c.title).join(", ")}.</p>` : ""}
+    <div class="next-zone"><button class="btn" data-nav="home">← Retour à l'arène</button></div>`;
+}
+
 function refreshErrorBadges() {
   const el = $("#errors-count");
   if (!el) return;
@@ -599,7 +690,8 @@ const GAMES = {
   marathon: { title: "Le Marathon", start: startMarathon },
   examen: { title: "L'Examen Blanc", start: startExamen },
   errors: { title: "Mes erreurs", start: startErrors },
-  battle: { title: "Battle en direct", start: startBattleSetup }
+  battle: { title: "Battle en direct", start: startBattleSetup },
+  diagnostic: { title: "Mon bilan", start: startDiagnostic }
 };
 
 function show(viewId) {
@@ -814,6 +906,7 @@ function startNotionDrill(id) {
         streak = 0;
         recordError({ kind: cur.kind, label: cur.label, q: cur.q, opts: cur.opts, answer: cur.answer, v: cur.v, why: cur.why });
       }
+      skillStore.record(id, good);
       bumpDaily();
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Suivant →" : "Voir le verdict"}</button>`;
@@ -1026,7 +1119,19 @@ function mentionFor(score, total) {
   return ["Rattrapage en vue", "Socrate disait « je sais que je ne sais rien ». Toi aussi, visiblement. Rejoue !"];
 }
 
-function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
+function recoBlock(reco) {
+  if (!reco) return "";
+  return `<div class="exam-recap reco-box">
+    <div class="recap-title">🎯 Notion à retravailler en priorité</div>
+    <div class="recap-row">
+      <span class="recap-notion">${escapeHtml(reco.title)}</span>
+      <button class="btn ghost" data-nav="fiche:${reco.id}">Relire la fiche</button>
+      <button class="btn ghost" data-nav="drill:${reco.id}">S'entraîner</button>
+    </div>
+  </div>`;
+}
+
+function endScreen({ score, total, xp, bestLine, replay, extra, share, reco }) {
   track("fin-" + (currentRun && currentRun.game ? currentRun.game.split(":")[0] : "jeu"));
   const [mention, comment] = mentionFor(score, total);
   const lvlUp = gainXp(xp);
@@ -1039,6 +1144,7 @@ function endScreen({ score, total, xp, bestLine, replay, extra, share }) {
       <p class="comment">${comment}</p>
       ${duelBlock(score, total)}
       ${battleCtx ? `<div class="exam-recap" id="battle-rank"></div>` : ""}
+      ${recoBlock(reco)}
       ${bestLine ? `<p class="mono" style="margin-bottom:1.4rem">${bestLine}</p>` : ""}
       <div class="actions">
         <button class="btn primary" id="btn-replay">Rejouer</button>
@@ -1143,6 +1249,7 @@ function startQuiz() {
   beginRun("quiz");
   const rounds = pick(QUIZ, 10);
   let i = 0, score = 0, streak = 0;
+  const sessionMiss = {};
 
   function round() {
     const cur = rounds[i];
@@ -1170,8 +1277,10 @@ function startQuiz() {
       if (good) { score++; streak++; }
       else {
         streak = 0;
+        if (cur.n) sessionMiss[cur.n] = (sessionMiss[cur.n] || 0) + 1;
         recordError({ kind: "qcm", label: "QCM", q: cur.q, opts: [...cur.opts], answer: cur.opts[cur.ok], why: cur.why });
       }
+      skillStore.record(cur.n, good);
       bumpDaily();
       if (battleCtx && window.battle) window.battle.report(battleCtx.code, score, i + 1, false);
       $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Eh non…", cur.why);
@@ -1187,7 +1296,8 @@ function startQuiz() {
       score, total: rounds.length,
       xp: score * 12,
       bestLine: isRecord ? "★ Nouveau record !" : `Record : ${store.best("quiz")}/10`,
-      replay: startQuiz
+      replay: startQuiz,
+      reco: recoFromMiss(sessionMiss)
     });
   }
 
@@ -1201,6 +1311,7 @@ function startVF() {
   beginRun("vf");
   const rounds = pick(TRUEFALSE, 10);
   let i = 0, score = 0, streak = 0;
+  const sessionMiss = {};
 
   function round() {
     const cur = rounds[i];
@@ -1230,8 +1341,10 @@ function startVF() {
       if (good) { score++; streak++; }
       else {
         streak = 0;
+        if (cur.n) sessionMiss[cur.n] = (sessionMiss[cur.n] || 0) + 1;
         recordError({ kind: "vf", label: "Vrai ou faux ?", q: cur.s, v: cur.v, why: cur.why });
       }
+      skillStore.record(cur.n, good);
       bumpDaily();
       if (battleCtx && window.battle) window.battle.report(battleCtx.code, score, i + 1, false);
       $("#feedback").innerHTML = explainBlock(good,
@@ -1248,7 +1361,8 @@ function startVF() {
       score, total: rounds.length,
       xp: score * 10,
       bestLine: isRecord ? "★ Nouveau record !" : `Record : ${store.best("vf")}/10`,
-      replay: startVF
+      replay: startVF,
+      reco: recoFromMiss(sessionMiss)
     });
   }
 
@@ -1624,6 +1738,7 @@ function startExamen() {
       parNotion[cur.nid].total++;
       if (good) { score++; parNotion[cur.nid].ok++; }
       else recordError({ kind: cur.kind, label: `${cur.ntitle} · ${cur.label}`, q: cur.q, opts: cur.opts, answer: cur.answer, v: cur.v, why: cur.why });
+      skillStore.record(cur.nid, good);
       $("#feedback").innerHTML = explainBlock(good, good ? "+1 point" : "Zéro pointé sur celle-là", cur.why);
       $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Question suivante →" : "Voir ma copie"}</button>`;
       $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
@@ -1793,7 +1908,7 @@ function startMarathon() {
         </div>
         <div class="options">${order.map((k, idx) => optionButton(cur.opts[k], idx)).join("")}</div>`;
       wire(order.map(k => k === cur.ok), cur.why,
-        { kind: "qcm", label: "QCM", q: cur.q, opts: [...cur.opts], answer: cur.opts[cur.ok], why: cur.why });
+        { kind: "qcm", label: "QCM", q: cur.q, opts: [...cur.opts], answer: cur.opts[cur.ok], why: cur.why, n: cur.n });
     } else {
       const cur = item.data;
       stage().innerHTML = `
@@ -1806,7 +1921,7 @@ function startMarathon() {
           <button class="opt" data-idx="1"><span>FAUX</span></button>
         </div>`;
       wire([cur.v === true, cur.v === false], cur.why,
-        { kind: "vf", label: "Vrai ou faux ?", q: cur.s, v: cur.v, why: cur.why });
+        { kind: "vf", label: "Vrai ou faux ?", q: cur.s, v: cur.v, why: cur.why, n: cur.n });
     }
   }
 
@@ -1816,6 +1931,7 @@ function startMarathon() {
       const idx = Number(btn.dataset.idx);
       const good = goodMask[idx];
       if (!good && errItem) recordError(errItem);
+      if (errItem && errItem.n) skillStore.record(errItem.n, good);
       bumpDaily();
       document.querySelectorAll(".opt").forEach(b => {
         b.disabled = true;

@@ -403,6 +403,13 @@ const TRUEFALSE = [
     why: "Première phrase (ou presque) du Manifeste du parti communiste (1848) : hommes libres et esclaves, seigneurs et serfs, bourgeois et prolétaires…" }
 ];
 
+/* ---------- ÉTIQUETAGE PAR NOTION (pour le diagnostic des lacunes) ----------
+   Ordre = ordre des questions ci-dessus. À garder synchronisé si on ajoute une question. */
+const _QUIZ_N = ["verite","devoir","verite","justice","etat","inconscient","bonheur","travail","langage","temps","verite","nature","liberte","justice","devoir","devoir","liberte","science","religion","art","travail","justice","justice","science","science","technique","devoir","justice","conscience","inconscient","devoir","liberte","raison","justice","travail","verite","temps","nature","travail","langage","langage","nature","etat","etat","art","art","inconscient","technique","liberte","temps","travail"];
+const _TF_N = ["devoir","bonheur","conscience","liberte","art","etat","etat","liberte","conscience","religion","etat","verite","art","etat","langage","liberte","verite","bonheur","inconscient","etat"];
+QUIZ.forEach((q, i) => { if (_QUIZ_N[i]) q.n = _QUIZ_N[i]; });
+TRUEFALSE.forEach((q, i) => { if (_TF_N[i]) q.n = _TF_N[i]; });
+
 /* ---------- JEU 04 · LES REPÈRES (flashcards officielles) ---------- */
 const FLASHCARDS = [
   { front: "Absolu / Relatif",
