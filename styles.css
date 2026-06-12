@@ -439,6 +439,7 @@ body::after {
 }
 
 .quote-day .label { color: var(--red); display: block; margin-bottom: 0.7rem; }
+.quote-day.q-fade { animation: drop-in 0.5s ease both; }
 
 .quote-day .txt {
   font-family: var(--font-display);

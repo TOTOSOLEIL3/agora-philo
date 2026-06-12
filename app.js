@@ -1984,17 +1984,29 @@ function startMarathon() {
 /* ============================================================
    ACCUEIL : marquee + citation du pied de page
    ============================================================ */
+let lastQuoteIdx = -1;
+function renderQuoteDuMoment() {
+  const idx = Math.floor(Date.now() / 600000) % QUOTES.length; // tranche de 10 minutes
+  if (idx === lastQuoteIdx) return;
+  lastQuoteIdx = idx;
+  const qd = QUOTES[idx];
+  const t = $("#qday-txt"), w = $("#qday-who");
+  if (!t || !w) return;
+  t.textContent = `« ${qd.q} »`;
+  w.textContent = `${qd.a} — ${qd.src}`;
+  const sec = t.closest(".quote-day");
+  if (sec) { sec.classList.remove("q-fade"); void sec.offsetWidth; sec.classList.add("q-fade"); }
+}
+
 function initHome() {
   const items = NOTIONS.map(n => `<span>${n}<i> ✶ </i></span>`).join("");
   $("#marquee-track").innerHTML = items + items; // boucle continue
 
   renderNotionGrid();
 
-  // Citation du jour (déterministe : même citation pour tout le monde, change chaque jour)
-  const dayIdx = Math.floor(Date.now() / 86400000) % QUOTES.length;
-  const qd = QUOTES[dayIdx];
-  $("#qday-txt").textContent = `« ${qd.q} »`;
-  $("#qday-who").textContent = `${qd.a} — ${qd.src}`;
+  // Citation du moment : déterministe (même pour tous) et change toutes les 10 minutes
+  renderQuoteDuMoment();
+  setInterval(renderQuoteDuMoment, 20000); // re-vérifie souvent, bascule à chaque nouvelle tranche
 
   const fq = QUOTES[Math.floor(Math.random() * QUOTES.length)];
   $("#footer-quote").textContent = `« ${fq.q} »`;
