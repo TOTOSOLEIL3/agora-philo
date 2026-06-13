@@ -610,6 +610,20 @@ body::after {
 
 .topnav button:hover { border-bottom-color: var(--red); color: var(--blue); }
 
+/* lien de bascule vers le site jumeau (Maths ↔ Philo) — même style des deux côtés */
+.cross-link {
+  text-decoration: none;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 0.2rem 0.55rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.cross-link:hover { background: var(--blue); color: var(--paper); transform: translate(-1px, -1px); }
+
 /* ============================================================
    LE COURS — grille des notions
    ============================================================ */
