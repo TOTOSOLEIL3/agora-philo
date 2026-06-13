@@ -527,6 +527,126 @@ function recoFromMiss(miss) {
   return c ? { id: c.id, title: c.title } : null;
 }
 
+/* ============================================================
+   DÉCODER LE SUJET — notions mobilisées + présupposé
+   ============================================================ */
+function startSujets() {
+  beginRun("sujets");
+  const rounds = pick(SUJETS, 8);
+  let i = 0, notionScore = 0, presupScore = 0;
+
+  function round() {
+    const cur = rounds[i];
+    setMeta(`Sujet ${i + 1} / ${rounds.length}`, "");
+    setProgress(i / rounds.length);
+    phaseNotions(cur);
+  }
+
+  // ---- Étape 1 : quelles notions ? (sélection multiple) ----
+  function phaseNotions(cur) {
+    const distractIds = shuffle(COURS.map(c => c.id).filter(id => !cur.n.includes(id))).slice(0, 5);
+    const options = shuffle([...cur.n, ...distractIds]);
+    const picked = new Set();
+
+    stage().innerHTML = `
+      <div class="q-card">
+        <div class="label">Étape 1 · Les notions du sujet</div>
+        <div class="question">« ${cur.s} »</div>
+      </div>
+      <p class="sujet-consigne">Quelle(s) notion(s) ce sujet mobilise-t-il ? (souvent 2)</p>
+      <div class="notion-pick" id="pick">
+        ${options.map(id => `<button class="pick-chip" data-id="${id}">${COURS.find(c => c.id === id).title}</button>`).join("")}
+      </div>
+      <div id="feedback"></div>
+      <div class="next-zone"><button class="btn primary" id="valider">Valider les notions</button></div>`;
+
+    document.querySelectorAll(".pick-chip").forEach(b => b.addEventListener("click", () => {
+      const id = b.dataset.id;
+      if (picked.has(id)) { picked.delete(id); b.classList.remove("on"); }
+      else { picked.add(id); b.classList.add("on"); }
+    }));
+
+    $("#valider").addEventListener("click", () => {
+      const correct = cur.n.every(id => picked.has(id)) && picked.size === cur.n.length;
+      if (correct) notionScore++;
+      cur.n.forEach(id => skillStore.record(id, correct));
+      document.querySelectorAll(".pick-chip").forEach(b => {
+        b.disabled = true;
+        const isAnswer = cur.n.includes(b.dataset.id);
+        if (isAnswer) b.classList.add("good");
+        else if (picked.has(b.dataset.id)) b.classList.add("bad");
+        else b.classList.add("off");
+      });
+      $("#valider").remove();
+      $("#feedback").innerHTML = explainBlock(correct,
+        correct ? "Notions trouvées !" : "Pas tout à fait",
+        `Notions en jeu : <strong>${cur.n.map(id => COURS.find(c => c.id === id).title).join(" + ")}</strong>. ${cur.aide}`);
+      $("#feedback").insertAdjacentHTML("afterend",
+        `<div class="next-zone"><button class="btn primary" id="vers-presup">Trouver le présupposé →</button></div>`);
+      $("#vers-presup").addEventListener("click", () => phasePresup(cur));
+    });
+  }
+
+  // ---- Étape 2 : le présupposé (QCM) ----
+  function phasePresup(cur) {
+    const opts = shuffle([cur.presup, ...cur.faux]);
+    stage().innerHTML = `
+      <div class="q-card">
+        <div class="label">Étape 2 · Le présupposé</div>
+        <div class="question" style="font-size:1.2rem">« ${cur.s} »</div>
+      </div>
+      <p class="sujet-consigne">Quel est le présupposé du sujet — ce qu'il tient pour acquis ?</p>
+      <div class="options">${opts.map(optionButton).join("")}</div>
+      <div id="feedback"></div>
+      <div class="next-zone" id="next-zone"></div>`;
+
+    document.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+      const good = opts[btn.dataset.idx] === cur.presup;
+      if (good) presupScore++;
+      document.querySelectorAll(".opt").forEach(b => {
+        b.disabled = true;
+        if (opts[b.dataset.idx] === cur.presup) b.classList.add("correct");
+        else if (b === btn) b.classList.add("wrong");
+        else b.classList.add("dimmed");
+      });
+      bumpDaily();
+      $("#feedback").innerHTML = explainBlock(good, good ? "Exact !" : "Le présupposé était ailleurs",
+        `Présupposé : <em>${cur.presup}</em><br>${cur.aide}`);
+      $("#next-zone").innerHTML = `<button class="btn primary" id="btn-next">${i + 1 < rounds.length ? "Sujet suivant →" : "Voir le bilan"}</button>`;
+      $("#btn-next").addEventListener("click", () => { i++; i < rounds.length ? round() : finish(); });
+    }));
+  }
+
+  function finish() {
+    setProgress(1);
+    track("fin-sujets");
+    const total = rounds.length;
+    const xp = notionScore * 10 + presupScore * 10;
+    const lvlUp = gainXp(xp);
+    const both = Math.min(notionScore, presupScore);
+    const mention = notionScore + presupScore >= total * 1.6 ? "Analyste de sujet hors pair"
+      : notionScore + presupScore >= total ? "Bon décodeur"
+      : "L'analyse, ça se travaille";
+    stage().innerHTML = `
+      <div class="endscreen">
+        <span class="xp-gain">+${xp} XP${lvlUp ? " · NIVEAU SUPÉRIEUR !" : ""}</span>
+        <div class="big-score">${notionScore}+${presupScore}<span style="font-size:1.2rem">/${total * 2}</span></div>
+        <div class="mention">${mention}</div>
+        <p class="comment">Notions trouvées : <strong>${notionScore}/${total}</strong> · Présupposés trouvés : <strong>${presupScore}/${total}</strong></p>
+        <p class="mono" style="margin-bottom:1.4rem">Analyser le sujet = la première chose que lit le correcteur. Tu progresses !</p>
+        <div class="actions">
+          <button class="btn primary" id="btn-replay">Refaire</button>
+          <button class="btn" data-nav="methodo:dissertation">La méthode de dissert</button>
+          <button class="btn" data-nav="home">Retour à l'arène</button>
+        </div>
+      </div>`;
+    $("#btn-replay").addEventListener("click", startSujets);
+  }
+
+  show("view-game");
+  round();
+}
+
 /* ---------- MON BILAN : diagnostic des lacunes par notion ---------- */
 function startDiagnostic() {
   $("#game-title").textContent = "Mon bilan par notion";
@@ -691,7 +811,8 @@ const GAMES = {
   examen: { title: "L'Examen Blanc", start: startExamen },
   errors: { title: "Mes erreurs", start: startErrors },
   battle: { title: "Battle en direct", start: startBattleSetup },
-  diagnostic: { title: "Mon bilan", start: startDiagnostic }
+  diagnostic: { title: "Mon bilan", start: startDiagnostic },
+  sujets: { title: "Décoder le sujet", start: startSujets }
 };
 
 function show(viewId) {

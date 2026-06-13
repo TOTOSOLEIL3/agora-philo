@@ -1484,6 +1484,35 @@ body::after {
 
 .endscreen .actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
+.sujet-consigne { font-size: 1rem; margin: 1.2rem 0 0.9rem; font-weight: 600; }
+
+.notion-pick { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+.pick-chip {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow-sm);
+  padding: 0.55rem 0.95rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.pick-chip:hover:not(:disabled) { transform: translate(-1px, -1px); }
+.pick-chip.on { background: var(--blue); color: var(--paper); box-shadow: 2px 2px 0 var(--ink); }
+.pick-chip.good { background: var(--green); border-color: var(--green); color: var(--paper); box-shadow: none; }
+.pick-chip.bad { background: var(--red); border-color: var(--red); color: var(--paper); box-shadow: none; }
+.pick-chip.off { opacity: 0.4; box-shadow: none; }
+
+.sujet-card { border-color: var(--gold); box-shadow: 5px 5px 0 var(--gold); }
+.sujet-card .num { color: var(--gold); }
+.sujet-card .best { color: var(--gold); }
+.sujet-card:hover { box-shadow: 8px 8px 0 var(--gold); }
+.sujet-card:active { box-shadow: 2px 2px 0 var(--gold); }
+
 .diag-card { border-color: var(--green); box-shadow: 5px 5px 0 var(--green); }
 .diag-card .num { color: var(--green); }
 .diag-card .best { color: var(--green); }
